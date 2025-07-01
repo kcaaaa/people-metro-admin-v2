@@ -1,0 +1,34 @@
+﻿{
+  "name": "people-metro-admin-v2",
+  "version": "2.0.1",
+  "description": "人民城轨2.0运营管理系统 - 专为城市轨道交通行业设计的企业级短视频内容管理平台",
+  "private": true,
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx http-server -p 8000",
+    "build": "echo 'No build required for static site'",
+    "deploy": "npm run build"
+  },
+  "keywords": [
+    "metro",
+    "railway",
+    "admin",
+    "management",
+    "video",
+    "content",
+    "enterprise"
+  ],
+  "author": "人民城轨开发团队",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/[your-username]/people-metro-admin-v2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/[your-username]/people-metro-admin-v2/issues"
+  },
+  "homepage": "https://github.com/[your-username]/people-metro-admin-v2#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
