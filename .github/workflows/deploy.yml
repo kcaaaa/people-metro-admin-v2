@@ -1,4 +1,4 @@
-﻿name: Deploy to GitHub Pages
+﻿name: 🚇 Deploy RuoYi-Style Admin to GitHub Pages
 
 on:
   push:
@@ -22,38 +22,69 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: 📥 Checkout Repository
         uses: actions/checkout@v4
         
-      - name: Setup Pages
+      - name: 🔧 Setup Pages
         uses: actions/configure-pages@v4
         
-      - name: Create docs directory if not exists
+      - name: 📂 Prepare Deployment Directory
         run: |
-          if [ ! -d "docs" ]; then
-            mkdir -p docs
-          fi
+          echo "🧹 Cleaning docs directory..."
+          rm -rf docs
+          mkdir -p docs
+          echo "✅ Created fresh docs directory"
           
-      - name: Copy files to docs
+      - name: 📋 Copy Files to Docs
         run: |
-          # 复制主文件
-          cp -f index.html docs/ 2>/dev/null || :
-          cp -f README.md docs/ 2>/dev/null || :
-          cp -f 人民城轨2.md docs/ 2>/dev/null || :
+          echo "📄 Copying main files..."
+          cp -f index.html docs/ || echo "⚠️  index.html not found"
+          cp -f README.md docs/ || echo "⚠️  README.md not found"
+          cp -f 人民城轨2.md docs/ || echo "⚠️  人民城轨2.md not found"
           
-          # 复制js目录
+          echo "📁 Copying JavaScript files..."
           if [ -d "js" ]; then
             cp -r js docs/
+            echo "✅ JavaScript files copied successfully"
+            ls -la docs/js/
+          else
+            echo "❌ js directory not found"
           fi
           
-          # 创建.nojekyll文件
+          echo "🚫 Creating .nojekyll file..."
           touch docs/.nojekyll
           
-      - name: Upload artifact
+          echo "📊 Deployment contents:"
+          find docs -type f -name "*.html" -o -name "*.js" -o -name "*.css" -o -name "*.md" | head -20
+          
+      - name: 🔍 Validate Deployment
+        run: |
+          echo "🔍 Validating deployment files..."
+          
+          if [ ! -f "docs/index.html" ]; then
+            echo "❌ Missing index.html"
+            exit 1
+          fi
+          
+          if [ ! -d "docs/js" ]; then
+            echo "❌ Missing js directory"
+            exit 1
+          fi
+          
+          echo "✅ All required files present"
+          echo "📊 Total files: $(find docs -type f | wc -l)"
+          
+      - name: 📤 Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: 'docs'
           
-      - name: Deploy to GitHub Pages
+      - name: 🚀 Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        
+      - name: 🎉 Deployment Success
+        run: |
+          echo "🎉 人民城轨2.0运营管理后台 (若依风格) 部署成功！"
+          echo "🔗 访问地址: ${{ steps.deployment.outputs.page_url }}"
+          echo "⏰ 部署时间: $(date)"
