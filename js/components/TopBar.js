@@ -1,83 +1,460 @@
-// 顶部操作栏组件
-const TopBar = ({ user, notifications, onNotificationClick, onLogout }) => {
-    const { Badge, Dropdown, Avatar, Space, Button, Tooltip, Modal } = antd;
+// RuoYi风格顶部操作栏组件
+const TopBar = ({ currentPage, user, notifications, onSearch, onNotificationClick, onLogout }) => {
+    const { Badge, Dropdown, Avatar, Space, Button, Tooltip, Modal, Input, Breadcrumb } = antd;
+    const { Search } = Input;
     
-    // 用户菜单
+    // 页面标题映射 - 用于面包屑导航
+    const pageTitleMap = {
+        'dashboard': { title: '首页', breadcrumb: ['首页'] },
+        'content': { title: '内容管理', breadcrumb: ['内容管理', '内容管理'] },
+        'review': { title: 'AI审核', breadcrumb: ['内容管理', 'AI审核'] },
+        'audit-flow': { title: '审核流程', breadcrumb: ['内容管理', '审核流程'] },
+        'user': { title: '用户管理', breadcrumb: ['用户管理', '用户管理'] },
+        'admin': { title: '管理员与权限', breadcrumb: ['用户管理', '管理员与权限'] },
+        'feedback': { title: '用户反馈', breadcrumb: ['用户管理', '用户反馈'] },
+        'live': { title: '直播管理', breadcrumb: ['运营管理', '直播管理'] },
+        'booth': { title: '展位管理', breadcrumb: ['运营管理', '展位管理'] },
+        'message': { title: '消息管理', breadcrumb: ['运营管理', '消息管理'] },
+        'version': { title: 'APP版本', breadcrumb: ['运营管理', 'APP版本'] },
+        'stats': { title: '行为统计', breadcrumb: ['数据分析', '行为统计'] },
+        'operational': { title: '运营统计', breadcrumb: ['数据分析', '运营统计'] },
+        'traffic': { title: '流量分配', breadcrumb: ['数据分析', '流量分配'] },
+        'data': { title: '数据管理', breadcrumb: ['系统管理', '数据管理'] },
+        'logs': { title: '日志管理', breadcrumb: ['系统管理', '日志管理'] },
+        'settings': { title: '系统设置', breadcrumb: ['系统管理', '系统设置'] }
+    };
+
+    const currentPageInfo = pageTitleMap[currentPage] || { title: '未知页面', breadcrumb: ['未知页面'] };
+    
+    // 用户菜单配置
     const userMenuItems = [
-        { key: 'profile', label: '个人中心' },
-        { key: 'settings', label: '账户设置' },
+        {
+            key: 'profile',
+            label: React.createElement('div', {
+                style: { display: 'flex', alignItems: 'center', gap: '8px' }
+            }, [
+                React.createElement('span', { key: 'icon' }, '👤'),
+                React.createElement('span', { key: 'text' }, '个人中心')
+            ])
+        },
+        {
+            key: 'settings',
+            label: React.createElement('div', {
+                style: { display: 'flex', alignItems: 'center', gap: '8px' }
+            }, [
+                React.createElement('span', { key: 'icon' }, '⚙️'),
+                React.createElement('span', { key: 'text' }, '账户设置')
+            ])
+        },
         { type: 'divider' },
-        { key: 'logout', label: '退出登录', danger: true }
+        {
+            key: 'logout',
+            label: React.createElement('div', {
+                style: { display: 'flex', alignItems: 'center', gap: '8px', color: '#ff4d4f' }
+            }, [
+                React.createElement('span', { key: 'icon' }, '🚪'),
+                React.createElement('span', { key: 'text' }, '退出登录')
+            ]),
+            danger: true
+        }
     ];
 
     const handleUserMenuClick = ({ key }) => {
-        if (key === 'logout') {
-            Modal.confirm({
-                title: '确认退出',
-                content: '您确定要退出登录吗？',
-                okText: '确定',
-                cancelText: '取消',
-                onOk: () => onLogout && onLogout(),
-            });
+        switch(key) {
+            case 'profile':
+                console.log('跳转到个人中心');
+                break;
+            case 'settings':
+                console.log('跳转到账户设置');
+                break;
+            case 'logout':
+                Modal.confirm({
+                    title: '确认退出',
+                    content: '您确定要退出登录吗？退出后需要重新登录。',
+                    okText: '确定退出',
+                    cancelText: '取消',
+                    okType: 'danger',
+                    icon: React.createElement('span', { style: { fontSize: '18px' } }, '⚠️'),
+                    onOk: () => {
+                        console.log('用户确认退出');
+                        if (onLogout) {
+                            onLogout();
+                        } else {
+                            // 模拟退出登录
+                            window.location.reload();
+                        }
+                    },
+                });
+                break;
+            default:
+                break;
         }
     };
 
-    const userMenu = { items: userMenuItems, onClick: handleUserMenuClick };
+    // 通知菜单配置
+    const getNotificationItems = () => {
+        if (!notifications || notifications.length === 0) {
+            return [
+                {
+                    key: 'empty',
+                    label: React.createElement('div', {
+                        style: {
+                            textAlign: 'center',
+                            padding: '20px',
+                            color: 'var(--ruoyi-text-secondary)'
+                        }
+                    }, [
+                        React.createElement('div', { key: 'icon', style: { fontSize: '24px', marginBottom: '8px' } }, '📭'),
+                        React.createElement('div', { key: 'text' }, '暂无通知')
+                    ])
+                }
+            ];
+        }
 
-    // 通知菜单
-    const notificationItems = notifications?.length > 0
-        ? [
-            ...notifications.slice(0, 5).map((notif, i) => ({
-                key: `notif-${i}`,
-                label: React.createElement('div', {},
-                    React.createElement('div', { style: { fontWeight: 'bold' } }, notif.title),
-                    React.createElement('div', { style: { fontSize: '12px' } }, notif.content)
-                ),
-            })),
-            { type: 'divider' },
-            { key: 'view-all', label: React.createElement('div', { style: { textAlign: 'center' } }, '查看全部') },
-        ]
-        : [{ key: 'empty', label: React.createElement('div', { style: { textAlign: 'center', padding: '12px' } }, '暂无通知') }];
+        const items = notifications.slice(0, 5).map((notif, i) => ({
+            key: `notif-${i}`,
+            label: React.createElement('div', {
+                style: {
+                    padding: '8px 4px',
+                    borderBottom: i < Math.min(4, notifications.length - 1) ? '1px solid var(--ruoyi-border-extra-light)' : 'none'
+                }
+            }, [
+                React.createElement('div', {
+                    key: 'header',
+                    style: {
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '4px'
+                    }
+                }, [
+                    React.createElement('span', {
+                        key: 'title',
+                        style: {
+                            fontWeight: '500',
+                            color: 'var(--ruoyi-text-primary)',
+                            fontSize: '13px'
+                        }
+                    }, notif.title),
+                    React.createElement('span', {
+                        key: 'badge',
+                        style: {
+                            display: 'inline-block',
+                            width: '6px',
+                            height: '6px',
+                            borderRadius: '50%',
+                            background: notif.read ? 'transparent' : 'var(--ruoyi-danger)',
+                            marginLeft: '8px'
+                        }
+                    })
+                ]),
+                React.createElement('div', {
+                    key: 'content',
+                    style: {
+                        fontSize: '12px',
+                        color: 'var(--ruoyi-text-secondary)',
+                        lineHeight: '1.4',
+                        marginBottom: '4px'
+                    }
+                }, notif.content),
+                React.createElement('div', {
+                    key: 'time',
+                    style: {
+                        fontSize: '11px',
+                        color: 'var(--ruoyi-text-placeholder)'
+                    }
+                }, notif.time || '刚刚')
+            ])
+        }));
 
-    const notificationMenu = { items: notificationItems, onClick: onNotificationClick };
+        // 添加"查看全部"选项
+        if (notifications.length > 0) {
+            items.push({ type: 'divider' });
+            items.push({
+                key: 'view-all',
+                label: React.createElement('div', {
+                    style: {
+                        textAlign: 'center',
+                        padding: '8px',
+                        color: 'var(--ruoyi-primary)',
+                        fontSize: '13px',
+                        fontWeight: '500'
+                    }
+                }, '查看全部通知')
+            });
+        }
+
+        return items;
+    };
+
+    const notificationMenu = {
+        items: getNotificationItems(),
+        onClick: ({ key }) => {
+            if (key === 'view-all') {
+                console.log('查看全部通知');
+                if (onNotificationClick) {
+                    onNotificationClick();
+                }
+            } else if (key.startsWith('notif-')) {
+                console.log('点击通知:', key);
+            }
+        }
+    };
     
+    // 计算未读通知数量
     const unreadCount = notifications?.filter(n => !n.read).length || 0;
-
     const displayName = user?.name || user?.username || '管理员';
 
-    return React.createElement('div', { className: 'top-bar' },
-        // Left Side
-        React.createElement('div', { className: 'top-bar-left' },
-            React.createElement('h1', { className: 'page-title-in-bar' }, '运营管理后台'),
-        ),
-        // Right Side
-        React.createElement('div', { className: 'top-bar-right' },
-            React.createElement(Space, { size: "middle" },
-                React.createElement(Tooltip, { title: "帮助文档" },
-                    React.createElement(Button, { 
-                        shape: 'circle',
-                        onClick: () => window.open('https://github.com/kcaaaa/renmin-chenggui-admin/wiki', '_blank')
-                    }, '❓')
-                ),
-                React.createElement(Dropdown, { menu: notificationMenu, trigger: ['click'] },
-                    React.createElement(Tooltip, { title: "通知" },
-                        React.createElement(Badge, { count: unreadCount, size: 'small' },
-                            React.createElement(Button, { shape: 'circle' }, '🔔')
-                        )
-                    )
-                ),
-                React.createElement(Dropdown, { menu: userMenu, trigger: ['click'] },
-                    React.createElement(Space, { style: { cursor: 'pointer' } },
-                        React.createElement(Avatar, {
-                            style: { backgroundColor: '#1890ff' },
-                            size: 'default'
-                        }, displayName.charAt(0)),
-                        React.createElement('span', {}, displayName)
-                    )
-                )
-            )
-        )
-    );
+    // 搜索处理
+    const handleSearch = (value) => {
+        console.log('全局搜索:', value);
+        if (onSearch) {
+            onSearch(value);
+        }
+    };
+
+    // 快捷操作按钮
+    const quickActions = [
+        {
+            key: 'refresh',
+            icon: '🔄',
+            title: '刷新页面',
+            onClick: () => window.location.reload()
+        },
+        {
+            key: 'fullscreen',
+            icon: '🔍',
+            title: '全屏显示',
+            onClick: () => {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                } else {
+                    document.documentElement.requestFullscreen();
+                }
+            }
+        }
+    ];
+
+    return React.createElement('div', {
+        className: 'top-bar',
+        style: {
+            background: 'var(--ruoyi-bg-white)',
+            borderBottom: '1px solid var(--ruoyi-border-lighter)',
+            padding: '0 24px',
+            height: '50px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            position: 'relative',
+            zIndex: 1000,
+            boxShadow: '0 1px 4px rgba(0, 21, 41, 0.08)'
+        }
+    }, [
+        // 左侧 - 面包屑导航
+        React.createElement('div', {
+            key: 'left',
+            className: 'top-bar-left',
+            style: {
+                display: 'flex',
+                alignItems: 'center',
+                gap: '16px',
+                flex: 1
+            }
+        }, [
+            // 面包屑导航
+            React.createElement(Breadcrumb, {
+                key: 'breadcrumb',
+                style: { margin: 0 },
+                items: currentPageInfo.breadcrumb.map((item, index) => ({
+                    title: React.createElement('span', {
+                        style: {
+                            color: index === currentPageInfo.breadcrumb.length - 1 
+                                ? 'var(--ruoyi-text-primary)' 
+                                : 'var(--ruoyi-text-secondary)',
+                            fontWeight: index === currentPageInfo.breadcrumb.length - 1 ? '500' : '400',
+                            fontSize: '14px'
+                        }
+                    }, item)
+                }))
+            }),
+            
+            // 页面标题（可选显示）
+            React.createElement('div', {
+                key: 'page-title',
+                style: {
+                    height: '20px',
+                    width: '1px',
+                    background: 'var(--ruoyi-border-base)',
+                    margin: '0 8px'
+                }
+            }),
+            React.createElement('span', {
+                key: 'current-title',
+                style: {
+                    fontSize: '14px',
+                    color: 'var(--ruoyi-text-regular)',
+                    fontWeight: '400'
+                }
+            }, currentPageInfo.title)
+        ]),
+
+        // 右侧 - 操作区域
+        React.createElement('div', {
+            key: 'right',
+            className: 'top-bar-right',
+            style: {
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+            }
+        }, [
+            // 全局搜索
+            React.createElement(Search, {
+                key: 'search',
+                placeholder: '搜索菜单、用户、内容...',
+                allowClear: true,
+                onSearch: handleSearch,
+                style: {
+                    width: '240px'
+                },
+                size: 'middle'
+            }),
+
+            // 快捷操作按钮
+            React.createElement(Space, {
+                key: 'quick-actions',
+                size: 'small'
+            }, quickActions.map(action =>
+                React.createElement(Tooltip, {
+                    key: action.key,
+                    title: action.title
+                }, React.createElement(Button, {
+                    type: 'text',
+                    shape: 'circle',
+                    size: 'small',
+                    onClick: action.onClick,
+                    style: {
+                        color: 'var(--ruoyi-text-secondary)',
+                        border: 'none',
+                        background: 'transparent'
+                    }
+                }, action.icon))
+            )),
+
+            // 帮助文档
+            React.createElement(Tooltip, {
+                key: 'help',
+                title: '帮助文档'
+            }, React.createElement(Button, {
+                type: 'text',
+                shape: 'circle',
+                size: 'small',
+                onClick: () => window.open('https://github.com/kcaaaa/renmin-chenggui-admin/wiki', '_blank'),
+                style: {
+                    color: 'var(--ruoyi-text-secondary)',
+                    border: 'none',
+                    background: 'transparent'
+                }
+            }, '❓')),
+
+            // 通知中心
+            React.createElement(Dropdown, {
+                key: 'notifications',
+                menu: notificationMenu,
+                trigger: ['click'],
+                placement: 'bottomRight',
+                overlayStyle: {
+                    width: '300px'
+                }
+            }, React.createElement(Tooltip, {
+                title: '通知中心'
+            }, React.createElement(Badge, {
+                count: unreadCount,
+                size: 'small',
+                offset: [-2, 2]
+            }, React.createElement(Button, {
+                type: 'text',
+                shape: 'circle',
+                size: 'small',
+                style: {
+                    color: 'var(--ruoyi-text-secondary)',
+                    border: 'none',
+                    background: 'transparent'
+                }
+            }, '🔔')))),
+
+            // 分隔线
+            React.createElement('div', {
+                key: 'divider',
+                style: {
+                    height: '16px',
+                    width: '1px',
+                    background: 'var(--ruoyi-border-base)',
+                    margin: '0 4px'
+                }
+            }),
+
+            // 用户信息
+            React.createElement(Dropdown, {
+                key: 'user-menu',
+                menu: { items: userMenuItems, onClick: handleUserMenuClick },
+                trigger: ['click'],
+                placement: 'bottomRight'
+            }, React.createElement('div', {
+                className: 'user-info',
+                style: {
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '6px 12px',
+                    borderRadius: 'var(--ruoyi-border-radius-base)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    ':hover': {
+                        background: 'var(--ruoyi-bg-lighter)'
+                    }
+                }
+            }, [
+                React.createElement('div', {
+                    key: 'avatar',
+                    className: 'user-avatar',
+                    style: {
+                        width: '28px',
+                        height: '28px',
+                        borderRadius: '50%',
+                        background: 'var(--ruoyi-primary)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'white',
+                        fontSize: '12px',
+                        fontWeight: '500'
+                    }
+                }, displayName.charAt(0).toUpperCase()),
+                React.createElement('span', {
+                    key: 'name',
+                    style: {
+                        fontSize: '14px',
+                        color: 'var(--ruoyi-text-primary)',
+                        fontWeight: '400',
+                        maxWidth: '100px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                    }
+                }, displayName),
+                React.createElement('span', {
+                    key: 'arrow',
+                    style: {
+                        fontSize: '10px',
+                        color: 'var(--ruoyi-text-placeholder)',
+                        transform: 'rotate(0deg)',
+                        transition: 'transform 0.2s ease'
+                    }
+                }, '▼')
+            ]))
+        ])
+    ]);
 };
 
 window.TopBar = TopBar; 
