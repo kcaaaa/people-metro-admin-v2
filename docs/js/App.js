@@ -97,6 +97,8 @@ const App = () => {
             'review-interaction': window.ReviewManagement,
             'review-mechanism': window.ReviewManagement,
             'ReviewManagement': window.ReviewManagement,
+            'exhibition-audit': window.ExhibitionAuditManagement,
+            'ExhibitionAuditManagement': window.ExhibitionAuditManagement,
             'audit-flow': window.AuditFlowManagement,
             'AuditFlowManagement': window.AuditFlowManagement,
             'admin': window.AdminManagement,
