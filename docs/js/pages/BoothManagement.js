@@ -12,12 +12,10 @@ const BoothManagement = () => {
     const [venueModalVisible, setVenueModalVisible] = React.useState(false);
     const [floorModalVisible, setFloorModalVisible] = React.useState(false);
     const [areaModalVisible, setAreaModalVisible] = React.useState(false);
-    const [companyModalVisible, setCompanyModalVisible] = React.useState(false);
     const [boothMapModalVisible, setBoothMapModalVisible] = React.useState(false);
     const [editingVenue, setEditingVenue] = React.useState(null);
     const [editingFloor, setEditingFloor] = React.useState(null);
     const [editingArea, setEditingArea] = React.useState(null);
-    const [editingCompany, setEditingCompany] = React.useState(null);
     const [selectedFloor, setSelectedFloor] = React.useState(null);
     const [selectedArea, setSelectedArea] = React.useState(null);
     const [loading, setLoading] = React.useState(false);
@@ -25,7 +23,6 @@ const BoothManagement = () => {
     const [venueForm] = Form.useForm();
     const [floorForm] = Form.useForm();
     const [areaForm] = Form.useForm();
-    const [companyForm] = Form.useForm();
     
     // 模拟数据
     const [boothData, setBoothData] = React.useState({
@@ -62,74 +59,13 @@ const BoothManagement = () => {
             { id: 'area_f', floorId: 'floor_f2', name: 'F区', description: '绿色技术展示区', boothCount: 15, color: '#13c2c2' }
         ],
         
-        // 参展公司数据
-        companies: [
-            {
-                id: 'company_001',
-                name: '中车集团',
-                logo: '/images/logos/crrc.png',
-                description: '中国中车股份有限公司',
-                floorId: 'floor_f1',
-                areaId: 'area_a',
-                boothNumber: 'A区-01',
-                boothSize: '3x3',
-                appAccount: 'crrc_official',
-                contactPerson: '张经理',
-                contactPhone: '13800138001',
-                contactEmail: 'zhang@crrc.com',
-                website: 'https://www.crrcgc.cc',
-                category: '车辆制造',
-                status: 'confirmed',
-                created: '2024-01-12 14:30:00'
-            },
-            {
-                id: 'company_002',
-                name: '比亚迪轨道交通',
-                logo: '/images/logos/byd.png',
-                description: '比亚迪轨道交通有限公司',
-                floorId: 'floor_f1',
-                areaId: 'area_a',
-                boothNumber: 'A区-02',
-                boothSize: '3x3',
-                appAccount: 'byd_rail',
-                contactPerson: '李总监',
-                contactPhone: '13800138002',
-                contactEmail: 'li@byd.com',
-                website: 'https://rail.byd.com',
-                category: '智能交通',
-                status: 'confirmed',
-                created: '2024-01-13 09:15:00'
-            },
-            {
-                id: 'company_003',
-                name: '华为技术',
-                logo: '/images/logos/huawei.png',
-                description: '华为技术有限公司',
-                floorId: 'floor_f1',
-                areaId: 'area_a',
-                boothNumber: 'A区-03',
-                boothSize: '6x3',
-                appAccount: 'huawei_rail',
-                contactPerson: '王工程师',
-                contactPhone: '13800138003',
-                contactEmail: 'wang@huawei.com',
-                website: 'https://www.huawei.com',
-                category: '通信技术',
-                status: 'pending',
-                created: '2024-01-14 16:45:00'
-            }
-        ],
-        
         // 统计数据
         statistics: {
             totalVenues: 1,
             totalFloors: 4,
             totalAreas: 12,
             totalBooths: 150,
-            occupiedBooths: 89,
-            totalCompanies: 67,
-            confirmedCompanies: 45,
-            pendingCompanies: 22
+            occupiedBooths: 89
         }
     });
 
@@ -184,7 +120,6 @@ const BoothManagement = () => {
         switch(activeTab) {
             case 'venue': return boothData.venues;
             case 'floor': return boothData.floors;
-            case 'company': return boothData.companies;
             default: return [];
         }
     };
@@ -193,8 +128,7 @@ const BoothManagement = () => {
     const getTabDisplayName = (tab) => {
         const names = {
             venue: '场馆',
-            floor: '楼层分区',
-            company: '参展公司'
+            floor: '楼层分区'
         };
         return names[tab] || '数据';
     };
@@ -209,8 +143,6 @@ const BoothManagement = () => {
                 return filterVenues(item);
             } else if (activeTab === 'floor') {
                 return filterFloors(item);
-            } else if (activeTab === 'company') {
-                return filterCompanies(item);
             }
             return true;
         });
@@ -251,35 +183,6 @@ const BoothManagement = () => {
         
         // 场馆筛选
         if (venueFilter !== 'all' && floor.venueId !== venueFilter) {
-            return false;
-        }
-        
-        return true;
-    };
-
-    // 公司筛选逻辑
-    const filterCompanies = (company) => {
-        // 文本搜索
-        if (searchText && 
-            !company.name?.toLowerCase().includes(searchText.toLowerCase()) && 
-            !company.description?.toLowerCase().includes(searchText.toLowerCase()) &&
-            !company.contactPerson?.toLowerCase().includes(searchText.toLowerCase()) &&
-            !company.boothLocation?.toLowerCase().includes(searchText.toLowerCase())) {
-            return false;
-        }
-        
-        // 状态筛选
-        if (statusFilter !== 'all' && company.status !== statusFilter) {
-            return false;
-        }
-        
-        // 类型筛选
-        if (typeFilter !== 'all' && company.category !== typeFilter) {
-            return false;
-        }
-        
-        // 楼层筛选
-        if (floorFilter !== 'all' && company.floorId !== floorFilter) {
             return false;
         }
         
@@ -517,194 +420,6 @@ const BoothManagement = () => {
         ]);
     };
 
-    // 渲染参展公司管理
-    const renderCompanyManagement = () => {
-        const companyColumns = [
-            {
-                title: '公司信息',
-                dataIndex: 'name',
-                width: 250,
-                render: (text, record) => React.createElement('div', {
-                    style: { display: 'flex', alignItems: 'center', gap: 12 }
-                }, [
-                    React.createElement('div', {
-                        key: 'logo',
-                        style: {
-                            width: '40px',
-                            height: '40px',
-                            background: '#f0f2f5',
-                            borderRadius: '4px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '12px',
-                            color: '#666'
-                        }
-                    }, 'LOGO'),
-                    React.createElement('div', { key: 'info' }, [
-                        React.createElement('div', {
-                            key: 'name',
-                            style: { fontWeight: 'bold', marginBottom: '4px' }
-                        }, text),
-                        React.createElement('div', {
-                            key: 'desc',
-                            style: { fontSize: '12px', color: '#666' }
-                        }, record.description),
-                        React.createElement('div', {
-                            key: 'category',
-                            style: { fontSize: '12px', marginTop: '4px' }
-                        }, React.createElement(Tag, { size: 'small' }, record.category))
-                    ])
-                ])
-            },
-            {
-                title: '展位信息',
-                dataIndex: 'boothNumber',
-                width: 150,
-                render: (text, record) => React.createElement('div', {}, [
-                    React.createElement('div', {
-                        key: 'booth',
-                        style: { fontWeight: 'bold', marginBottom: '4px' }
-                    }, text),
-                    React.createElement('div', {
-                        key: 'size',
-                        style: { fontSize: '12px', color: '#666' }
-                    }, `规格: ${record.boothSize}`)
-                ])
-            },
-            {
-                title: '联系信息',
-                dataIndex: 'contactPerson',
-                width: 180,
-                render: (text, record) => React.createElement('div', {}, [
-                    React.createElement('div', {
-                        key: 'person',
-                        style: { marginBottom: '4px' }
-                    }, text),
-                    React.createElement('div', {
-                        key: 'phone',
-                        style: { fontSize: '12px', color: '#666' }
-                    }, record.contactPhone),
-                    React.createElement('div', {
-                        key: 'email',
-                        style: { fontSize: '12px', color: '#666' }
-                    }, record.contactEmail)
-                ])
-            },
-            {
-                title: 'APP账号',
-                dataIndex: 'appAccount',
-                width: 120,
-                render: (text) => React.createElement(Tag, { color: 'blue' }, text)
-            },
-            {
-                title: '状态',
-                dataIndex: 'status',
-                width: 100,
-                render: (status) => React.createElement(Tag, {
-                    color: status === 'confirmed' ? 'green' : status === 'pending' ? 'orange' : 'red'
-                }, status === 'confirmed' ? '已确认' : status === 'pending' ? '待确认' : '已取消')
-            },
-            {
-                title: '操作',
-                width: 200,
-                render: (_, record) => React.createElement(Space, { size: 'small' }, [
-                    React.createElement(Button, {
-                        key: 'edit',
-                        size: 'small',
-                        onClick: () => editCompany(record)
-                    }, '编辑'),
-                    React.createElement(Button, {
-                        key: 'view',
-                        size: 'small',
-                        onClick: () => viewCompanyDetails(record)
-                    }, '详情'),
-                    React.createElement(Button, {
-                        key: 'delete',
-                        size: 'small',
-                        danger: true,
-                        onClick: () => deleteCompany(record)
-                    }, '删除')
-                ])
-            }
-        ];
-
-        return React.createElement('div', {}, [
-            // 统计卡片
-            React.createElement(Row, {
-                key: 'company-statistics',
-                gutter: [16, 16],
-                style: { marginBottom: '24px' }
-            }, [
-                React.createElement(Col, { span: 6 }, [
-                    React.createElement(Card, { size: 'small' }, [
-                        React.createElement(Statistic, {
-                            title: '参展公司总数',
-                            value: boothData.statistics.totalCompanies,
-                            prefix: '🏢',
-                            valueStyle: { color: '#1890ff' }
-                        })
-                    ])
-                ]),
-                React.createElement(Col, { span: 6 }, [
-                    React.createElement(Card, { size: 'small' }, [
-                        React.createElement(Statistic, {
-                            title: '已确认公司',
-                            value: boothData.statistics.confirmedCompanies,
-                            prefix: '✅',
-                            valueStyle: { color: '#52c41a' }
-                        })
-                    ])
-                ]),
-                React.createElement(Col, { span: 6 }, [
-                    React.createElement(Card, { size: 'small' }, [
-                        React.createElement(Statistic, {
-                            title: '待确认公司',
-                            value: boothData.statistics.pendingCompanies,
-                            prefix: '⏳',
-                            valueStyle: { color: '#faad14' }
-                        })
-                    ])
-                ]),
-                React.createElement(Col, { span: 6 }, [
-                    React.createElement(Card, { size: 'small' }, [
-                        React.createElement(Statistic, {
-                            title: '展位占用率',
-                            value: ((boothData.statistics.occupiedBooths / boothData.statistics.totalBooths) * 100).toFixed(1),
-                            suffix: '%',
-                            prefix: '📊',
-                            valueStyle: { color: '#722ed1' }
-                        })
-                    ])
-                ])
-            ]),
-
-            React.createElement(Card, {
-                key: 'company-table',
-                title: '参展公司列表',
-                extra: React.createElement(Space, {}, [
-                    React.createElement(Button, {
-                        type: 'primary',
-                        onClick: () => createNewCompany()
-                    }, '新增公司'),
-                    React.createElement(Button, {
-                        onClick: () => batchImportCompanies()
-                    }, '批量导入'),
-                    React.createElement(Button, {
-                        onClick: () => loadBoothData()
-                    }, '刷新数据')
-                ])
-            }, React.createElement(Table, {
-                dataSource: boothData.companies?.map((item, index) => ({ ...item, key: index })) || [],
-                columns: companyColumns,
-                pagination: { pageSize: 10 },
-                size: 'small',
-                scroll: { x: 1200 },
-                loading: loading
-            }))
-        ]);
-    };
-
     // 功能函数
     const createNewVenue = () => {
         setEditingVenue(null);
@@ -742,18 +457,6 @@ const BoothManagement = () => {
         setAreaModalVisible(true);
     };
 
-    const createNewCompany = () => {
-        setEditingCompany(null);
-        companyForm.resetFields();
-        setCompanyModalVisible(true);
-    };
-
-    const editCompany = (company) => {
-        setEditingCompany(company);
-        companyForm.setFieldsValue(company);
-        setCompanyModalVisible(true);
-    };
-
     const uploadBoothMap = (floor) => {
         setSelectedFloor(floor);
         setBoothMapModalVisible(true);
@@ -770,11 +473,6 @@ const BoothManagement = () => {
             key: 'floor',
             label: '🏗️ 楼层分区',
             children: renderFloorAreaManagement()
-        },
-        {
-            key: 'company',
-            label: '🏭 参展公司',
-            children: renderCompanyManagement()
         }
     ];
 
@@ -817,7 +515,7 @@ const BoothManagement = () => {
         }),
 
         // 这里会添加各种Modal组件
-        // 场馆Modal、楼层Modal、分区Modal、公司Modal等
+        // 场馆Modal、楼层Modal、分区Modal等
     ]);
 };
 

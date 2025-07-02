@@ -107,6 +107,8 @@ const App = () => {
             'AdminManagement': window.AdminManagement,
             'booth': window.BoothManagement,
             'BoothManagement': window.BoothManagement,
+            'exhibitor': window.ExhibitorManagement,
+            'ExhibitorManagement': window.ExhibitorManagement,
             'live': window.LiveManagement,
             'LiveManagement': window.LiveManagement,
             'user': window.UserManagement,

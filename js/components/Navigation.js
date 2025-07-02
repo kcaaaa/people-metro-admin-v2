@@ -84,6 +84,13 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     page: 'BoothManagement'
                 },
                 {
+                    key: 'exhibitor',
+                    icon: '🏭',
+                    label: '参展公司管理',
+                    title: '参展公司信息管理与审核',
+                    page: 'ExhibitorManagement'
+                },
+                {
                     key: 'live',
                     icon: '📺',
                     label: '论坛直播',
