@@ -91,6 +91,8 @@ const App = () => {
             'ContentManagement': window.ContentManagement,
             'complaint': window.ComplaintManagement,
             'ComplaintManagement': window.ComplaintManagement,
+            'content-tags': window.ContentTagManagement,
+            'ContentTagManagement': window.ContentTagManagement,
             'review': window.ReviewManagement,
             'review-image': window.ReviewManagement,
             'review-video': window.ReviewManagement,

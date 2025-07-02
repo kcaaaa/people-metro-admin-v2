@@ -31,6 +31,13 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     label: '投诉管理',
                     title: '用户投诉视频管理与处理',
                     page: 'ComplaintManagement'
+                },
+                {
+                    key: 'content-tags',
+                    icon: '🏷️',
+                    label: '内容标签',
+                    title: '视频标签维护与热门标签管理',
+                    page: 'ContentTagManagement'
                 }
             ]
         },
