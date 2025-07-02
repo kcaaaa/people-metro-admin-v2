@@ -1,9 +1,9 @@
-// RuoYi风格导航组件 - 分级菜单版本
+// 简洁白色系统导航组件
 const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) => {
     const { Menu } = antd;
     const { SubMenu } = Menu;
     
-    // 菜单项配置 - 真正的分级结构
+    // 菜单项配置
     const menuItems = [
         {
             key: 'dashboard',
@@ -168,7 +168,6 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
 
     // 递归渲染菜单项
     const renderMenuItem = (item) => {
-        // 如果有子菜单，渲染SubMenu
         if (item.children && item.children.length > 0) {
             return React.createElement(SubMenu, {
                 key: item.key,
@@ -185,8 +184,7 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                             fontSize: '16px',
                             width: '20px',
                             marginRight: collapsed ? 0 : '12px',
-                            textAlign: 'center',
-                            transition: 'all 0.3s ease'
+                            textAlign: 'center'
                         }
                     }, item.icon),
                     !collapsed && React.createElement('span', {
@@ -200,7 +198,6 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             }, item.children.map(child => renderMenuItem(child)));
         }
         
-        // 普通菜单项
         return React.createElement(Menu.Item, {
             key: item.key,
             title: item.title,
@@ -216,8 +213,7 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     fontSize: '16px',
                     width: '20px',
                     marginRight: collapsed ? 0 : '12px',
-                    textAlign: 'center',
-                    transition: 'all 0.3s ease'
+                    textAlign: 'center'
                 }
             }, item.icon),
             !collapsed && React.createElement('span', {
@@ -230,7 +226,7 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
         ]);
     };
 
-    // 获取扁平化的菜单项（用于选中状态）
+    // 获取扁平化的菜单项
     const getFlatMenuItems = (items) => {
         let flatItems = [];
         items.forEach(item => {
@@ -249,7 +245,6 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
     const getDefaultOpenKeys = () => {
         const currentItem = flatMenuItems.find(item => item.key === currentPage);
         if (currentItem) {
-            // 查找包含当前页面的父菜单
             for (let menu of menuItems) {
                 if (menu.children && menu.children.some(child => child.key === currentPage)) {
                     return [menu.key];
@@ -264,18 +259,19 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
         style: {
             width: collapsed ? '64px' : '260px',
             transition: 'all 0.2s ease',
-            background: '#001529', // 深色背景
-            minHeight: '100vh' // 确保满高度
+            background: '#f8f9fa',
+            minHeight: '100vh',
+            borderRight: '1px solid #e8e8e8'
         }
     }, [
-        // 导航头部 - Logo区域
+        // 导航头部
         React.createElement('div', {
             key: 'header',
             className: 'nav-header',
             style: {
-                height: '50px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                height: '60px',
+                background: '#ffffff',
+                borderBottom: '1px solid #e8e8e8',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -290,28 +286,34 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                 style: {
                     display: 'flex',
                     alignItems: 'center',
-                    color: '#FFFFFF',
-                    fontSize: '16px',
+                    color: '#333333',
+                    fontSize: '18px',
                     fontWeight: '600',
                     textDecoration: 'none',
                     transition: 'all 0.3s ease',
                     cursor: 'pointer'
                 },
-                onClick: () => onPageChange('dashboard')
+                onClick: () => onPageChange('dashboard'),
+                onMouseEnter: (e) => {
+                    e.currentTarget.style.color = '#1890ff';
+                },
+                onMouseLeave: (e) => {
+                    e.currentTarget.style.color = '#333333';
+                }
             }, [
                 React.createElement('div', {
                     key: 'icon',
                     className: 'logo-icon',
                     style: {
-                        fontSize: '20px',
-                        marginRight: collapsed ? 0 : '8px',
+                        fontSize: '24px',
+                        marginRight: collapsed ? 0 : '12px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: '28px',
-                        height: '28px',
-                        background: 'var(--ruoyi-primary)',
-                        borderRadius: '4px',
+                        width: '32px',
+                        height: '32px',
+                        background: '#1890ff',
+                        borderRadius: '6px',
                         transition: 'all 0.3s ease'
                     }
                 }, '🚇'),
@@ -319,7 +321,7 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     key: 'text',
                     className: 'logo-text',
                     style: {
-                        fontSize: '16px',
+                        fontSize: '18px',
                         fontWeight: '600',
                         whiteSpace: 'nowrap'
                     }
@@ -336,26 +338,25 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     right: '12px',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    color: 'rgba(255, 255, 255, 0.65)',
+                    background: '#f5f5f5',
+                    border: '1px solid #e8e8e8',
+                    color: '#666666',
                     cursor: 'pointer',
-                    padding: '4px',
-                    borderRadius: '2px',
+                    padding: '6px',
+                    borderRadius: '4px',
                     fontSize: '12px',
-                    transition: 'all 0.2s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
+                    transition: 'all 0.2s ease'
                 },
                 title: '收起菜单',
                 onMouseEnter: (e) => {
-                    e.target.style.color = '#FFFFFF';
-                    e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                    e.target.style.color = '#1890ff';
+                    e.target.style.borderColor = '#1890ff';
+                    e.target.style.background = '#e6f7ff';
                 },
                 onMouseLeave: (e) => {
-                    e.target.style.color = 'rgba(255, 255, 255, 0.65)';
-                    e.target.style.background = 'none';
+                    e.target.style.color = '#666666';
+                    e.target.style.borderColor = '#e8e8e8';
+                    e.target.style.background = '#f5f5f5';
                 }
             }, '◀')
         ]),
@@ -366,29 +367,31 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             style: {
                 padding: '8px',
                 textAlign: 'center',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+                borderBottom: '1px solid #e8e8e8'
             }
         }, React.createElement('button', {
             className: 'nav-toggle',
             onClick: onToggleCollapse,
             style: {
-                background: 'none',
-                border: 'none',
-                color: 'rgba(255, 255, 255, 0.65)',
+                background: '#f5f5f5',
+                border: '1px solid #e8e8e8',
+                color: '#666666',
                 cursor: 'pointer',
-                padding: '4px',
-                borderRadius: '2px',
+                padding: '6px',
+                borderRadius: '4px',
                 fontSize: '12px',
                 transition: 'all 0.2s ease'
             },
             title: '展开菜单',
             onMouseEnter: (e) => {
-                e.target.style.color = '#FFFFFF';
-                e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.target.style.color = '#1890ff';
+                e.target.style.borderColor = '#1890ff';
+                e.target.style.background = '#e6f7ff';
             },
             onMouseLeave: (e) => {
-                e.target.style.color = 'rgba(255, 255, 255, 0.65)';
-                e.target.style.background = 'none';
+                e.target.style.color = '#666666';
+                e.target.style.borderColor = '#e8e8e8';
+                e.target.style.background = '#f5f5f5';
             }
         }, '▶')),
         
@@ -403,50 +406,18 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                 paddingBottom: '16px'
             }
         }, [
-            // 添加自定义样式
-            React.createElement('style', {
-                key: 'menu-styles'
-            }, `
-                .main-nav .ant-menu-dark {
-                    background: transparent;
-                    color: rgba(255, 255, 255, 0.85);
-                }
-                .main-nav .ant-menu-dark .ant-menu-item,
-                .main-nav .ant-menu-dark .ant-menu-submenu-title {
-                    color: rgba(255, 255, 255, 0.85);
-                }
-                .main-nav .ant-menu-dark .ant-menu-item:hover,
-                .main-nav .ant-menu-dark .ant-menu-submenu-title:hover {
-                    color: #fff;
-                    background-color: rgba(255, 255, 255, 0.08);
-                }
-                .main-nav .ant-menu-dark .ant-menu-item-selected {
-                    background-color: #1890ff;
-                    color: #fff;
-                }
-                .main-nav .ant-menu-dark .ant-menu-submenu-selected .ant-menu-submenu-title {
-                    color: #1890ff;
-                }
-                .main-nav .ant-menu-dark .ant-menu-submenu-open .ant-menu-submenu-title {
-                    color: #fff;
-                }
-                .main-nav .ant-menu-dark .ant-menu-submenu .ant-menu-sub {
-                    background: rgba(0, 0, 0, 0.3);
-                }
-            `),
-            
             // 渲染菜单
             React.createElement(Menu, {
                 key: 'menu',
                 mode: 'inline',
-                theme: 'dark',
+                theme: 'light',
                 selectedKeys: [currentPage],
                 defaultOpenKeys: getDefaultOpenKeys(),
                 style: { 
                     background: 'transparent',
                     border: 'none',
                     flex: 1,
-                    color: 'rgba(255, 255, 255, 0.85)' // 确保文字颜色
+                    color: '#333333'
                 },
                 inlineCollapsed: collapsed,
                 onClick: ({ key }) => {
@@ -467,16 +438,19 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     left: '16px',
                     right: '16px',
                     textAlign: 'center',
-                    color: 'rgba(255, 255, 255, 0.45)',
+                    color: '#999999',
                     fontSize: '11px',
                     lineHeight: '1.4',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-                    paddingTop: '12px'
+                    borderTop: '1px solid #f0f0f0',
+                    paddingTop: '12px',
+                    background: '#ffffff',
+                    borderRadius: '6px',
+                    border: '1px solid #f0f0f0'
                 }
             }, [
                 React.createElement('div', {
                     key: 'version',
-                    style: { marginBottom: '4px' }
+                    style: { marginBottom: '4px', fontWeight: '500', color: '#666666' }
                 }, 'Version 2.2'),
                 React.createElement('div', {
                     key: 'copyright'

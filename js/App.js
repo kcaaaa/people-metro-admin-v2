@@ -1,4 +1,4 @@
-// RuoYi风格主应用组件
+// 简洁白色系统主应用组件
 const App = () => {
     const { Layout } = antd;
     const { Sider, Header, Content } = Layout;
@@ -21,7 +21,7 @@ const App = () => {
         {
             type: 'success',
             title: '版本更新',
-            content: '人民城轨2.0 v2.2版本已发布，新增若依风格界面和批量操作功能',
+            content: '人民城轨2.0 v2.2版本已发布，新增简洁白色界面和优化操作体验',
             time: '30分钟前',
             read: false
         },
@@ -63,27 +63,21 @@ const App = () => {
 
     const handleSearch = (value) => {
         console.log('全局搜索:', value);
-        // 实现全局搜索逻辑
         if (value.trim()) {
-            // 模拟搜索结果处理
             alert(`搜索功能开发中，搜索内容：${value}`);
         }
     };
 
     const handleNotificationClick = () => {
         console.log('查看全部通知');
-        // 可以跳转到通知管理页面
         setCurrentPage('notifications');
     };
 
     const handleLogout = () => {
         console.log('用户退出登录');
-        // 实现登出逻辑
-        // 清除用户信息、token等
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         
-        // 重新加载页面或跳转到登录页
         setTimeout(() => {
             window.location.reload();
         }, 500);
@@ -156,14 +150,14 @@ const App = () => {
                 React.createElement('h2', {
                     key: 'title',
                     style: { 
-                        color: 'var(--ruoyi-text-primary)',
+                        color: '#333333',
                         marginBottom: '8px'
                     }
                 }, '页面开发中'),
                 React.createElement('p', {
                     key: 'description',
                     style: { 
-                        color: 'var(--ruoyi-text-secondary)',
+                        color: '#666666',
                         marginBottom: '24px'
                     }
                 }, `${currentPage} 页面正在开发中，敬请期待...`),
@@ -172,11 +166,21 @@ const App = () => {
                     onClick: () => handlePageChange('dashboard'),
                     style: {
                         padding: '8px 16px',
-                        background: 'var(--ruoyi-primary)',
+                        background: '#1890ff',
                         color: 'white',
                         border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        transition: 'all 0.2s ease'
+                    },
+                    onMouseEnter: (e) => {
+                        e.target.style.background = '#40a9ff';
+                        e.target.style.transform = 'translateY(-1px)';
+                    },
+                    onMouseLeave: (e) => {
+                        e.target.style.background = '#1890ff';
+                        e.target.style.transform = 'translateY(0)';
                     }
                 }, '返回首页')
             ]);
@@ -192,7 +196,7 @@ const App = () => {
         };
 
         window.addEventListener('resize', handleResize);
-        handleResize(); // 初始化检查
+        handleResize();
 
         return () => {
             window.removeEventListener('resize', handleResize);
@@ -204,7 +208,7 @@ const App = () => {
             className: 'app-container',
             style: { 
                 minHeight: '100vh',
-                background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' // 整体背景渐变
+                background: '#ffffff'
             }
         }, [
             // 左侧导航栏
@@ -221,7 +225,7 @@ const App = () => {
                     top: 0,
                     bottom: 0,
                     zIndex: 1001,
-                    background: 'transparent' // 透明背景，让Navigation组件控制背景
+                    background: 'transparent'
                 }
             }, React.createElement(Navigation, {
                 currentPage: currentPage,
@@ -238,7 +242,7 @@ const App = () => {
                     marginLeft: collapsed ? 64 : 260,
                     transition: 'margin-left 0.2s ease',
                     minHeight: '100vh',
-                    background: 'transparent' // 透明背景使用整体渐变
+                    background: '#ffffff'
                 }
             }, [
                 // 顶部操作栏
@@ -251,12 +255,11 @@ const App = () => {
                         left: collapsed ? 64 : 260,
                         zIndex: 1000,
                         padding: 0,
-                        height: 50,
+                        height: 60,
                         transition: 'left 0.2s ease',
-                        background: 'rgba(255, 255, 255, 0.95)', // 半透明白色背景
-                        backdropFilter: 'blur(20px)', // 毛玻璃效果
-                        borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
-                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)' // 柔和阴影
+                        background: '#ffffff',
+                        borderBottom: '1px solid #e8e8e8',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
                     }
                 }, React.createElement(TopBar, {
                     currentPage: currentPage,
@@ -271,14 +274,14 @@ const App = () => {
                 React.createElement(Content, {
                     key: 'content',
                     style: {
-                        marginTop: 50,
+                        marginTop: 60,
                         padding: '24px',
-                        background: 'transparent', // 透明背景
-                        minHeight: 'calc(100vh - 50px)',
+                        background: '#fafafa',
+                        minHeight: 'calc(100vh - 60px)',
                         overflow: 'auto'
                     }
                 }, [
-                    // 添加内容包装器，便于统一样式
+                    // 内容包装器
                     React.createElement('div', {
                         key: 'content-wrapper',
                         className: 'page-content',
@@ -286,13 +289,12 @@ const App = () => {
                             maxWidth: '100%',
                             margin: '0 auto',
                             animation: 'fadeIn 0.3s ease-out',
-                            background: 'rgba(255, 255, 255, 0.8)', // 半透明白色内容背景
-                            borderRadius: '12px',
+                            background: '#ffffff',
+                            borderRadius: '8px',
                             padding: '24px',
-                            backdropFilter: 'blur(20px)',
-                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)', // 卡片阴影
-                            border: '1px solid rgba(255, 255, 255, 0.2)', // 边框
-                            minHeight: 'calc(100vh - 122px)' // 确保高度
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                            border: '1px solid #f0f0f0',
+                            minHeight: 'calc(100vh - 108px)'
                         }
                     }, renderContent())
                 ])
