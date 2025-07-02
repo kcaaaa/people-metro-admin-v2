@@ -1,5 +1,5 @@
 // 增强版首页页面 - 完全可交互
-const Dashboard = () => {
+const Dashboard = ({ onPageChange, currentPage }) => {
     const { Row, Col, Card, Statistic, Button, Space, Alert, Progress, Tooltip, Modal, Form, Select, DatePicker, message, Tabs, Table } = antd;
     const { RangePicker } = DatePicker;
     const { Option } = Select;
@@ -49,7 +49,7 @@ const Dashboard = () => {
                     description: '当前待审核内容超过1000条，建议及时处理',
                     time: '5分钟前',
                     actionable: true,
-                    action: () => window.dispatchEvent(new CustomEvent('navigate', { detail: 'review' }))
+                    action: () => onPageChange('review')
                 },
                 {
                     id: 2,
@@ -259,7 +259,7 @@ const Dashboard = () => {
             icon: '🔍',
             color: '#f59e42',
             clickable: true,
-            onClick: () => window.dispatchEvent(new CustomEvent('navigate', { detail: 'review' }))
+            onClick: () => onPageChange('review')
         },
         {
             key: 'activeUsers',
@@ -270,7 +270,7 @@ const Dashboard = () => {
             icon: '👥',
             color: '#22c55e',
             clickable: true,
-            onClick: () => window.dispatchEvent(new CustomEvent('navigate', { detail: 'user' }))
+            onClick: () => onPageChange('user')
         },
         {
             key: 'violationRate',
@@ -281,7 +281,7 @@ const Dashboard = () => {
             icon: '⚠️',
             color: '#ef4444',
             clickable: true,
-            onClick: () => window.dispatchEvent(new CustomEvent('navigate', { detail: 'logs' }))
+            onClick: () => onPageChange('logs')
         },
         {
             key: 'contentPublished',
@@ -292,7 +292,7 @@ const Dashboard = () => {
             icon: '📝',
             color: '#2563eb',
             clickable: true,
-            onClick: () => window.dispatchEvent(new CustomEvent('navigate', { detail: 'content' }))
+            onClick: () => onPageChange('content')
         },
         {
             key: 'liveCount',
@@ -303,7 +303,7 @@ const Dashboard = () => {
             icon: '🎥',
             color: '#f59e42',
             clickable: true,
-            onClick: () => window.dispatchEvent(new CustomEvent('navigate', { detail: 'live' }))
+            onClick: () => onPageChange('live')
         },
         {
             key: 'exhibitionData',
@@ -314,7 +314,7 @@ const Dashboard = () => {
             icon: '🏢',
             color: '#8b5cf6',
             clickable: true,
-            onClick: () => window.dispatchEvent(new CustomEvent('navigate', { detail: 'booth' }))
+            onClick: () => onPageChange('booth')
         }
     ];
 

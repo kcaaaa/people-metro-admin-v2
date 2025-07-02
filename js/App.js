@@ -138,7 +138,10 @@ const App = () => {
         const PageComponent = pageComponents[currentPage] || window.Dashboard;
         
         if (PageComponent) {
-            return React.createElement(PageComponent);
+            return React.createElement(PageComponent, {
+                onPageChange: handlePageChange,
+                currentPage: currentPage
+            });
         } else {
             // 404页面
             return React.createElement('div', {
