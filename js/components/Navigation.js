@@ -3,6 +3,44 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
     const { Menu } = antd;
     const { SubMenu } = Menu;
     
+    // 菜单配置状态
+    const [menuConfig, setMenuConfig] = React.useState(() => {
+        const saved = localStorage.getItem('menuConfig');
+        if (saved) {
+            try {
+                return JSON.parse(saved);
+            } catch (e) {
+                console.warn('Failed to parse menu config from localStorage');
+            }
+        }
+        return null; // 使用默认配置
+    });
+
+    // 监听菜单配置变化
+    React.useEffect(() => {
+        const handleMenuConfigChange = () => {
+            const saved = localStorage.getItem('menuConfig');
+            if (saved) {
+                try {
+                    setMenuConfig(JSON.parse(saved));
+                } catch (e) {
+                    console.warn('Failed to parse menu config from localStorage');
+                }
+            }
+        };
+
+        window.addEventListener('menuConfigChanged', handleMenuConfigChange);
+        return () => {
+            window.removeEventListener('menuConfigChanged', handleMenuConfigChange);
+        };
+    }, []);
+
+    // 检查菜单项是否启用
+    const isMenuEnabled = (key) => {
+        if (!menuConfig) return true; // 如果没有配置，默认显示
+        return menuConfig[key]?.enabled !== false;
+    };
+    
     // 菜单项配置
     const menuItems = [
         {
@@ -189,10 +227,45 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     label: '流量分配',
                     title: '推荐算法与流量分配配置',
                     page: 'TrafficAllocation'
+                },
+                {
+                    key: 'menu',
+                    icon: '📋',
+                    label: '菜单管理',
+                    title: '动态控制系统导航菜单显隐',
+                    page: 'MenuManagement'
                 }
             ]
         }
     ];
+
+    // 过滤菜单项 - 根据配置显示/隐藏
+    const filterMenuItems = (items) => {
+        return items.filter(item => {
+            // 检查当前菜单项是否启用
+            if (!isMenuEnabled(item.key)) {
+                return false;
+            }
+
+            // 如果有子菜单，递归过滤子菜单
+            if (item.children && item.children.length > 0) {
+                const filteredChildren = filterMenuItems(item.children);
+                // 如果所有子菜单都被禁用，则隐藏父菜单（可选行为）
+                if (filteredChildren.length === 0) {
+                    return false; // 或者返回 true 保留空的父菜单
+                }
+                // 更新子菜单为过滤后的结果
+                item.children = filteredChildren;
+            }
+            
+            return true;
+        });
+    };
+
+    // 获取过滤后的菜单项
+    const filteredMenuItems = React.useMemo(() => {
+        return filterMenuItems(JSON.parse(JSON.stringify(menuItems))); // 深拷贝避免修改原数组
+    }, [menuConfig]);
 
     // 递归渲染菜单项
     const renderMenuItem = (item) => {
@@ -267,13 +340,13 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
         return flatItems;
     };
 
-    const flatMenuItems = getFlatMenuItems(menuItems);
+    const flatMenuItems = getFlatMenuItems(filteredMenuItems);
 
     // 根据当前页面获取默认展开的SubMenu
     const getDefaultOpenKeys = () => {
         const currentItem = flatMenuItems.find(item => item.key === currentPage);
         if (currentItem) {
-            for (let menu of menuItems) {
+            for (let menu of filteredMenuItems) {
                 if (menu.children && menu.children.some(child => child.key === currentPage)) {
                     return [menu.key];
                 }
@@ -455,7 +528,7 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                         onPageChange(key);
                     }
                 }
-            }, menuItems.map(renderMenuItem)),
+            }, filteredMenuItems.map(renderMenuItem)),
             
             // 底部版本信息（仅展开状态显示）
             !collapsed && React.createElement('div', {

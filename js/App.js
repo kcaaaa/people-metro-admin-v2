@@ -133,6 +133,8 @@ const App = () => {
             'VersionManagement': window.VersionManagement,
             'traffic': window.TrafficAllocation,
             'TrafficAllocation': window.TrafficAllocation,
+            'menu': window.MenuManagement,
+            'MenuManagement': window.MenuManagement,
             'personal-center': window.PersonalCenter,
             'PersonalCenter': window.PersonalCenter
         };

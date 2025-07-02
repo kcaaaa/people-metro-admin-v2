@@ -26,6 +26,7 @@ const TopBar = ({ currentPage, user, notifications, onSearch, onNotificationClic
         'settings': { title: '系统设置', breadcrumb: ['系统管理', '系统设置'] },
         'version': { title: 'APP版本管理', breadcrumb: ['系统管理', 'APP版本管理'] },
         'traffic': { title: '流量分配', breadcrumb: ['系统管理', '流量分配'] },
+        'menu': { title: '菜单管理', breadcrumb: ['系统管理', '菜单管理'] },
         'personal-center': { title: '个人中心', breadcrumb: ['个人中心'] },
         'profile': { title: '用户画像', breadcrumb: ['用户画像分析'] }
     };
