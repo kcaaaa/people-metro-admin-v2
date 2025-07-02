@@ -795,6 +795,253 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--ruoyi-text-placeholder);
         }
+
+        /* ======================================== */
+        /* === MODERN UI ENHANCEMENTS (v2.2) === */
+        /* ======================================== */
+        
+        /* Global Glass Morphism Effects */
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* App Container with Modern Background */
+        .app-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Navigation Glass Effect Override */
+        .main-nav {
+            background: linear-gradient(180deg, #304156 0%, #2c3e50 100%) !important;
+            backdrop-filter: blur(20px);
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15) !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Header Glass Morphism */
+        .top-bar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(20px) !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+        }
+        
+        /* Content Wrapper Glass Card */
+        .page-content {
+            background: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: blur(20px) !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+            margin: 0 !important;
+            padding: 24px !important;
+        }
+        
+        /* Enhanced Card Styles */
+        .ant-card {
+            background: rgba(255, 255, 255, 0.9) !important;
+            backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+        }
+        
+        .ant-card:hover {
+            background: rgba(255, 255, 255, 0.95) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+        }
+        
+        /* Table Glass Effect */
+        .ant-table-wrapper {
+            background: rgba(255, 255, 255, 0.9) !important;
+            backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+        }
+        
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Modern Button Enhancements */
+        .ant-btn {
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        
+        .ant-btn:hover {
+            transform: translateY(-1px) scale(1.02) !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .ant-btn-primary {
+            background: linear-gradient(135deg, #409EFF 0%, #1890ff 100%) !important;
+            border: none !important;
+            box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3) !important;
+        }
+        
+        .ant-btn-primary:hover {
+            background: linear-gradient(135deg, #66b1ff 0%, #409eff 100%) !important;
+            box-shadow: 0 4px 16px rgba(24, 144, 255, 0.4) !important;
+        }
+        
+        /* Enhanced Input Fields */
+        .ant-input, .ant-select-selector {
+            background: rgba(255, 255, 255, 0.9) !important;
+            backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .ant-input:focus, .ant-select-selector:focus {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-color: var(--ruoyi-primary) !important;
+            box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2) !important;
+        }
+        
+        /* Modern Form Styling */
+        .ant-form-item {
+            margin-bottom: 20px !important;
+        }
+        
+        .ant-form-item-label > label {
+            font-weight: 500 !important;
+            color: var(--ruoyi-text-primary) !important;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Enhanced Status Indicators */
+        .status-success {
+            color: #52c41a !important;
+            background: rgba(82, 196, 26, 0.1) !important;
+            padding: 2px 8px !important;
+            border-radius: 12px !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+        }
+        
+        .status-warning {
+            color: #faad14 !important;
+            background: rgba(250, 173, 20, 0.1) !important;
+            padding: 2px 8px !important;
+            border-radius: 12px !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+        }
+        
+        .status-error {
+            color: #f5222d !important;
+            background: rgba(245, 34, 45, 0.1) !important;
+            padding: 2px 8px !important;
+            border-radius: 12px !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+        }
+        
+        /* Animation Keyframes */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        /* Page Transition Animation */
+        .page-fade-in {
+            animation: fadeIn 0.3s ease-out !important;
+        }
+        
+        /* Modern Loading States */
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+        
+        /* Responsive Design Enhancements */
+        @media (max-width: 768px) {
+            .page-content {
+                margin: 12px !important;
+                padding: 16px !important;
+                border-radius: 8px !important;
+            }
+            
+            .ant-card {
+                margin: 8px 0 !important;
+            }
+            
+            .ant-btn {
+                height: 36px !important;
+                padding: 0 12px !important;
+            }
+        }
+        
+        /* Dark Mode Support (Future Enhancement) */
+        @media (prefers-color-scheme: dark) {
+            .page-content {
+                background: rgba(30, 30, 30, 0.8) !important;
+                color: #fff !important;
+            }
+            
+            .ant-card {
+                background: rgba(40, 40, 40, 0.9) !important;
+                color: #fff !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -901,5 +1148,4 @@
         }
     </script>
 </body>
-</html> 
 </html> 

@@ -202,7 +202,10 @@ const App = () => {
     return React.createElement(ErrorBoundary, {}, 
         React.createElement(Layout, {
             className: 'app-container',
-            style: { minHeight: '100vh' }
+            style: { 
+                minHeight: '100vh',
+                background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' // 整体背景渐变
+            }
         }, [
             // 左侧导航栏
             React.createElement(Sider, {
@@ -218,7 +221,7 @@ const App = () => {
                     top: 0,
                     bottom: 0,
                     zIndex: 1001,
-                    background: '#001529'
+                    background: 'transparent' // 透明背景，让Navigation组件控制背景
                 }
             }, React.createElement(Navigation, {
                 currentPage: currentPage,
@@ -234,7 +237,8 @@ const App = () => {
                 style: { 
                     marginLeft: collapsed ? 64 : 260,
                     transition: 'margin-left 0.2s ease',
-                    minHeight: '100vh'
+                    minHeight: '100vh',
+                    background: 'transparent' // 透明背景使用整体渐变
                 }
             }, [
                 // 顶部操作栏
@@ -249,9 +253,10 @@ const App = () => {
                         padding: 0,
                         height: 50,
                         transition: 'left 0.2s ease',
-                        background: 'var(--ruoyi-bg-white)',
-                        borderBottom: '1px solid var(--ruoyi-border-lighter)',
-                        boxShadow: '0 1px 4px rgba(0, 21, 41, 0.08)'
+                        background: 'rgba(255, 255, 255, 0.95)', // 半透明白色背景
+                        backdropFilter: 'blur(20px)', // 毛玻璃效果
+                        borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)' // 柔和阴影
                     }
                 }, React.createElement(TopBar, {
                     currentPage: currentPage,
@@ -268,7 +273,7 @@ const App = () => {
                     style: {
                         marginTop: 50,
                         padding: '24px',
-                        background: 'var(--ruoyi-bg-page)',
+                        background: 'transparent', // 透明背景
                         minHeight: 'calc(100vh - 50px)',
                         overflow: 'auto'
                     }
@@ -280,7 +285,14 @@ const App = () => {
                         style: {
                             maxWidth: '100%',
                             margin: '0 auto',
-                            animation: 'fadeIn 0.3s ease-out'
+                            animation: 'fadeIn 0.3s ease-out',
+                            background: 'rgba(255, 255, 255, 0.8)', // 半透明白色内容背景
+                            borderRadius: '12px',
+                            padding: '24px',
+                            backdropFilter: 'blur(20px)',
+                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)', // 卡片阴影
+                            border: '1px solid rgba(255, 255, 255, 0.2)', // 边框
+                            minHeight: 'calc(100vh - 122px)' // 确保高度
                         }
                     }, renderContent())
                 ])

@@ -264,8 +264,10 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
         style: {
             width: collapsed ? '64px' : '260px',
             transition: 'all 0.2s ease',
-            background: '#001529', // 深色背景
-            minHeight: '100vh' // 确保满高度
+            background: 'linear-gradient(180deg, #304156 0%, #2c3e50 100%)', // 柔和的深灰蓝渐变
+            minHeight: '100vh',
+            boxShadow: '2px 0 8px rgba(0, 0, 0, 0.15)', // 添加阴影
+            borderRight: '1px solid rgba(255, 255, 255, 0.1)' // 边框分隔
         }
     }, [
         // 导航头部 - Logo区域
@@ -274,13 +276,14 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             className: 'nav-header',
             style: {
                 height: '50px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'rgba(255, 255, 255, 0.08)',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: collapsed ? '0' : '0 16px',
-                position: 'relative'
+                position: 'relative',
+                backdropFilter: 'blur(10px)' // 毛玻璃效果
             }
         }, [
             // Logo和标题
@@ -310,9 +313,10 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                         justifyContent: 'center',
                         width: '28px',
                         height: '28px',
-                        background: 'var(--ruoyi-primary)',
-                        borderRadius: '4px',
-                        transition: 'all 0.3s ease'
+                        background: 'linear-gradient(135deg, #409EFF 0%, #1890ff 100%)',
+                        borderRadius: '6px',
+                        transition: 'all 0.3s ease',
+                        boxShadow: '0 2px 8px rgba(24, 144, 255, 0.3)'
                     }
                 }, '🚇'),
                 !collapsed && React.createElement('span', {
@@ -321,7 +325,8 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     style: {
                         fontSize: '16px',
                         fontWeight: '600',
-                        whiteSpace: 'nowrap'
+                        whiteSpace: 'nowrap',
+                        textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
                     }
                 }, '人民城轨2.0')
             ]),
@@ -336,12 +341,12 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     right: '12px',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    background: 'none',
+                    background: 'rgba(255, 255, 255, 0.1)',
                     border: 'none',
-                    color: 'rgba(255, 255, 255, 0.65)',
+                    color: 'rgba(255, 255, 255, 0.8)',
                     cursor: 'pointer',
-                    padding: '4px',
-                    borderRadius: '2px',
+                    padding: '6px',
+                    borderRadius: '4px',
                     fontSize: '12px',
                     transition: 'all 0.2s ease',
                     display: 'flex',
@@ -351,11 +356,13 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                 title: '收起菜单',
                 onMouseEnter: (e) => {
                     e.target.style.color = '#FFFFFF';
-                    e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                    e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                    e.target.style.transform = 'translateY(-50%) scale(1.1)';
                 },
                 onMouseLeave: (e) => {
-                    e.target.style.color = 'rgba(255, 255, 255, 0.65)';
-                    e.target.style.background = 'none';
+                    e.target.style.color = 'rgba(255, 255, 255, 0.8)';
+                    e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                    e.target.style.transform = 'translateY(-50%) scale(1)';
                 }
             }, '◀')
         ]),
@@ -366,29 +373,31 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             style: {
                 padding: '8px',
                 textAlign: 'center',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+                borderBottom: '1px solid rgba(255, 255, 255, 0.15)'
             }
         }, React.createElement('button', {
             className: 'nav-toggle',
             onClick: onToggleCollapse,
             style: {
-                background: 'none',
+                background: 'rgba(255, 255, 255, 0.1)',
                 border: 'none',
-                color: 'rgba(255, 255, 255, 0.65)',
+                color: 'rgba(255, 255, 255, 0.8)',
                 cursor: 'pointer',
-                padding: '4px',
-                borderRadius: '2px',
+                padding: '6px',
+                borderRadius: '4px',
                 fontSize: '12px',
                 transition: 'all 0.2s ease'
             },
             title: '展开菜单',
             onMouseEnter: (e) => {
                 e.target.style.color = '#FFFFFF';
-                e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                e.target.style.transform = 'scale(1.1)';
             },
             onMouseLeave: (e) => {
-                e.target.style.color = 'rgba(255, 255, 255, 0.65)';
-                e.target.style.background = 'none';
+                e.target.style.color = 'rgba(255, 255, 255, 0.8)';
+                e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.target.style.transform = 'scale(1)';
             }
         }, '▶')),
         
@@ -399,39 +408,84 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                 flex: 1,
                 overflowY: 'auto',
                 overflowX: 'hidden',
-                paddingTop: '8px',
+                paddingTop: '12px',
                 paddingBottom: '16px'
             }
         }, [
-            // 添加自定义样式
+            // 更新自定义样式
             React.createElement('style', {
                 key: 'menu-styles'
             }, `
                 .main-nav .ant-menu-dark {
                     background: transparent;
-                    color: rgba(255, 255, 255, 0.85);
+                    color: rgba(255, 255, 255, 0.9);
                 }
                 .main-nav .ant-menu-dark .ant-menu-item,
                 .main-nav .ant-menu-dark .ant-menu-submenu-title {
                     color: rgba(255, 255, 255, 0.85);
+                    margin: 2px 8px;
+                    border-radius: 6px;
+                    transition: all 0.3s ease;
+                    position: relative;
+                    overflow: hidden;
                 }
                 .main-nav .ant-menu-dark .ant-menu-item:hover,
                 .main-nav .ant-menu-dark .ant-menu-submenu-title:hover {
                     color: #fff;
-                    background-color: rgba(255, 255, 255, 0.08);
+                    background: linear-gradient(135deg, rgba(64, 158, 255, 0.15) 0%, rgba(24, 144, 255, 0.25) 100%);
+                    box-shadow: 0 2px 8px rgba(24, 144, 255, 0.15);
+                    transform: translateX(2px);
                 }
                 .main-nav .ant-menu-dark .ant-menu-item-selected {
-                    background-color: #1890ff;
+                    background: linear-gradient(135deg, #409EFF 0%, #1890ff 100%);
                     color: #fff;
+                    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+                    font-weight: 500;
                 }
                 .main-nav .ant-menu-dark .ant-menu-submenu-selected .ant-menu-submenu-title {
-                    color: #1890ff;
+                    color: #409EFF;
+                    background: rgba(64, 158, 255, 0.1);
                 }
                 .main-nav .ant-menu-dark .ant-menu-submenu-open .ant-menu-submenu-title {
                     color: #fff;
+                    background: rgba(255, 255, 255, 0.05);
                 }
                 .main-nav .ant-menu-dark .ant-menu-submenu .ant-menu-sub {
-                    background: rgba(0, 0, 0, 0.3);
+                    background: rgba(0, 0, 0, 0.2);
+                    backdrop-filter: blur(10px);
+                    border-radius: 0 0 8px 8px;
+                    margin: 0 8px;
+                    padding: 4px 0;
+                }
+                .main-nav .ant-menu-dark .ant-menu-submenu .ant-menu-sub .ant-menu-item {
+                    margin: 1px 4px;
+                    padding-left: 32px !important;
+                    border-radius: 4px;
+                    font-size: 13px;
+                }
+                .main-nav .ant-menu-dark .ant-menu-submenu .ant-menu-sub .ant-menu-item:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                    transform: translateX(4px);
+                }
+                .main-nav .ant-menu-dark .ant-menu-submenu .ant-menu-sub .ant-menu-item-selected {
+                    background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+                    color: #fff;
+                    box-shadow: 0 2px 8px rgba(82, 196, 26, 0.3);
+                }
+                /* 滚动条样式 */
+                .main-nav .ant-menu::-webkit-scrollbar {
+                    width: 4px;
+                }
+                .main-nav .ant-menu::-webkit-scrollbar-track {
+                    background: rgba(255, 255, 255, 0.1);
+                    border-radius: 2px;
+                }
+                .main-nav .ant-menu::-webkit-scrollbar-thumb {
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 2px;
+                }
+                .main-nav .ant-menu::-webkit-scrollbar-thumb:hover {
+                    background: rgba(255, 255, 255, 0.5);
                 }
             `),
             
@@ -446,7 +500,7 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     background: 'transparent',
                     border: 'none',
                     flex: 1,
-                    color: 'rgba(255, 255, 255, 0.85)' // 确保文字颜色
+                    color: 'rgba(255, 255, 255, 0.9)'
                 },
                 inlineCollapsed: collapsed,
                 onClick: ({ key }) => {
@@ -467,16 +521,19 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     left: '16px',
                     right: '16px',
                     textAlign: 'center',
-                    color: 'rgba(255, 255, 255, 0.45)',
+                    color: 'rgba(255, 255, 255, 0.5)',
                     fontSize: '11px',
                     lineHeight: '1.4',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-                    paddingTop: '12px'
+                    borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+                    paddingTop: '12px',
+                    background: 'rgba(0, 0, 0, 0.1)',
+                    borderRadius: '6px',
+                    backdropFilter: 'blur(10px)'
                 }
             }, [
                 React.createElement('div', {
                     key: 'version',
-                    style: { marginBottom: '4px' }
+                    style: { marginBottom: '4px', fontWeight: '500' }
                 }, 'Version 2.2'),
                 React.createElement('div', {
                     key: 'copyright'
