@@ -95,8 +95,8 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
         {
             key: 'operation-statistics',
             icon: '📊',
-            label: '运营统计',
-            title: '运营统计模块',
+            label: '运营管理',
+            title: '运营管理模块',
             children: [
                 {
                     key: 'stats',
