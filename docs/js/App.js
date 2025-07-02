@@ -89,6 +89,8 @@ const App = () => {
             'Dashboard': window.Dashboard,
             'content': window.ContentManagement,
             'ContentManagement': window.ContentManagement,
+            'complaint': window.ComplaintManagement,
+            'ComplaintManagement': window.ComplaintManagement,
             'review': window.ReviewManagement,
             'review-image': window.ReviewManagement,
             'review-video': window.ReviewManagement,

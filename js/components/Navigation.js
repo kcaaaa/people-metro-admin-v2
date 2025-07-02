@@ -24,6 +24,13 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     label: '内容管理',
                     title: '平台内容查看与管理',
                     page: 'ContentManagement'
+                },
+                {
+                    key: 'complaint',
+                    icon: '⚠️',
+                    label: '投诉管理',
+                    title: '用户投诉视频管理与处理',
+                    page: 'ComplaintManagement'
                 }
             ]
         },
