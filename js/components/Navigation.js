@@ -23,7 +23,15 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     label: '内容管理',
                     title: '平台内容查看与管理',
                     page: 'ContentManagement'
-                },
+                }
+            ]
+        },
+        // 审核管理分组
+        {
+            key: 'review-group',
+            type: 'group',
+            label: '审核管理',
+            children: [
                 {
                     key: 'review',
                     icon: '🔍',
@@ -34,17 +42,82 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                 {
                     key: 'audit-flow',
                     icon: '⚙️',
-                    label: '审核流程',
+                    label: '审核流程管理',
                     title: '配置和管理审核流程模板',
                     page: 'AuditFlowManagement'
                 }
             ]
         },
-        // 用户管理分组
+        // 展会管理分组
         {
-            key: 'user-group',
+            key: 'exhibition-group',
             type: 'group',
-            label: '用户管理',
+            label: '展会管理',
+            children: [
+                {
+                    key: 'booth',
+                    icon: '🏢',
+                    label: '展位管理',
+                    title: '展会展位信息管理',
+                    page: 'BoothManagement'
+                },
+                {
+                    key: 'live',
+                    icon: '📺',
+                    label: '论坛直播',
+                    title: '论坛直播内容管理',
+                    page: 'LiveManagement'
+                }
+            ]
+        },
+        // 运营统计分组
+        {
+            key: 'operation-stats-group',
+            type: 'group',
+            label: '运营统计',
+            children: [
+                {
+                    key: 'stats',
+                    icon: '📈',
+                    label: '行为统计',
+                    title: '用户行为数据统计',
+                    page: 'BehaviorStats'
+                },
+                {
+                    key: 'operational',
+                    icon: '📊',
+                    label: '运营数据统计',
+                    title: '核心运营指标与分模块统计',
+                    page: 'OperationalStats'
+                },
+                {
+                    key: 'data',
+                    icon: '💾',
+                    label: '运营数据管理',
+                    title: '运营数据资源监控与管理',
+                    page: 'DataManagement'
+                },
+                {
+                    key: 'feedback',
+                    icon: '💭',
+                    label: '用户反馈管理',
+                    title: '处理用户反馈和建议',
+                    page: 'FeedbackManagement'
+                },
+                {
+                    key: 'message',
+                    icon: '💬',
+                    label: '消息管理',
+                    title: 'APP系统消息推送管理',
+                    page: 'MessageManagement'
+                }
+            ]
+        },
+        // 系统管理分组
+        {
+            key: 'system-group',
+            type: 'group',
+            label: '系统管理',
             children: [
                 {
                     key: 'user',
@@ -61,93 +134,6 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     page: 'AdminManagement'
                 },
                 {
-                    key: 'feedback',
-                    icon: '💭',
-                    label: '用户反馈',
-                    title: '处理用户反馈和建议',
-                    page: 'FeedbackManagement'
-                }
-            ]
-        },
-        // 运营管理分组
-        {
-            key: 'operation-group',
-            type: 'group',
-            label: '运营管理',
-            children: [
-                {
-                    key: 'live',
-                    icon: '📺',
-                    label: '直播管理',
-                    title: '直播内容管理',
-                    page: 'LiveManagement'
-                },
-                {
-                    key: 'booth',
-                    icon: '🏢',
-                    label: '展位管理',
-                    title: '展会展位信息管理',
-                    page: 'BoothManagement'
-                },
-                {
-                    key: 'message',
-                    icon: '💬',
-                    label: '消息管理',
-                    title: 'APP系统消息推送管理',
-                    page: 'MessageManagement'
-                },
-                {
-                    key: 'version',
-                    icon: '📱',
-                    label: 'APP版本',
-                    title: 'APP版本发布和更新管理',
-                    page: 'VersionManagement'
-                }
-            ]
-        },
-        // 数据分析分组
-        {
-            key: 'analytics-group',
-            type: 'group',
-            label: '数据分析',
-            children: [
-                {
-                    key: 'stats',
-                    icon: '📈',
-                    label: '行为统计',
-                    title: '用户行为数据统计',
-                    page: 'BehaviorStats'
-                },
-                {
-                    key: 'operational',
-                    icon: '📊',
-                    label: '运营统计',
-                    title: '核心运营指标与分模块统计',
-                    page: 'OperationalStats'
-                },
-                {
-                    key: 'traffic',
-                    icon: '🎯',
-                    label: '流量分配',
-                    title: '推荐算法与流量分配配置',
-                    page: 'TrafficAllocation'
-                }
-            ]
-        },
-        // 系统管理分组
-        {
-            key: 'system-group',
-            type: 'group',
-            label: '系统管理',
-            children: [
-                {
-                    key: 'data',
-                    icon: '💾',
-                    label: '数据管理',
-                    title: '系统资源监控与数据管理',
-                    page: 'DataManagement'
-                },
-                {
                     key: 'logs',
                     icon: '📋',
                     label: '日志管理',
@@ -160,6 +146,20 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     label: '系统设置',
                     title: '系统配置与管理',
                     page: 'SystemSettings'
+                },
+                {
+                    key: 'version',
+                    icon: '📱',
+                    label: 'APP版本管理',
+                    title: 'APP版本发布和更新管理',
+                    page: 'VersionManagement'
+                },
+                {
+                    key: 'traffic',
+                    icon: '🎯',
+                    label: '流量分配',
+                    title: '推荐算法与流量分配配置',
+                    page: 'TrafficAllocation'
                 }
             ]
         }
