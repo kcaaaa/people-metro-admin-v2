@@ -1,7 +1,6 @@
 // RuoYi风格顶部操作栏组件
-const TopBar = ({ currentPage, user, notifications, onSearch, onNotificationClick, onLogout, onPageChange }) => {
+const TopBar = ({ currentPage, user, notifications, onNotificationClick, onLogout, onPageChange }) => {
     const { Badge, Dropdown, Avatar, Space, Button, Tooltip, Modal, Input, Breadcrumb } = antd;
-    const { Search } = Input;
     
     // 页面标题映射 - 用于面包屑导航
     const pageTitleMap = {
@@ -218,36 +217,6 @@ const TopBar = ({ currentPage, user, notifications, onSearch, onNotificationClic
     const unreadCount = notifications?.filter(n => !n.read).length || 0;
     const displayName = user?.name || user?.username || '管理员';
 
-    // 搜索处理
-    const handleSearch = (value) => {
-        console.log('全局搜索:', value);
-        if (onSearch) {
-            onSearch(value);
-        }
-    };
-
-    // 快捷操作按钮
-    const quickActions = [
-        {
-            key: 'refresh',
-            icon: '🔄',
-            title: '刷新页面',
-            onClick: () => window.location.reload()
-        },
-        {
-            key: 'fullscreen',
-            icon: '🔍',
-            title: '全屏显示',
-            onClick: () => {
-                if (document.fullscreenElement) {
-                    document.exitFullscreen();
-                } else {
-                    document.documentElement.requestFullscreen();
-                }
-            }
-        }
-    ];
-
     return React.createElement('div', {
         className: 'top-bar',
         style: {
@@ -321,55 +290,6 @@ const TopBar = ({ currentPage, user, notifications, onSearch, onNotificationClic
                 gap: '12px'
             }
         }, [
-            // 全局搜索
-            React.createElement(Search, {
-                key: 'search',
-                placeholder: '搜索菜单、用户、内容...',
-                allowClear: true,
-                onSearch: handleSearch,
-                style: {
-                    width: '240px'
-                },
-                size: 'middle'
-            }),
-
-            // 快捷操作按钮
-            React.createElement(Space, {
-                key: 'quick-actions',
-                size: 'small'
-            }, quickActions.map(action =>
-                React.createElement(Tooltip, {
-                    key: action.key,
-                    title: action.title
-                }, React.createElement(Button, {
-                    type: 'text',
-                    shape: 'circle',
-                    size: 'small',
-                    onClick: action.onClick,
-                    style: {
-                        color: 'var(--ruoyi-text-secondary)',
-                        border: 'none',
-                        background: 'transparent'
-                    }
-                }, action.icon))
-            )),
-
-            // 帮助文档
-            React.createElement(Tooltip, {
-                key: 'help',
-                title: '帮助文档'
-            }, React.createElement(Button, {
-                type: 'text',
-                shape: 'circle',
-                size: 'small',
-                onClick: () => window.open('https://github.com/kcaaaa/renmin-chenggui-admin/wiki', '_blank'),
-                style: {
-                    color: 'var(--ruoyi-text-secondary)',
-                    border: 'none',
-                    background: 'transparent'
-                }
-            }, '❓')),
-
             // 通知中心
             React.createElement(Dropdown, {
                 key: 'notifications',

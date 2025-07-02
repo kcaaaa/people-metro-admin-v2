@@ -61,13 +61,6 @@ const App = () => {
         console.log('侧边栏折叠状态:', !collapsed);
     };
 
-    const handleSearch = (value) => {
-        console.log('全局搜索:', value);
-        if (value.trim()) {
-            alert(`搜索功能开发中，搜索内容：${value}`);
-        }
-    };
-
     const handleNotificationClick = () => {
         console.log('查看全部通知');
         setCurrentPage('notifications');
@@ -280,7 +273,6 @@ const App = () => {
                     currentPage: currentPage,
                     user: user,
                     notifications: notifications,
-                    onSearch: handleSearch,
                     onNotificationClick: handleNotificationClick,
                     onLogout: handleLogout,
                     onPageChange: handlePageChange
