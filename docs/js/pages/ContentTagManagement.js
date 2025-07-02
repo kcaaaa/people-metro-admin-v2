@@ -12,6 +12,20 @@ const ContentTagManagement = () => {
     const [tagList, setTagList] = React.useState([]);
     const [hotTagList, setHotTagList] = React.useState([]);
     const [selectedTags, setSelectedTags] = React.useState([]);
+    
+    // 兴趣标签配置相关状态
+    const [interestConfig, setInterestConfig] = React.useState({
+        enabled: true,
+        title: '选择您感兴趣的内容标签',
+        subtitle: '根据您的兴趣，我们将为您推荐相关内容',
+        maxSelections: 5,
+        minSelections: 3
+    });
+    const [interestTags, setInterestTags] = React.useState([]);
+    const [selectedInterestTags, setSelectedInterestTags] = React.useState([]);
+    const [interestConfigForm] = Form.useForm();
+    const [interestPreviewVisible, setInterestPreviewVisible] = React.useState(false);
+    
     const [pagination, setPagination] = React.useState({
         current: 1,
         pageSize: 10,
@@ -159,6 +173,7 @@ const ContentTagManagement = () => {
     React.useEffect(() => {
         loadTagList();
         loadHotTags();
+        loadInterestConfig();
     }, [pagination.current, pagination.pageSize, filters]);
 
     const loadTagList = async () => {
@@ -200,6 +215,101 @@ const ContentTagManagement = () => {
         } catch (error) {
             console.error('加载热门标签失败:', error);
         }
+    };
+
+    // 加载兴趣标签配置
+    const loadInterestConfig = async () => {
+        try {
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            // 模拟已配置的兴趣标签
+            const mockInterestTags = [
+                { id: 1, name: '高速列车', category: 'technology', color: '#1890ff', appDescription: '高速列车技术与产品', displayOrder: 1, enabled: true },
+                { id: 2, name: '城市轨道', category: 'scene', color: '#52c41a', appDescription: '城市轨道交通建设', displayOrder: 2, enabled: true },
+                { id: 3, name: '智能控制', category: 'technology', color: '#722ed1', appDescription: '智能控制系统', displayOrder: 3, enabled: true },
+                { id: 5, name: '安全系统', category: 'technology', color: '#f5222d', appDescription: '轨道交通安全技术', displayOrder: 4, enabled: true },
+                { id: 7, name: '新能源技术', category: 'environment', color: '#13c2c2', appDescription: '绿色环保新能源', displayOrder: 5, enabled: false }
+            ];
+            
+            setInterestTags(mockInterestTags);
+            
+            // 设置表单初始值
+            interestConfigForm.setFieldsValue(interestConfig);
+            
+        } catch (error) {
+            console.error('加载兴趣标签配置失败:', error);
+        }
+    };
+
+    // 保存兴趣标签配置
+    const saveInterestConfig = async (values) => {
+        try {
+            setLoading(true);
+            
+            console.log('保存兴趣标签配置:', {
+                config: values,
+                tags: interestTags
+            });
+            
+            // 模拟API调用
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            setInterestConfig(values);
+            message.success('兴趣标签配置保存成功！');
+            
+        } catch (error) {
+            message.error('保存失败，请重试');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 添加兴趣标签
+    const addInterestTag = (tag) => {
+        const isExist = interestTags.find(item => item.id === tag.id);
+        if (isExist) {
+            message.warning('该标签已添加为兴趣标签');
+            return;
+        }
+        
+        const newInterestTag = {
+            ...tag,
+            appDescription: tag.description,
+            displayOrder: interestTags.length + 1,
+            enabled: true
+        };
+        
+        setInterestTags(prev => [...prev, newInterestTag]);
+        message.success(`已添加"${tag.name}"为兴趣标签`);
+    };
+
+    // 移除兴趣标签
+    const removeInterestTag = (tagId) => {
+        setInterestTags(prev => prev.filter(item => item.id !== tagId));
+        message.success('已移除兴趣标签');
+    };
+
+    // 更新兴趣标签
+    const updateInterestTag = (tagId, updates) => {
+        setInterestTags(prev => prev.map(item => 
+            item.id === tagId ? { ...item, ...updates } : item
+        ));
+    };
+
+    // 调整兴趣标签顺序
+    const moveInterestTag = (dragIndex, hoverIndex) => {
+        const draggedTag = interestTags[dragIndex];
+        const newTags = [...interestTags];
+        newTags.splice(dragIndex, 1);
+        newTags.splice(hoverIndex, 0, draggedTag);
+        
+        // 重新设置displayOrder
+        const updatedTags = newTags.map((tag, index) => ({
+            ...tag,
+            displayOrder: index + 1
+        }));
+        
+        setInterestTags(updatedTags);
     };
 
     // 处理标签操作
@@ -772,6 +882,306 @@ const ContentTagManagement = () => {
         ]));
     };
 
+    // 渲染兴趣标签配置页面
+    const renderInterestTagConfig = () => {
+        return React.createElement('div', {}, [
+            // 配置说明
+            React.createElement(Alert, {
+                key: 'info',
+                type: 'info',
+                message: '功能说明',
+                description: '用户兴趣标签用于APP端新用户引导和长期未登录用户的兴趣重新选择。用户可以选择感兴趣的标签，系统会根据选择推荐相关内容。',
+                style: { marginBottom: 24 },
+                showIcon: true
+            }),
+
+            // 配置表单
+            React.createElement(Card, {
+                key: 'config-form',
+                title: '基础配置',
+                style: { marginBottom: 24 }
+            }, React.createElement(Form, {
+                form: interestConfigForm,
+                layout: 'vertical',
+                onFinish: saveInterestConfig,
+                initialValues: interestConfig
+            }, [
+                React.createElement(Row, { key: 'row1', gutter: 16 }, [
+                    React.createElement(Col, { key: 'enabled', span: 6 },
+                        React.createElement(Form.Item, {
+                            label: '启用状态',
+                            name: 'enabled',
+                            valuePropName: 'checked'
+                        }, React.createElement(Switch, {
+                            checkedChildren: '启用',
+                            unCheckedChildren: '禁用'
+                        }))
+                    ),
+                    React.createElement(Col, { key: 'min', span: 9 },
+                        React.createElement(Form.Item, {
+                            label: '最少选择数量',
+                            name: 'minSelections',
+                            rules: [{ required: true, message: '请输入最少选择数量' }]
+                        }, React.createElement(Input, {
+                            type: 'number',
+                            min: 1,
+                            max: 10,
+                            placeholder: '建议1-3个'
+                        }))
+                    ),
+                    React.createElement(Col, { key: 'max', span: 9 },
+                        React.createElement(Form.Item, {
+                            label: '最多选择数量',
+                            name: 'maxSelections',
+                            rules: [{ required: true, message: '请输入最多选择数量' }]
+                        }, React.createElement(Input, {
+                            type: 'number',
+                            min: 1,
+                            max: 20,
+                            placeholder: '建议3-8个'
+                        }))
+                    )
+                ]),
+                React.createElement(Form.Item, {
+                    key: 'title',
+                    label: '页面标题',
+                    name: 'title',
+                    rules: [{ required: true, message: '请输入页面标题' }]
+                }, React.createElement(Input, {
+                    placeholder: '如：选择您感兴趣的内容标签'
+                })),
+                React.createElement(Form.Item, {
+                    key: 'subtitle',
+                    label: '页面副标题',
+                    name: 'subtitle'
+                }, React.createElement(TextArea, {
+                    placeholder: '如：根据您的兴趣，我们将为您推荐相关内容',
+                    rows: 2
+                })),
+                React.createElement(Form.Item, {
+                    key: 'save-btn'
+                }, React.createElement(Space, {}, [
+                    React.createElement(Button, {
+                        key: 'save',
+                        type: 'primary',
+                        htmlType: 'submit',
+                        loading: loading
+                    }, '保存配置'),
+                    React.createElement(Button, {
+                        key: 'preview',
+                        onClick: () => setInterestPreviewVisible(true)
+                    }, '预览效果')
+                ]))
+            ])),
+
+            // 兴趣标签管理
+            React.createElement(Card, {
+                key: 'interest-tags',
+                title: React.createElement('div', {
+                    style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
+                }, [
+                    React.createElement('span', { key: 'title' }, '兴趣标签管理'),
+                    React.createElement('div', { key: 'stats' }, [
+                        React.createElement(Tag, { key: 'total', color: 'blue' }, `总计: ${interestTags.length}`),
+                        React.createElement(Tag, { key: 'enabled', color: 'green' }, `启用: ${interestTags.filter(t => t.enabled).length}`)
+                    ])
+                ])
+            }, [
+                React.createElement(Row, { key: 'content', gutter: 24 }, [
+                    // 左侧：可用标签
+                    React.createElement(Col, { key: 'available', span: 12 }, [
+                        React.createElement('h4', { key: 'title' }, '可用标签（点击添加为兴趣标签）'),
+                        React.createElement('div', {
+                            key: 'tags',
+                            style: { 
+                                maxHeight: 400, 
+                                overflowY: 'auto', 
+                                border: '1px solid #f0f0f0', 
+                                borderRadius: 6, 
+                                padding: 16 
+                            }
+                        }, tagList.filter(tag => tag.status === 'active').map(tag => {
+                            const isAdded = interestTags.find(item => item.id === tag.id);
+                            return React.createElement(Tag, {
+                                key: tag.id,
+                                color: isAdded ? '#d9d9d9' : tag.color,
+                                style: { 
+                                    margin: '4px 8px 4px 0', 
+                                    cursor: isAdded ? 'not-allowed' : 'pointer',
+                                    opacity: isAdded ? 0.5 : 1
+                                },
+                                onClick: isAdded ? undefined : () => addInterestTag(tag)
+                            }, isAdded ? `${tag.name} (已添加)` : tag.name);
+                        }))
+                    ]),
+                    
+                    // 右侧：已配置的兴趣标签
+                    React.createElement(Col, { key: 'configured', span: 12 }, [
+                        React.createElement('h4', { key: 'title' }, '已配置兴趣标签'),
+                        React.createElement('div', {
+                            key: 'list',
+                            style: { 
+                                maxHeight: 400, 
+                                overflowY: 'auto' 
+                            }
+                        }, interestTags.length === 0 
+                            ? React.createElement('div', {
+                                style: { 
+                                    textAlign: 'center', 
+                                    padding: 40, 
+                                    color: '#999', 
+                                    border: '1px dashed #d9d9d9', 
+                                    borderRadius: 6 
+                                }
+                            }, [
+                                React.createElement('div', { key: 'icon', style: { fontSize: 24, marginBottom: 8 } }, '🏷️'),
+                                React.createElement('div', { key: 'text' }, '暂无兴趣标签，请从左侧添加')
+                            ])
+                            : interestTags.sort((a, b) => a.displayOrder - b.displayOrder).map((tag, index) => 
+                                React.createElement(Card, {
+                                    key: tag.id,
+                                    size: 'small',
+                                    style: { marginBottom: 8 }
+                                }, [
+                                    React.createElement('div', {
+                                        key: 'content',
+                                        style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
+                                    }, [
+                                        React.createElement('div', { key: 'info', style: { flex: 1 } }, [
+                                            React.createElement('div', {
+                                                key: 'name',
+                                                style: { marginBottom: 4 }
+                                            }, [
+                                                React.createElement(Tag, {
+                                                    key: 'tag',
+                                                    color: tag.color,
+                                                    style: { marginRight: 8 }
+                                                }, tag.name),
+                                                React.createElement('span', {
+                                                    key: 'order',
+                                                    style: { fontSize: 12, color: '#999' }
+                                                }, `排序: ${tag.displayOrder}`)
+                                            ]),
+                                            React.createElement(Input, {
+                                                key: 'desc',
+                                                size: 'small',
+                                                placeholder: 'APP显示描述',
+                                                value: tag.appDescription,
+                                                onChange: (e) => updateInterestTag(tag.id, { appDescription: e.target.value }),
+                                                style: { marginBottom: 4 }
+                                            })
+                                        ]),
+                                        React.createElement('div', { key: 'actions' }, [
+                                            React.createElement(Switch, {
+                                                key: 'switch',
+                                                size: 'small',
+                                                checked: tag.enabled,
+                                                onChange: (checked) => updateInterestTag(tag.id, { enabled: checked }),
+                                                style: { marginRight: 8 }
+                                            }),
+                                            React.createElement(Space, { key: 'btns', direction: 'vertical', size: 'small' }, [
+                                                index > 0 && React.createElement(Button, {
+                                                    key: 'up',
+                                                    size: 'small',
+                                                    type: 'text',
+                                                    onClick: () => moveInterestTag(index, index - 1)
+                                                }, '↑'),
+                                                index < interestTags.length - 1 && React.createElement(Button, {
+                                                    key: 'down',
+                                                    size: 'small',
+                                                    type: 'text',
+                                                    onClick: () => moveInterestTag(index, index + 1)
+                                                }, '↓'),
+                                                React.createElement(Button, {
+                                                    key: 'remove',
+                                                    size: 'small',
+                                                    type: 'text',
+                                                    danger: true,
+                                                    onClick: () => removeInterestTag(tag.id)
+                                                }, '删除')
+                                            ])
+                                        ])
+                                    ])
+                                ])
+                            )
+                        )
+                    ])
+                ])
+            ])
+        ]);
+    };
+
+    // 渲染APP预览模态框
+    const renderInterestPreview = () => {
+        return React.createElement(Modal, {
+            title: 'APP端效果预览',
+            visible: interestPreviewVisible,
+            onCancel: () => setInterestPreviewVisible(false),
+            width: 400,
+            footer: [
+                React.createElement(Button, {
+                    key: 'close',
+                    onClick: () => setInterestPreviewVisible(false)
+                }, '关闭预览')
+            ]
+        }, React.createElement('div', {
+            style: {
+                background: '#f5f5f5',
+                borderRadius: 12,
+                padding: 20,
+                textAlign: 'center'
+            }
+        }, [
+            React.createElement('h3', {
+                key: 'title',
+                style: { marginBottom: 16, fontSize: 18, fontWeight: 'bold' }
+            }, interestConfig.title),
+            React.createElement('p', {
+                key: 'subtitle',
+                style: { color: '#666', marginBottom: 24, lineHeight: 1.5 }
+            }, interestConfig.subtitle),
+            React.createElement('div', {
+                key: 'tags',
+                style: { marginBottom: 24 }
+            }, interestTags.filter(tag => tag.enabled).map(tag => 
+                React.createElement(Tag, {
+                    key: tag.id,
+                    color: tag.color,
+                    style: { 
+                        margin: '4px 8px 8px 0', 
+                        padding: '8px 16px',
+                        fontSize: 14,
+                        borderRadius: 20,
+                        cursor: 'pointer',
+                        border: selectedInterestTags.includes(tag.id) ? '2px solid #1890ff' : 'none'
+                    },
+                    onClick: () => {
+                        const newSelected = selectedInterestTags.includes(tag.id)
+                            ? selectedInterestTags.filter(id => id !== tag.id)
+                            : selectedInterestTags.length < interestConfig.maxSelections
+                                ? [...selectedInterestTags, tag.id]
+                                : selectedInterestTags;
+                        setSelectedInterestTags(newSelected);
+                    }
+                }, [
+                    React.createElement('div', { key: 'name', style: { fontWeight: 'bold' } }, tag.name),
+                    React.createElement('div', { key: 'desc', style: { fontSize: 12, marginTop: 2 } }, tag.appDescription)
+                ])
+            )),
+            React.createElement('div', {
+                key: 'info',
+                style: { fontSize: 12, color: '#999' }
+            }, `请选择 ${interestConfig.minSelections}-${interestConfig.maxSelections} 个标签 (已选择 ${selectedInterestTags.length} 个)`),
+            React.createElement(Button, {
+                key: 'confirm',
+                type: 'primary',
+                size: 'large',
+                disabled: selectedInterestTags.length < interestConfig.minSelections,
+                style: { marginTop: 16, borderRadius: 20 }
+            }, '确认选择')
+        ]));
+    };
+
     return React.createElement('div', { className: 'page-fade-in' }, [
         React.createElement('div', { key: 'header', className: 'page-header' }, [
             React.createElement('h1', { key: 'title', className: 'page-title' }, '内容标签管理'),
@@ -789,7 +1199,7 @@ const ContentTagManagement = () => {
         }, [
             React.createElement(TabPane, {
                 key: 'tag-list',
-                tab: '标签管理'
+                tab: '🏷️ 标签管理'
             }, [
                 renderFilters(),
                 
@@ -855,11 +1265,17 @@ const ContentTagManagement = () => {
                         }
                     })
                 ])
-            ])
+            ]),
+            
+            React.createElement(TabPane, {
+                key: 'interest-config',
+                tab: '📱 兴趣标签配置'
+            }, renderInterestTagConfig())
         ]),
 
         renderTagModal(),
-        renderBatchModal()
+        renderBatchModal(),
+        renderInterestPreview()
     ]);
 };
 
