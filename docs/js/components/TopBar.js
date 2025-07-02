@@ -20,7 +20,7 @@ const TopBar = ({ currentPage, user, notifications, onSearch, onNotificationClic
         'feedback': { title: '用户反馈管理', breadcrumb: ['运营统计', '用户反馈管理'] },
         'message': { title: '消息管理', breadcrumb: ['运营统计', '消息管理'] },
         'user': { title: '用户管理', breadcrumb: ['系统管理', '用户管理'] },
-        'admin': { title: '管理员与权限', breadcrumb: ['系统管理', '管理员与权限'] },
+        'admin': { title: '权限管理', breadcrumb: ['系统管理', '权限管理'] },
         'logs': { title: '日志管理', breadcrumb: ['系统管理', '日志管理'] },
         'settings': { title: '系统设置', breadcrumb: ['系统管理', '系统设置'] },
         'version': { title: 'APP版本管理', breadcrumb: ['系统管理', 'APP版本管理'] },

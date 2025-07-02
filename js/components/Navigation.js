@@ -150,9 +150,9 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                 },
                 {
                     key: 'admin',
-                    icon: '👨‍💼',
-                    label: '管理员与权限',
-                    title: '管理员账号和权限管理',
+                    icon: '👥',
+                    label: '权限管理',
+                    title: '系统权限与角色管理',
                     page: 'AdminManagement'
                 },
                 {
