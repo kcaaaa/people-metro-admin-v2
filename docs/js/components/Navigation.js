@@ -1,8 +1,9 @@
-// RuoYi风格导航组件
+// RuoYi风格导航组件 - 分级菜单版本
 const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) => {
     const { Menu } = antd;
+    const { SubMenu } = Menu;
     
-    // 菜单项配置 - 符合若依风格的图标和分组
+    // 菜单项配置 - 真正的分级结构
     const menuItems = [
         {
             key: 'dashboard',
@@ -11,11 +12,11 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             title: '系统首页 - 实时查看核心运营指标和待办事项',
             page: 'Dashboard'
         },
-        // 内容管理分组
         {
-            key: 'content-group',
-            type: 'group',
+            key: 'content-management',
+            icon: '📄',
             label: '内容管理',
+            title: '内容管理模块',
             children: [
                 {
                     key: 'content',
@@ -26,11 +27,11 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                 }
             ]
         },
-        // 审核管理分组
         {
-            key: 'review-group',
-            type: 'group',
+            key: 'audit-management',
+            icon: '🔍',
             label: '审核管理',
+            title: '审核管理模块',
             children: [
                 {
                     key: 'review',
@@ -48,11 +49,11 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                 }
             ]
         },
-        // 展会管理分组
         {
-            key: 'exhibition-group',
-            type: 'group',
+            key: 'exhibition-management',
+            icon: '🏢',
             label: '展会管理',
+            title: '展会管理模块',
             children: [
                 {
                     key: 'booth',
@@ -70,11 +71,11 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                 }
             ]
         },
-        // 运营统计分组
         {
-            key: 'operation-stats-group',
-            type: 'group',
+            key: 'operation-statistics',
+            icon: '📊',
             label: '运营统计',
+            title: '运营统计模块',
             children: [
                 {
                     key: 'stats',
@@ -113,11 +114,11 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                 }
             ]
         },
-        // 系统管理分组
         {
-            key: 'system-group',
-            type: 'group',
+            key: 'system-management',
+            icon: '⚙️',
             label: '系统管理',
+            title: '系统管理模块',
             children: [
                 {
                     key: 'user',
@@ -167,40 +168,39 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
 
     // 递归渲染菜单项
     const renderMenuItem = (item) => {
-        if (item.type === 'group') {
-            // 分组标题（仅在展开状态显示）
-            if (collapsed) {
-                return item.children.map(child => renderMenuItem(child));
-            }
-            
-            return [
-                // 分组分隔线和标题
-                React.createElement('div', {
-                    key: `${item.key}-divider`,
+        // 如果有子菜单，渲染SubMenu
+        if (item.children && item.children.length > 0) {
+            return React.createElement(SubMenu, {
+                key: item.key,
+                title: React.createElement('span', {
                     style: {
-                        height: '1px',
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        margin: '12px 16px',
-                        marginTop: '20px'
+                        display: 'flex',
+                        alignItems: 'center'
                     }
-                }),
-                React.createElement('div', {
-                    key: `${item.key}-title`,
-                    style: {
-                        color: 'rgba(255, 255, 255, 0.45)',
-                        fontSize: '12px',
-                        fontWeight: '500',
-                        padding: '8px 16px 8px 16px',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                        lineHeight: '1.5'
-                    }
-                }, item.label),
-                // 分组菜单项
-                ...item.children.map(child => renderMenuItem(child))
-            ];
+                }, [
+                    React.createElement('span', {
+                        key: 'icon',
+                        className: 'nav-icon',
+                        style: {
+                            fontSize: '16px',
+                            width: '20px',
+                            marginRight: collapsed ? 0 : '12px',
+                            textAlign: 'center',
+                            transition: 'all 0.3s ease'
+                        }
+                    }, item.icon),
+                    !collapsed && React.createElement('span', {
+                        key: 'label',
+                        style: {
+                            fontSize: '14px',
+                            fontWeight: '400'
+                        }
+                    }, item.label)
+                ])
+            }, item.children.map(child => renderMenuItem(child)));
         }
         
+        // 普通菜单项
         return React.createElement(Menu.Item, {
             key: item.key,
             title: item.title,
@@ -234,7 +234,7 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
     const getFlatMenuItems = (items) => {
         let flatItems = [];
         items.forEach(item => {
-            if (item.type === 'group') {
+            if (item.children && item.children.length > 0) {
                 flatItems = flatItems.concat(item.children);
             } else {
                 flatItems.push(item);
@@ -244,6 +244,20 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
     };
 
     const flatMenuItems = getFlatMenuItems(menuItems);
+
+    // 根据当前页面获取默认展开的SubMenu
+    const getDefaultOpenKeys = () => {
+        const currentItem = flatMenuItems.find(item => item.key === currentPage);
+        if (currentItem) {
+            // 查找包含当前页面的父菜单
+            for (let menu of menuItems) {
+                if (menu.children && menu.children.some(child => child.key === currentPage)) {
+                    return [menu.key];
+                }
+            }
+        }
+        return [];
+    };
 
     return React.createElement('div', {
         className: `main-nav ${collapsed ? 'collapsed' : ''}`,
@@ -391,7 +405,9 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             React.createElement(Menu, {
                 key: 'menu',
                 mode: 'inline',
+                theme: 'dark',
                 selectedKeys: [currentPage],
+                defaultOpenKeys: getDefaultOpenKeys(),
                 style: { 
                     background: 'transparent',
                     border: 'none',
@@ -405,7 +421,7 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                         onPageChange(key);
                     }
                 }
-            }, menuItems.map(renderMenuItem).flat()),
+            }, menuItems.map(renderMenuItem)),
             
             // 底部版本信息（仅展开状态显示）
             !collapsed && React.createElement('div', {
