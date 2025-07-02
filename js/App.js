@@ -130,7 +130,9 @@ const App = () => {
             'version': window.VersionManagement,
             'VersionManagement': window.VersionManagement,
             'traffic': window.TrafficAllocation,
-            'TrafficAllocation': window.TrafficAllocation
+            'TrafficAllocation': window.TrafficAllocation,
+            'personal-center': window.PersonalCenter,
+            'PersonalCenter': window.PersonalCenter
         };
 
         const PageComponent = pageComponents[currentPage] || window.Dashboard;
@@ -273,7 +275,8 @@ const App = () => {
                     notifications: notifications,
                     onSearch: handleSearch,
                     onNotificationClick: handleNotificationClick,
-                    onLogout: handleLogout
+                    onLogout: handleLogout,
+                    onPageChange: handlePageChange
                 })),
 
                 // 主内容区域

@@ -127,6 +127,8 @@ const App = () => {
             'DataManagement': window.DataManagement,
             'traffic': window.TrafficAllocation,
             'TrafficAllocation': window.TrafficAllocation,
+            'personal-center': window.PersonalCenter,
+            'PersonalCenter': window.PersonalCenter,
             'logs': window.LogManagement,
             'LogManagement': window.LogManagement,
             'settings': window.SystemSettings,
@@ -273,7 +275,8 @@ const App = () => {
                     notifications: notifications,
                     onSearch: handleSearch,
                     onNotificationClick: handleNotificationClick,
-                    onLogout: handleLogout
+                    onLogout: handleLogout,
+                    onPageChange: handlePageChange
                 })),
 
                 // 主内容区域
