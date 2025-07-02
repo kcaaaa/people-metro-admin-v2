@@ -263,7 +263,9 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
         className: `main-nav ${collapsed ? 'collapsed' : ''}`,
         style: {
             width: collapsed ? '64px' : '260px',
-            transition: 'all 0.2s ease'
+            transition: 'all 0.2s ease',
+            background: '#001529', // 深色背景
+            minHeight: '100vh' // 确保满高度
         }
     }, [
         // 导航头部 - Logo区域
@@ -401,6 +403,38 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                 paddingBottom: '16px'
             }
         }, [
+            // 添加自定义样式
+            React.createElement('style', {
+                key: 'menu-styles'
+            }, `
+                .main-nav .ant-menu-dark {
+                    background: transparent;
+                    color: rgba(255, 255, 255, 0.85);
+                }
+                .main-nav .ant-menu-dark .ant-menu-item,
+                .main-nav .ant-menu-dark .ant-menu-submenu-title {
+                    color: rgba(255, 255, 255, 0.85);
+                }
+                .main-nav .ant-menu-dark .ant-menu-item:hover,
+                .main-nav .ant-menu-dark .ant-menu-submenu-title:hover {
+                    color: #fff;
+                    background-color: rgba(255, 255, 255, 0.08);
+                }
+                .main-nav .ant-menu-dark .ant-menu-item-selected {
+                    background-color: #1890ff;
+                    color: #fff;
+                }
+                .main-nav .ant-menu-dark .ant-menu-submenu-selected .ant-menu-submenu-title {
+                    color: #1890ff;
+                }
+                .main-nav .ant-menu-dark .ant-menu-submenu-open .ant-menu-submenu-title {
+                    color: #fff;
+                }
+                .main-nav .ant-menu-dark .ant-menu-submenu .ant-menu-sub {
+                    background: rgba(0, 0, 0, 0.3);
+                }
+            `),
+            
             // 渲染菜单
             React.createElement(Menu, {
                 key: 'menu',
@@ -411,7 +445,8 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                 style: { 
                     background: 'transparent',
                     border: 'none',
-                    flex: 1
+                    flex: 1,
+                    color: 'rgba(255, 255, 255, 0.85)' // 确保文字颜色
                 },
                 inlineCollapsed: collapsed,
                 onClick: ({ key }) => {
