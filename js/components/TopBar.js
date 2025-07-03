@@ -1,6 +1,7 @@
 // RuoYi风格顶部操作栏组件
 const TopBar = ({ currentPage, user, notifications, onNotificationClick, onLogout, onPageChange }) => {
-    const { Badge, Dropdown, Avatar, Space, Button, Tooltip, Modal, Input, Breadcrumb } = antd;
+    const { Badge, Dropdown, Avatar, Space, Button, Tooltip, Modal, Input, Breadcrumb, message } = antd;
+    const { confirm } = Modal;
     
     // 页面标题映射 - 用于面包屑导航
     const pageTitleMap = {
@@ -80,23 +81,7 @@ const TopBar = ({ currentPage, user, notifications, onNotificationClick, onLogou
                 }
                 break;
             case 'logout':
-                Modal.confirm({
-                    title: '确认退出',
-                    content: '您确定要退出登录吗？退出后需要重新登录。',
-                    okText: '确定退出',
-                    cancelText: '取消',
-                    okType: 'danger',
-                    icon: React.createElement('span', { style: { fontSize: '18px' } }, '⚠️'),
-                    onOk: () => {
-                        console.log('用户确认退出');
-                        if (onLogout) {
-                            onLogout();
-                        } else {
-                            // 模拟退出登录
-                            window.location.reload();
-                        }
-                    },
-                });
+                handleLogout();
                 break;
             default:
                 break;
@@ -216,6 +201,20 @@ const TopBar = ({ currentPage, user, notifications, onNotificationClick, onLogou
     // 计算未读通知数量
     const unreadCount = notifications?.filter(n => !n.read).length || 0;
     const displayName = user?.name || user?.username || '管理员';
+
+    // 处理退出登录
+    const handleLogout = () => {
+        confirm({
+            title: '确认退出',
+            content: '您确定要退出登录吗？退出后需要重新登录。',
+            okText: '确定退出',
+            cancelText: '取消',
+            onOk() {
+                message.loading('正在退出...');
+                onLogout && onLogout();
+            }
+        });
+    };
 
     return React.createElement('div', {
         className: 'top-bar',
