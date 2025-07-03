@@ -451,7 +451,9 @@ const ExhibitorManagement = () => {
             // 模拟Excel文件下载
             const csvContent = [
                 ['公司名称', '公司描述', '公司分类', '展位号', '展位规格', 'APP账号', '联系人', '联系电话', '联系邮箱', '公司网站'],
-                ['示例公司', '这是一个示例公司描述', '车辆制造', 'A区-01', '3x3', 'demo_account', '张三', '13800138000', 'zhangsan@example.com', 'https://example.com'],
+                ['测试公司1', '测试公司1描述', '车辆制造', 'T区-01', '3x3', 'test_account1', '张三', '13800000001', 'test1@example.com', 'https://test1.com'],
+                ['测试公司2', '测试公司2描述', '智能交通', 'T区-02', '3x3', 'test_account2', '李四', '13800000002', 'test2@example.com', 'https://test2.com'],
+                ['测试公司3', '测试公司3描述', '通信技术', 'T区-03', '3x3', 'test_account3', '王五', '13800000003', 'test3@example.com', 'https://test3.com'],
                 ['', '', '', '', '', '', '', '', '', '']
             ].map(row => row.join(',')).join('\n');
             
@@ -554,55 +556,19 @@ const ExhibitorManagement = () => {
         const valid = [];
         const invalid = [];
         const existingBoothNumbers = new Set(companies.map(c => c.boothNumber));
-        const existingAppAccounts = new Set(companies.map(c => c.appAccount));
         
         data.forEach((row, index) => {
             const errors = [];
             
-            // 必填字段验证
-            if (!row.name) errors.push('公司名称不能为空');
-            if (!row.description) errors.push('公司描述不能为空');
-            if (!row.category) errors.push('公司分类不能为空');
-            if (!row.boothNumber) errors.push('展位号不能为空');
-            if (!row.boothSize) errors.push('展位规格不能为空');
-            if (!row.appAccount) errors.push('APP账号不能为空');
-            if (!row.contactPerson) errors.push('联系人不能为空');
-            if (!row.contactPhone) errors.push('联系电话不能为空');
-            if (!row.contactEmail) errors.push('联系邮箱不能为空');
-            
-            // 格式验证
-            if (row.contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.contactEmail)) {
-                errors.push('邮箱格式不正确');
-            }
-            
-            if (row.contactPhone && !/^1[3-9]\d{9}$/.test(row.contactPhone)) {
-                errors.push('手机号格式不正确');
-            }
-            
-            // 分类验证
-            const validCategories = ['车辆制造', '智能交通', '通信技术', '数字化解决方案', '信号系统'];
-            if (row.category && !validCategories.includes(row.category)) {
-                errors.push(`公司分类不正确，应为：${validCategories.join('、')}`);
-            }
-            
-            // 重复性检查
+            // 只校验展位号唯一性
             if (row.boothNumber && existingBoothNumbers.has(row.boothNumber)) {
                 errors.push('展位号已被占用');
             }
             
-            if (row.appAccount && existingAppAccounts.has(row.appAccount)) {
-                errors.push('APP账号已存在');
-            }
-            
-            // 批量数据内部重复检查
+            // 批量数据内部展位号重复检查
             const duplicateBoothInBatch = data.filter((item, idx) => idx !== index && item.boothNumber === row.boothNumber);
             if (duplicateBoothInBatch.length > 0) {
                 errors.push('批量数据中展位号重复');
-            }
-            
-            const duplicateAccountInBatch = data.filter((item, idx) => idx !== index && item.appAccount === row.appAccount);
-            if (duplicateAccountInBatch.length > 0) {
-                errors.push('批量数据中APP账号重复');
             }
             
             const validatedRow = { ...row, errors, index: index + 1 };
@@ -632,19 +598,19 @@ const ExhibitorManagement = () => {
             // 生成新的公司数据
             const newCompanies = importValidation.valid.map((row, index) => ({
                 id: `company_import_${Date.now()}_${index}`,
-                name: row.name,
+                name: row.name || '未命名公司',
                 logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=100',
-                description: row.description,
+                description: row.description || '暂无描述',
                 floorId: 'floor_f1', // 默认楼层
                 areaId: 'area_a', // 默认区域
-                boothNumber: row.boothNumber,
-                boothSize: row.boothSize,
-                appAccount: row.appAccount,
-                contactPerson: row.contactPerson,
-                contactPhone: row.contactPhone,
-                contactEmail: row.contactEmail,
+                boothNumber: row.boothNumber || `TEMP-${index + 1}`,
+                boothSize: row.boothSize || '3x3',
+                appAccount: row.appAccount || `auto_${Date.now()}_${index}`,
+                contactPerson: row.contactPerson || '待补充',
+                contactPhone: row.contactPhone || '13800000000',
+                contactEmail: row.contactEmail || `temp${index}@example.com`,
                 website: row.website || '',
-                category: row.category,
+                category: row.category || '车辆制造',
                 status: 'pending', // 导入的数据默认为待审核状态
                 created: new Date().toLocaleString('zh-CN', {
                     year: 'numeric',
