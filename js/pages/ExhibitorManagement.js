@@ -2,16 +2,26 @@
 const ExhibitorManagement = () => {
     console.log('ExhibitorManagement component is rendering...');
     
-    const { Row, Col, Card, Button, Space, Alert, Tag, Table, Modal, Form, Input, Select, message, Upload, Image, Divider, Statistic, Progress, InputNumber, Radio, Switch, DatePicker } = antd;
+    const { Row, Col, Card, Button, Space, Alert, Tag, Table, Modal, Form, Input, Select, message, Upload, Image, Divider, Statistic, Progress, InputNumber, Radio, Switch, DatePicker, Tooltip, Steps, Descriptions } = antd;
     const { TextArea } = Input;
     const { Option } = Select;
     const { RangePicker: DateRangePicker } = DatePicker;
+    const { Dragger } = Upload;
     
     // 状态管理
     const [companyModalVisible, setCompanyModalVisible] = React.useState(false);
     const [editingCompany, setEditingCompany] = React.useState(null);
     const [loading, setLoading] = React.useState(false);
     const [companyForm] = Form.useForm();
+    
+    // 导入功能状态
+    const [importModalVisible, setImportModalVisible] = React.useState(false);
+    const [importStep, setImportStep] = React.useState(0);
+    const [uploadedFile, setUploadedFile] = React.useState(null);
+    const [importData, setImportData] = React.useState([]);
+    const [importValidation, setImportValidation] = React.useState({ valid: [], invalid: [] });
+    const [importLoading, setImportLoading] = React.useState(false);
+    const [importResults, setImportResults] = React.useState(null);
     
     // 搜索和筛选状态
     const [searchText, setSearchText] = React.useState('');
@@ -419,6 +429,332 @@ const ExhibitorManagement = () => {
         }
     ];
 
+    // 导入模板数据
+    const importTemplate = [
+        {
+            name: '公司名称',
+            description: '公司描述',
+            category: '车辆制造',
+            boothNumber: 'A区-01',
+            boothSize: '3x3',
+            appAccount: 'demo_account',
+            contactPerson: '张三',
+            contactPhone: '13800138000',
+            contactEmail: 'zhangsan@example.com',
+            website: 'https://example.com'
+        }
+    ];
+
+    // 下载导入模板
+    const downloadImportTemplate = (format = 'excel') => {
+        if (format === 'excel') {
+            // 模拟Excel文件下载
+            const csvContent = [
+                ['公司名称', '公司描述', '公司分类', '展位号', '展位规格', 'APP账号', '联系人', '联系电话', '联系邮箱', '公司网站'],
+                ['示例公司', '这是一个示例公司描述', '车辆制造', 'A区-01', '3x3', 'demo_account', '张三', '13800138000', 'zhangsan@example.com', 'https://example.com'],
+                ['', '', '', '', '', '', '', '', '', '']
+            ].map(row => row.join(',')).join('\n');
+            
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', '参展公司导入模板.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            message.success('导入模板下载成功');
+        }
+    };
+
+    // 解析上传的文件
+    const parseUploadedFile = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const text = e.target.result;
+                    const lines = text.split('\n').filter(line => line.trim());
+                    
+                    if (lines.length < 2) {
+                        reject(new Error('文件内容格式不正确，至少需要标题行和一行数据'));
+                        return;
+                    }
+                    
+                    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+                    const expectedHeaders = ['公司名称', '公司描述', '公司分类', '展位号', '展位规格', 'APP账号', '联系人', '联系电话', '联系邮箱', '公司网站'];
+                    
+                    // 验证标题行
+                    const missingHeaders = expectedHeaders.filter(h => !headers.includes(h));
+                    if (missingHeaders.length > 0) {
+                        reject(new Error(`缺少必要的列：${missingHeaders.join(', ')}`));
+                        return;
+                    }
+                    
+                    // 解析数据行
+                    const data = [];
+                    for (let i = 1; i < lines.length; i++) {
+                        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                        if (values.some(v => v)) { // 跳过空行
+                            const row = {};
+                            headers.forEach((header, index) => {
+                                const value = values[index] || '';
+                                switch (header) {
+                                    case '公司名称':
+                                        row.name = value;
+                                        break;
+                                    case '公司描述':
+                                        row.description = value;
+                                        break;
+                                    case '公司分类':
+                                        row.category = value;
+                                        break;
+                                    case '展位号':
+                                        row.boothNumber = value;
+                                        break;
+                                    case '展位规格':
+                                        row.boothSize = value;
+                                        break;
+                                    case 'APP账号':
+                                        row.appAccount = value;
+                                        break;
+                                    case '联系人':
+                                        row.contactPerson = value;
+                                        break;
+                                    case '联系电话':
+                                        row.contactPhone = value;
+                                        break;
+                                    case '联系邮箱':
+                                        row.contactEmail = value;
+                                        break;
+                                    case '公司网站':
+                                        row.website = value;
+                                        break;
+                                }
+                            });
+                            row.rowIndex = i;
+                            data.push(row);
+                        }
+                    }
+                    
+                    resolve(data);
+                } catch (error) {
+                    reject(new Error('文件解析失败：' + error.message));
+                }
+            };
+            reader.onerror = () => reject(new Error('文件读取失败'));
+            reader.readAsText(file, 'utf-8');
+        });
+    };
+
+    // 验证导入数据
+    const validateImportData = (data) => {
+        const valid = [];
+        const invalid = [];
+        const existingBoothNumbers = new Set(companies.map(c => c.boothNumber));
+        const existingAppAccounts = new Set(companies.map(c => c.appAccount));
+        
+        data.forEach((row, index) => {
+            const errors = [];
+            
+            // 必填字段验证
+            if (!row.name) errors.push('公司名称不能为空');
+            if (!row.description) errors.push('公司描述不能为空');
+            if (!row.category) errors.push('公司分类不能为空');
+            if (!row.boothNumber) errors.push('展位号不能为空');
+            if (!row.boothSize) errors.push('展位规格不能为空');
+            if (!row.appAccount) errors.push('APP账号不能为空');
+            if (!row.contactPerson) errors.push('联系人不能为空');
+            if (!row.contactPhone) errors.push('联系电话不能为空');
+            if (!row.contactEmail) errors.push('联系邮箱不能为空');
+            
+            // 格式验证
+            if (row.contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.contactEmail)) {
+                errors.push('邮箱格式不正确');
+            }
+            
+            if (row.contactPhone && !/^1[3-9]\d{9}$/.test(row.contactPhone)) {
+                errors.push('手机号格式不正确');
+            }
+            
+            // 分类验证
+            const validCategories = ['车辆制造', '智能交通', '通信技术', '数字化解决方案', '信号系统'];
+            if (row.category && !validCategories.includes(row.category)) {
+                errors.push(`公司分类不正确，应为：${validCategories.join('、')}`);
+            }
+            
+            // 重复性检查
+            if (row.boothNumber && existingBoothNumbers.has(row.boothNumber)) {
+                errors.push('展位号已被占用');
+            }
+            
+            if (row.appAccount && existingAppAccounts.has(row.appAccount)) {
+                errors.push('APP账号已存在');
+            }
+            
+            // 批量数据内部重复检查
+            const duplicateBoothInBatch = data.filter((item, idx) => idx !== index && item.boothNumber === row.boothNumber);
+            if (duplicateBoothInBatch.length > 0) {
+                errors.push('批量数据中展位号重复');
+            }
+            
+            const duplicateAccountInBatch = data.filter((item, idx) => idx !== index && item.appAccount === row.appAccount);
+            if (duplicateAccountInBatch.length > 0) {
+                errors.push('批量数据中APP账号重复');
+            }
+            
+            const validatedRow = { ...row, errors, index: index + 1 };
+            
+            if (errors.length === 0) {
+                valid.push(validatedRow);
+            } else {
+                invalid.push(validatedRow);
+            }
+        });
+        
+        return { valid, invalid };
+    };
+
+    // 执行导入
+    const executeImport = async () => {
+        if (importValidation.valid.length === 0) {
+            message.error('没有有效的数据可以导入');
+            return;
+        }
+        
+        setImportLoading(true);
+        
+        try {
+            await new Promise(resolve => setTimeout(resolve, 2000)); // 模拟导入过程
+            
+            // 生成新的公司数据
+            const newCompanies = importValidation.valid.map((row, index) => ({
+                id: `company_import_${Date.now()}_${index}`,
+                name: row.name,
+                logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=100',
+                description: row.description,
+                floorId: 'floor_f1', // 默认楼层
+                areaId: 'area_a', // 默认区域
+                boothNumber: row.boothNumber,
+                boothSize: row.boothSize,
+                appAccount: row.appAccount,
+                contactPerson: row.contactPerson,
+                contactPhone: row.contactPhone,
+                contactEmail: row.contactEmail,
+                website: row.website || '',
+                category: row.category,
+                status: 'pending', // 导入的数据默认为待审核状态
+                created: new Date().toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                }).replace(/\//g, '-')
+            }));
+            
+            // 更新公司列表
+            setCompanies(prev => [...prev, ...newCompanies]);
+            
+            // 记录导入结果
+            const results = {
+                total: importData.length,
+                success: importValidation.valid.length,
+                failed: importValidation.invalid.length,
+                newCompanies: newCompanies
+            };
+            
+            setImportResults(results);
+            setImportStep(3);
+            
+            // 写入操作日志
+            const auditLog = {
+                id: `audit_${Date.now()}`,
+                action: '批量导入参展公司',
+                operator: '管理员',
+                target: '参展公司管理',
+                details: `导入${results.success}家公司，失败${results.failed}条记录`,
+                timestamp: new Date().toLocaleString('zh-CN'),
+                type: 'import',
+                risk: 'medium'
+            };
+            
+            const existingLogs = JSON.parse(localStorage.getItem('auditLogs') || '[]');
+            existingLogs.unshift(auditLog);
+            localStorage.setItem('auditLogs', JSON.stringify(existingLogs));
+            
+            message.success(`导入成功！共导入${results.success}家参展公司`);
+            
+        } catch (error) {
+            message.error('导入失败：' + error.message);
+        } finally {
+            setImportLoading(false);
+        }
+    };
+
+    // 重置导入流程
+    const resetImportFlow = () => {
+        setImportStep(0);
+        setUploadedFile(null);
+        setImportData([]);
+        setImportValidation({ valid: [], invalid: [] });
+        setImportResults(null);
+        setImportModalVisible(false);
+    };
+
+    // 文件上传配置
+    const uploadProps = {
+        name: 'file',
+        multiple: false,
+        accept: '.csv,.xlsx,.xls',
+        beforeUpload: (file) => {
+            // 检查文件类型
+            const isValidType = file.type === 'text/csv' || 
+                               file.type === 'application/vnd.ms-excel' || 
+                               file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+            
+            if (!isValidType) {
+                message.error('只支持 CSV、Excel 格式的文件');
+                return false;
+            }
+            
+            // 检查文件大小（最大5MB）
+            const isLimitSize = file.size / 1024 / 1024 < 5;
+            if (!isLimitSize) {
+                message.error('文件大小不能超过 5MB');
+                return false;
+            }
+            
+            setUploadedFile(file);
+            
+            // 解析文件
+            parseUploadedFile(file)
+                .then(data => {
+                    setImportData(data);
+                    const validation = validateImportData(data);
+                    setImportValidation(validation);
+                    setImportStep(1);
+                    message.success(`文件解析成功，共${data.length}条数据`);
+                })
+                .catch(error => {
+                    message.error(error.message);
+                    setUploadedFile(null);
+                });
+            
+            return false; // 阻止自动上传
+        },
+        onRemove: () => {
+            setUploadedFile(null);
+            setImportData([]);
+            setImportValidation({ valid: [], invalid: [] });
+            setImportStep(0);
+        }
+    };
+
     return React.createElement('div', {
         style: { padding: '0' }
     }, [
@@ -540,6 +876,11 @@ const ExhibitorManagement = () => {
             ),
             React.createElement(Col, { key: 'actions', span: 10 },
                 React.createElement(Space, { size: 'small' }, [
+                    React.createElement(Button, {
+                        key: 'import',
+                        onClick: () => setImportModalVisible(true),
+                        style: { color: '#52c41a', borderColor: '#52c41a' }
+                    }, '批量导入'),
                     React.createElement(Button, {
                         key: 'reset',
                         onClick: resetFilters
@@ -711,6 +1052,317 @@ const ExhibitorManagement = () => {
             }, React.createElement(Input, { 
                 placeholder: '请输入LOGO图片URL或使用上传功能' 
             }))
+        ])),
+
+        // 批量导入模态框
+        React.createElement(Modal, {
+            key: 'importModal',
+            title: '批量导入参展公司',
+            visible: importModalVisible,
+            onCancel: resetImportFlow,
+            footer: null,
+            width: 900,
+            destroyOnClose: true
+        }, React.createElement('div', {}, [
+            // 导入步骤
+            React.createElement(Steps, {
+                key: 'steps',
+                current: importStep,
+                style: { marginBottom: '24px' }
+            }, [
+                React.createElement(Steps.Step, {
+                    key: 'upload',
+                    title: '上传文件',
+                    description: '选择导入文件'
+                }),
+                React.createElement(Steps.Step, {
+                    key: 'validate',
+                    title: '数据校验',
+                    description: '验证数据格式'
+                }),
+                React.createElement(Steps.Step, {
+                    key: 'import',
+                    title: '执行导入',
+                    description: '导入到系统'
+                }),
+                React.createElement(Steps.Step, {
+                    key: 'result',
+                    title: '导入结果',
+                    description: '查看导入结果'
+                })
+            ]),
+
+            // 步骤1：文件上传
+            importStep === 0 && React.createElement('div', { key: 'upload-step' }, [
+                React.createElement(Alert, {
+                    key: 'alert',
+                    message: '导入说明',
+                    description: '请下载模板文件，按照格式填写数据后上传。支持CSV、Excel格式，文件大小不超过5MB。',
+                    type: 'info',
+                    showIcon: true,
+                    style: { marginBottom: '16px' }
+                }),
+                
+                React.createElement(Space, {
+                    key: 'template-buttons',
+                    style: { marginBottom: '16px' }
+                }, [
+                    React.createElement(Button, {
+                        key: 'download-excel',
+                        onClick: () => downloadImportTemplate('excel')
+                    }, '下载Excel模板'),
+                    React.createElement(Button, {
+                        key: 'download-csv',
+                        onClick: () => downloadImportTemplate('csv')
+                    }, '下载CSV模板')
+                ]),
+                
+                React.createElement(Dragger, {
+                    key: 'uploader',
+                    ...uploadProps,
+                    style: { padding: '40px' }
+                }, [
+                    React.createElement('p', {
+                        key: 'icon',
+                        className: 'ant-upload-drag-icon',
+                        style: { fontSize: '48px', color: '#1890ff' }
+                    }, '📁'),
+                    React.createElement('p', {
+                        key: 'text',
+                        className: 'ant-upload-text',
+                        style: { fontSize: '16px', marginBottom: '8px' }
+                    }, '点击或拖拽文件到此区域上传'),
+                    React.createElement('p', {
+                        key: 'hint',
+                        className: 'ant-upload-hint',
+                        style: { color: '#666' }
+                    }, '支持CSV、Excel格式，单个文件大小不超过5MB')
+                ])
+            ]),
+
+            // 步骤2：数据校验
+            importStep === 1 && React.createElement('div', { key: 'validate-step' }, [
+                React.createElement(Row, {
+                    key: 'summary',
+                    gutter: 16,
+                    style: { marginBottom: '16px' }
+                }, [
+                    React.createElement(Col, { span: 8 },
+                        React.createElement(Card, {
+                            style: { textAlign: 'center' }
+                        }, React.createElement(Statistic, {
+                            title: '总数据量',
+                            value: importData.length,
+                            valueStyle: { color: '#1890ff' }
+                        }))
+                    ),
+                    React.createElement(Col, { span: 8 },
+                        React.createElement(Card, {
+                            style: { textAlign: 'center' }
+                        }, React.createElement(Statistic, {
+                            title: '有效数据',
+                            value: importValidation.valid.length,
+                            valueStyle: { color: '#52c41a' }
+                        }))
+                    ),
+                    React.createElement(Col, { span: 8 },
+                        React.createElement(Card, {
+                            style: { textAlign: 'center' }
+                        }, React.createElement(Statistic, {
+                            title: '错误数据',
+                            value: importValidation.invalid.length,
+                            valueStyle: { color: '#ff4d4f' }
+                        }))
+                    )
+                ]),
+
+                // 错误数据列表
+                importValidation.invalid.length > 0 && React.createElement('div', {
+                    key: 'invalid-data',
+                    style: { marginBottom: '16px' }
+                }, [
+                    React.createElement('h4', {
+                        key: 'title',
+                        style: { color: '#ff4d4f' }
+                    }, `错误数据 (${importValidation.invalid.length}条)`),
+                    React.createElement(Table, {
+                        key: 'table',
+                        dataSource: importValidation.invalid.map(item => ({ ...item, key: item.index })),
+                        size: 'small',
+                        pagination: { pageSize: 5 },
+                        columns: [
+                            {
+                                title: '行号',
+                                dataIndex: 'index',
+                                width: 60
+                            },
+                            {
+                                title: '公司名称',
+                                dataIndex: 'name',
+                                width: 150
+                            },
+                            {
+                                title: '错误信息',
+                                dataIndex: 'errors',
+                                render: (errors) => React.createElement('div', {},
+                                    errors.map((error, idx) => 
+                                        React.createElement(Tag, {
+                                            key: idx,
+                                            color: 'red',
+                                            style: { marginBottom: '2px' }
+                                        }, error)
+                                    )
+                                )
+                            }
+                        ]
+                    })
+                ]),
+
+                // 操作按钮
+                React.createElement(Space, {
+                    key: 'actions',
+                    style: { marginTop: '16px' }
+                }, [
+                    React.createElement(Button, {
+                        key: 'back',
+                        onClick: () => setImportStep(0)
+                    }, '重新选择文件'),
+                    React.createElement(Button, {
+                        key: 'import',
+                        type: 'primary',
+                        disabled: importValidation.valid.length === 0,
+                        onClick: () => setImportStep(2)
+                    }, `导入有效数据 (${importValidation.valid.length}条)`)
+                ])
+            ]),
+
+            // 步骤3：确认导入
+            importStep === 2 && React.createElement('div', { key: 'confirm-step' }, [
+                React.createElement(Alert, {
+                    key: 'confirm-alert',
+                    message: '确认导入',
+                    description: `即将导入 ${importValidation.valid.length} 条有效数据，导入后数据将保存到系统中，请确认操作。`,
+                    type: 'warning',
+                    showIcon: true,
+                    style: { marginBottom: '16px' }
+                }),
+
+                React.createElement('h4', {
+                    key: 'preview-title'
+                }, '数据预览'),
+                
+                React.createElement(Table, {
+                    key: 'preview-table',
+                    dataSource: importValidation.valid.slice(0, 5).map(item => ({ ...item, key: item.index })),
+                    size: 'small',
+                    pagination: false,
+                    columns: [
+                        { title: '公司名称', dataIndex: 'name', width: 120 },
+                        { title: '分类', dataIndex: 'category', width: 100 },
+                        { title: '展位号', dataIndex: 'boothNumber', width: 80 },
+                        { title: '联系人', dataIndex: 'contactPerson', width: 80 },
+                        { title: '联系电话', dataIndex: 'contactPhone', width: 120 }
+                    ]
+                }),
+
+                importValidation.valid.length > 5 && React.createElement('div', {
+                    key: 'more-hint',
+                    style: { textAlign: 'center', color: '#666', margin: '8px 0' }
+                }, `还有 ${importValidation.valid.length - 5} 条数据...`),
+
+                React.createElement(Space, {
+                    key: 'actions',
+                    style: { marginTop: '16px' }
+                }, [
+                    React.createElement(Button, {
+                        key: 'back',
+                        onClick: () => setImportStep(1)
+                    }, '返回校验'),
+                    React.createElement(Button, {
+                        key: 'execute',
+                        type: 'primary',
+                        loading: importLoading,
+                        onClick: executeImport
+                    }, '确认导入')
+                ])
+            ]),
+
+            // 步骤4：导入结果
+            importStep === 3 && importResults && React.createElement('div', { key: 'result-step' }, [
+                React.createElement(Alert, {
+                    key: 'success-alert',
+                    message: '导入完成',
+                    description: `成功导入 ${importResults.success} 条数据，失败 ${importResults.failed} 条数据。`,
+                    type: 'success',
+                    showIcon: true,
+                    style: { marginBottom: '16px' }
+                }),
+
+                React.createElement(Row, {
+                    key: 'result-summary',
+                    gutter: 16,
+                    style: { marginBottom: '16px' }
+                }, [
+                    React.createElement(Col, { span: 6 },
+                        React.createElement(Card, {
+                            style: { textAlign: 'center' }
+                        }, React.createElement(Statistic, {
+                            title: '总处理',
+                            value: importResults.total,
+                            valueStyle: { color: '#1890ff' }
+                        }))
+                    ),
+                    React.createElement(Col, { span: 6 },
+                        React.createElement(Card, {
+                            style: { textAlign: 'center' }
+                        }, React.createElement(Statistic, {
+                            title: '成功导入',
+                            value: importResults.success,
+                            valueStyle: { color: '#52c41a' }
+                        }))
+                    ),
+                    React.createElement(Col, { span: 6 },
+                        React.createElement(Card, {
+                            style: { textAlign: 'center' }
+                        }, React.createElement(Statistic, {
+                            title: '导入失败',
+                            value: importResults.failed,
+                            valueStyle: { color: '#ff4d4f' }
+                        }))
+                    ),
+                    React.createElement(Col, { span: 6 },
+                        React.createElement(Card, {
+                            style: { textAlign: 'center' }
+                        }, React.createElement(Statistic, {
+                            title: '成功率',
+                            value: ((importResults.success / importResults.total) * 100).toFixed(1),
+                            valueStyle: { color: '#722ed1' },
+                            suffix: '%'
+                        }))
+                    )
+                ]),
+
+                React.createElement(Space, {
+                    key: 'final-actions',
+                    style: { marginTop: '16px' }
+                }, [
+                    React.createElement(Button, {
+                        key: 'close',
+                        type: 'primary',
+                        onClick: resetImportFlow
+                    }, '完成导入'),
+                    React.createElement(Button, {
+                        key: 'continue',
+                        onClick: () => {
+                            setImportStep(0);
+                            setUploadedFile(null);
+                            setImportData([]);
+                            setImportValidation({ valid: [], invalid: [] });
+                            setImportResults(null);
+                        }
+                    }, '继续导入')
+                ])
+            ])
         ]))
     ]);
 };
