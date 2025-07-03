@@ -1026,7 +1026,7 @@ const UserManagement = () => {
         {
             title: '操作',
             key: 'actions',
-            width: 200,
+            width: 260,
             render: (record) => React.createElement(Space, { size: 'small' }, [
                 React.createElement(Button, {
                     key: 'detail',
@@ -1053,7 +1053,14 @@ const UserManagement = () => {
                         type: 'link',
                         size: 'small',
                         onClick: () => activateUser(record)
-                    }, '启用')
+                    }, '启用'),
+                React.createElement(Button, {
+                    key: 'delete',
+                    type: 'link',
+                    size: 'small',
+                    danger: true,
+                    onClick: () => deleteUser(record)
+                }, '删除')
             ])
         }
     ];
@@ -1185,6 +1192,38 @@ const UserManagement = () => {
         setCurrentOrg({ parentId: parentOrg.id, parentName: parentOrg.name });
         orgForm.resetFields();
         setOrgModalVisible(true);
+    };
+
+    // 删除用户
+    const deleteUser = (user) => {
+        Modal.confirm({
+            title: '确认删除用户',
+            content: `确定要删除用户 "${user.realName}" 吗？此操作不可恢复。`,
+            okText: '删除',
+            okType: 'danger',
+            cancelText: '取消',
+            onOk() {
+                setUsers(prev => prev.filter(u => u.id !== user.id));
+                setAuditLogs(prev => [
+                    {
+                        id: `LOG_DEL_${user.id}_${Date.now()}`,
+                        key: `LOG_DEL_${user.id}_${Date.now()}`,
+                        operator: 'admin_system',
+                        operatorName: '张**',
+                        action: '删除用户',
+                        targetType: 'user',
+                        targetId: user.id,
+                        targetName: user.username,
+                        result: 'success',
+                        details: `删除用户 ${user.realName}（${user.username}）`,
+                        timestamp: new Date().toLocaleString(),
+                        riskLevel: 'medium'
+                    },
+                    ...prev
+                ]);
+                message.success('用户已删除');
+            }
+        });
     };
 
     // Tab页面内容
