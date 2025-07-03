@@ -43,7 +43,7 @@ const PersonalCenter = () => {
         'audit-flow': { enabled: true, label: '审核流程管理', level: 2, parent: 'audit-management' },
         'exhibition-management': { enabled: true, label: '展会管理', level: 1 },
         'booth': { enabled: true, label: '展位管理', level: 2, parent: 'exhibition-management' },
-        'exhibitor': { enabled: true, label: '参展公司管理', level: 2, parent: 'exhibition-management' },
+        'exhibitor': { enabled: true, label: '展商管理', level: 2, parent: 'exhibition-management' },
         'exhibitor-maintenance': { enabled: true, label: '展商维护', level: 2, parent: 'exhibition-management' },
         'live': { enabled: true, label: '论坛直播', level: 2, parent: 'exhibition-management' },
         'operation-statistics': { enabled: true, label: '运营管理', level: 1 },

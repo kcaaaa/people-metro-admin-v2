@@ -124,8 +124,8 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                 {
                     key: 'exhibitor',
                     icon: '🏭',
-                    label: '参展公司管理',
-                    title: '参展公司信息管理与审核',
+                    label: '展商管理',
+                    title: '展商信息管理与审核',
                     page: 'ExhibitorManagement'
                 },
                 {

@@ -467,7 +467,7 @@ const ExhibitorManagement = () => {
             link.click();
             document.body.removeChild(link);
             
-            message.success('导入模板下载成功');
+            message.success('展商导入模板下载成功');
         }
     };
 
@@ -737,14 +737,14 @@ const ExhibitorManagement = () => {
                     margin: '0 0 8px 0',
                     color: '#333'
                 }
-            }, '参展公司管理'),
+            }, '展商管理'),
             React.createElement('div', {
                 key: 'description',
                 style: { 
                     color: '#666', 
                     fontSize: '14px'
                 }
-            }, '管理展会参展公司信息，包括公司资料、展位分配、审核状态等')
+            }, '管理展会展商信息，包括公司资料、展位分配、审核状态等')
         ]),
 
         // 统计卡片
