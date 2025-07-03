@@ -896,7 +896,12 @@ const UserManagement = () => {
                     danger: true,
                     disabled: selectedRows.length === 0,
                     onClick: () => handleBatchUserOperation('suspend')
-                }, `批量停用 (${selectedRows.length})`)
+                }, `批量停用 (${selectedRows.length})`),
+                React.createElement(Button, {
+                    danger: true,
+                    disabled: selectedRows.length === 0,
+                    onClick: () => handleBatchUserOperation('delete')
+                }, `批量删除 (${selectedRows.length})`)
             );
         }
 
@@ -909,17 +914,67 @@ const UserManagement = () => {
             message.warning('请选择要操作的用户');
             return;
         }
-
-        const actionText = action === 'activate' ? '激活' : '停用';
+        let actionText = '';
+        let updateFn = null;
+        if (action === 'activate') {
+            actionText = '激活';
+            updateFn = u => selectedRows.includes(u.id) ? { ...u, status: 'active' } : u;
+        } else if (action === 'suspend') {
+            actionText = '停用';
+            updateFn = u => selectedRows.includes(u.id) ? { ...u, status: 'suspended' } : u;
+        } else if (action === 'delete') {
+            actionText = '删除';
+            updateFn = u => !selectedRows.includes(u.id);
+        }
         Modal.confirm({
             title: `确认${actionText}选中的用户？`,
             content: `将对 ${selectedRows.length} 个用户执行${actionText}操作`,
             onOk: () => {
                 setLoading(true);
                 setTimeout(() => {
+                    if (action === 'delete') {
+                        setUsers(prev => prev.filter(u => !selectedRows.includes(u.id)));
+                        setAuditLogs(prev => [
+                            {
+                                id: `LOG_BATCHDEL_${Date.now()}`,
+                                key: `LOG_BATCHDEL_${Date.now()}`,
+                                operator: 'admin_system',
+                                operatorName: '张**',
+                                action: '批量删除用户',
+                                targetType: 'user',
+                                targetId: selectedRows.join(','),
+                                targetName: '',
+                                result: 'success',
+                                details: `批量删除用户ID: ${selectedRows.join(', ')}`,
+                                timestamp: new Date().toLocaleString(),
+                                riskLevel: 'high'
+                            },
+                            ...prev
+                        ]);
+                        message.success(`已删除 ${selectedRows.length} 个用户`);
+                    } else {
+                        setUsers(prev => prev.map(updateFn));
+                        setAuditLogs(prev => [
+                            {
+                                id: `LOG_BATCH_${action}_${Date.now()}`,
+                                key: `LOG_BATCH_${action}_${Date.now()}`,
+                                operator: 'admin_system',
+                                operatorName: '张**',
+                                action: `批量${actionText}用户`,
+                                targetType: 'user',
+                                targetId: selectedRows.join(','),
+                                targetName: '',
+                                result: 'success',
+                                details: `批量${actionText}用户ID: ${selectedRows.join(', ')}`,
+                                timestamp: new Date().toLocaleString(),
+                                riskLevel: 'medium'
+                            },
+                            ...prev
+                        ]);
+                        message.success(`已${actionText} ${selectedRows.length} 个用户`);
+                    }
                     setSelectedRows([]);
-                    loadUsers();
-                    message.success(`已${actionText} ${selectedRows.length} 个用户`);
+                    setLoading(false);
                 }, 1000);
             }
         });
@@ -1567,9 +1622,74 @@ const UserManagement = () => {
                 form: form,
                 layout: 'vertical',
                 onFinish: (values) => {
-                    message.success(currentUser ? '用户信息已更新' : '用户创建成功');
-                            setModalVisible(false);
-                            loadUsers();
+                    if (currentUser) {
+                        // 编辑
+                        setUsers(prev => prev.map(u => u.id === currentUser.id ? { ...u, ...values } : u));
+                        setAuditLogs(prev => [
+                            {
+                                id: `LOG_EDIT_${currentUser.id}_${Date.now()}`,
+                                key: `LOG_EDIT_${currentUser.id}_${Date.now()}`,
+                                operator: 'admin_system',
+                                operatorName: '张**',
+                                action: '编辑用户',
+                                targetType: 'user',
+                                targetId: currentUser.id,
+                                targetName: currentUser.username,
+                                result: 'success',
+                                details: `编辑用户 ${currentUser.realName}（${currentUser.username}）信息`,
+                                timestamp: new Date().toLocaleString(),
+                                riskLevel: 'medium'
+                            },
+                            ...prev
+                        ]);
+                        message.success('用户信息已更新');
+                    } else {
+                        // 新增
+                        const newId = 'U' + (Math.floor(Math.random() * 9000) + 1000);
+                        const now = new Date();
+                        const newUser = {
+                            ...values,
+                            id: newId,
+                            key: newId,
+                            status: 'active',
+                            registerTime: now.toLocaleString(),
+                            lastLogin: '',
+                            loginCount: 0,
+                            riskLevel: 'low',
+                            certification: 'unverified',
+                            securityLevel: 'low',
+                            orgId: null,
+                            orgName: '个人用户',
+                            roles: ['普通用户'],
+                            permissions: ['content:view'],
+                            importSource: 'manual',
+                            importTime: now.toLocaleString(),
+                            twoFactorAuth: false,
+                            accountLocked: false,
+                            loginFailureCount: 0,
+                            passwordExpiry: '',
+                        };
+                        setUsers(prev => [newUser, ...prev]);
+                        setAuditLogs(prev => [
+                            {
+                                id: `LOG_ADD_${newId}_${Date.now()}`,
+                                key: `LOG_ADD_${newId}_${Date.now()}`,
+                                operator: 'admin_system',
+                                operatorName: '张**',
+                                action: '新增用户',
+                                targetType: 'user',
+                                targetId: newId,
+                                targetName: values.username,
+                                result: 'success',
+                                details: `新增用户 ${values.realName}（${values.username}）`,
+                                timestamp: now.toLocaleString(),
+                                riskLevel: 'low'
+                            },
+                            ...prev
+                        ]);
+                        message.success('用户创建成功');
+                    }
+                    setModalVisible(false);
                 }
             }, [
                     React.createElement(Form.Item, {
