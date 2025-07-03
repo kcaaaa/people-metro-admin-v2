@@ -1026,7 +1026,7 @@ const UserManagement = () => {
         {
             title: '操作',
             key: 'actions',
-            width: 320,
+            width: 400,
             render: (record) => React.createElement(Space, { size: 'small' }, [
                 React.createElement(Button, {
                     key: 'detail',
@@ -1046,6 +1046,12 @@ const UserManagement = () => {
                     size: 'small',
                     onClick: () => resetPassword(record)
                 }, '重置密码'),
+                React.createElement(Button, {
+                    key: 'assignRole',
+                    type: 'link',
+                    size: 'small',
+                    onClick: () => assignRolePermission(record)
+                }, '分配角色/权限'),
                 record.status === 'active' ? 
                     React.createElement(Button, {
                         key: 'suspend',
@@ -1268,6 +1274,73 @@ const UserManagement = () => {
                     ...prev
                 ]);
             }
+        });
+    };
+
+    // 分配角色/权限
+    const assignRolePermission = (user) => {
+        let selectedRoles = user.roles || [];
+        let selectedPerms = user.permissions || [];
+        let tempRoles = [...selectedRoles];
+        let tempPerms = [...selectedPerms];
+        let modal;
+        const handleOk = () => {
+            setUsers(prev => prev.map(u => u.id === user.id ? { ...u, roles: tempRoles, permissions: tempPerms } : u));
+            setAuditLogs(prev => [
+                {
+                    id: `LOG_ASSIGN_${user.id}_${Date.now()}`,
+                    key: `LOG_ASSIGN_${user.id}_${Date.now()}`,
+                    operator: 'admin_system',
+                    operatorName: '张**',
+                    action: '分配角色/权限',
+                    targetType: 'user',
+                    targetId: user.id,
+                    targetName: user.username,
+                    result: 'success',
+                    details: `分配角色[${tempRoles.join(', ')}]，权限[${tempPerms.join(', ')}]`,
+                    timestamp: new Date().toLocaleString(),
+                    riskLevel: 'medium'
+                },
+                ...prev
+            ]);
+            message.success('角色/权限分配成功');
+            modal.destroy();
+        };
+        modal = Modal.confirm({
+            title: `分配角色/权限 - ${user.realName}`,
+            width: 520,
+            icon: null,
+            content: React.createElement('div', {}, [
+                React.createElement(Form, {
+                    key: 'assign-form',
+                    layout: 'vertical',
+                    style: { marginTop: 12 }
+                }, [
+                    React.createElement(Form.Item, { label: '角色', key: 'roles' },
+                        React.createElement(Select, {
+                            mode: 'multiple',
+                            style: { width: '100%' },
+                            defaultValue: selectedRoles,
+                            onChange: (v) => { tempRoles = v; }
+                        }, roles.map(r => React.createElement(Option, { key: r.name, value: r.name }, r.name)))
+                    ),
+                    React.createElement(Form.Item, { label: '权限', key: 'perms' },
+                        React.createElement(Select, {
+                            mode: 'multiple',
+                            style: { width: '100%' },
+                            defaultValue: selectedPerms,
+                            onChange: (v) => { tempPerms = v; }
+                        }, permissions.flatMap(p => [
+                            React.createElement(Option, { key: p.code, value: p.code }, p.name),
+                            ...(p.children ? p.children.map(c => React.createElement(Option, { key: c.code, value: c.code }, c.name)) : [])
+                        ]))
+                    )
+                ])
+            ]),
+            okText: '保存',
+            cancelText: '取消',
+            onOk: handleOk,
+            onCancel: () => modal.destroy()
         });
     };
 
