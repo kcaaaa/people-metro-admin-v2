@@ -762,6 +762,29 @@ const ComplaintManagement = () => {
         });
     };
 
+    // 忽略投诉
+    const handleIgnoreComplaint = (record) => {
+        confirm({
+            title: '确认忽略投诉？',
+            content: `确定要忽略对视频"${record.video_title}"的投诉吗？操作后该投诉将标记为已处理。`,
+            okText: '确认忽略',
+            cancelText: '取消',
+            onOk() {
+                setLoading(true);
+                // 模拟API调用
+                setTimeout(() => {
+                    message.success('投诉已忽略');
+                    // 更新数据状态
+                    const updatedComplaints = complaints.map(item => 
+                        item.id === record.id ? { ...item, status: 'processed', action: 'ignored' } : item
+                    );
+                    setComplaints(updatedComplaints);
+                    setLoading(false);
+                }, 1000);
+            }
+        });
+    };
+
     // 表格列定义
     const columns = [
         {
@@ -891,6 +914,13 @@ const ComplaintManagement = () => {
                         }, '解除限流')
                     ]),
                     React.createElement(Space, { key: 'row2', size: 'small' }, [
+                        React.createElement(Button, {
+                            key: 'ignore',
+                            type: 'link',
+                            size: 'small',
+                            disabled: record.status === 'processed',
+                            onClick: () => handleIgnoreComplaint(record)
+                        }, '忽略投诉'),
                         React.createElement(Button, {
                             key: 'remove',
                             type: 'link',
