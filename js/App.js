@@ -33,12 +33,17 @@ const App = () => {
             // 设置用户权限（如果还没有设置）
             const currentPermissions = window.PermissionManager.getCurrentUserPermissions();
             if (!currentPermissions || currentPermissions.length === 0) {
-                // 设置默认管理员权限
+                // 设置超级管理员权限
                 window.PermissionManager.setUserPermissions(
                     user.userId, 
-                    ['*', 'content:complaint:view', 'content:complaint:handle'], // 使用正确的权限字符串
+                    ['*'], // 超级管理员拥有所有权限
                     'system'
                 );
+                
+                // 设置默认角色为超级管理员
+                if (window.PermissionManager.setDefaultPermissionsByRole) {
+                    window.PermissionManager.setDefaultPermissionsByRole('SUPER_ADMIN');
+                }
             }
             
             // 加载初始通知
