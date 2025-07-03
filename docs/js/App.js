@@ -184,7 +184,7 @@ const App = () => {
         console.log('用户退出登录');
         
         // 记录退出日志
-        if (window.StateManager) {
+        if (window.StateManager && user && user.userId) {
             window.StateManager.emit('user:logout', {
                 userId: user.userId,
                 timestamp: new Date().toISOString()
@@ -210,6 +210,9 @@ const App = () => {
         
         // 显示退出成功提示
         message.success('已安全退出系统');
+        
+        // 重定向到登录页面
+        window.location.reload();
     };
 
     // 实时更新通知数据
