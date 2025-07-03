@@ -36,7 +36,7 @@ const App = () => {
                 // 设置默认管理员权限
                 window.PermissionManager.setUserPermissions(
                     user.userId, 
-                    ['*'], // 管理员拥有所有权限
+                    ['*', 'complaint'], // 添加 'complaint' 权限
                     'system'
                 );
             }
