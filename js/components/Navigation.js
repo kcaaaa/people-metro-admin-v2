@@ -143,7 +143,6 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             .map(subMenu => 
                 React.createElement(Menu.Item, {
                     key: subMenu.key,
-                    onClick: () => onPageChange(subMenu.key),
                     className: `nav-menu-item ${currentPage === subMenu.key ? 'ant-menu-item-selected' : ''}`
                 }, [
                     React.createElement('span', { 
@@ -276,6 +275,10 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             selectedKeys: getSelectedKeys(),
             openKeys: getOpenKeys(),
             inlineCollapsed: collapsed,
+            onClick: ({ key }) => {
+                console.log('Navigation menu clicked:', key);
+                onPageChange(key);
+            },
             style: {
                 height: '100%',
                 borderRight: 0,
@@ -286,7 +289,6 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             // 首页
             shouldShowMenuItem('dashboard') && React.createElement(Menu.Item, {
                 key: 'dashboard',
-                onClick: () => onPageChange('dashboard'),
                 className: `nav-menu-item ${currentPage === 'dashboard' ? 'ant-menu-item-selected' : ''}`
             }, [
                 React.createElement('span', { 
