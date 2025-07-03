@@ -17,6 +17,50 @@ const PersonalCenter = () => {
     const [userForm] = Form.useForm();
     const [passwordForm] = Form.useForm();
 
+    // 菜单管理状态
+    const [menuConfig, setMenuConfig] = React.useState(() => {
+        const saved = localStorage.getItem('menuConfig');
+        if (saved) {
+            try {
+                return JSON.parse(saved);
+            } catch (e) {
+                console.warn('Failed to parse menu config from localStorage');
+            }
+        }
+        return null;
+    });
+
+    // 默认菜单配置
+    const defaultMenuConfig = {
+        'dashboard': { enabled: true, label: '首页', level: 1 },
+        'content-management': { enabled: true, label: '内容管理', level: 1 },
+        'content': { enabled: true, label: '内容管理', level: 2, parent: 'content-management' },
+        'complaint': { enabled: true, label: '投诉管理', level: 2, parent: 'content-management' },
+        'content-tags': { enabled: true, label: '内容标签', level: 2, parent: 'content-management' },
+        'audit-management': { enabled: true, label: '审核管理', level: 1 },
+        'review': { enabled: true, label: 'AI审核', level: 2, parent: 'audit-management' },
+        'exhibition-audit': { enabled: true, label: '展会内容审核', level: 2, parent: 'audit-management' },
+        'audit-flow': { enabled: true, label: '审核流程管理', level: 2, parent: 'audit-management' },
+        'exhibition-management': { enabled: true, label: '展会管理', level: 1 },
+        'booth': { enabled: true, label: '展位管理', level: 2, parent: 'exhibition-management' },
+        'exhibitor': { enabled: true, label: '参展公司管理', level: 2, parent: 'exhibition-management' },
+        'live': { enabled: true, label: '论坛直播', level: 2, parent: 'exhibition-management' },
+        'operation-statistics': { enabled: true, label: '运营管理', level: 1 },
+        'stats': { enabled: true, label: '行为统计', level: 2, parent: 'operation-statistics' },
+        'operational': { enabled: true, label: '运营数据统计', level: 2, parent: 'operation-statistics' },
+        'data': { enabled: true, label: '运营数据管理', level: 2, parent: 'operation-statistics' },
+        'feedback': { enabled: true, label: '用户反馈管理', level: 2, parent: 'operation-statistics' },
+        'message': { enabled: true, label: '消息管理', level: 2, parent: 'operation-statistics' },
+        'system-management': { enabled: true, label: '系统管理', level: 1 },
+        'user': { enabled: true, label: '用户管理', level: 2, parent: 'system-management' },
+        'admin': { enabled: true, label: '权限管理', level: 2, parent: 'system-management' },
+        'logs': { enabled: true, label: '日志管理', level: 2, parent: 'system-management' },
+        'settings': { enabled: true, label: '系统设置', level: 2, parent: 'system-management' },
+        'version': { enabled: true, label: 'APP版本管理', level: 2, parent: 'system-management' },
+        'traffic': { enabled: true, label: '流量分配', level: 2, parent: 'system-management' },
+        'menu': { enabled: true, label: '菜单管理', level: 2, parent: 'system-management' }
+    };
+
     // 模拟用户数据
     const mockUserInfo = {
         userId: 1,
@@ -237,6 +281,86 @@ const PersonalCenter = () => {
             return false;
         }
         return false; // 阻止自动上传，手动处理
+    };
+
+    // 获取当前菜单配置
+    const getCurrentMenuConfig = () => {
+        return menuConfig || defaultMenuConfig;
+    };
+
+    // 保存菜单配置
+    const saveMenuConfig = (config) => {
+        try {
+            localStorage.setItem('menuConfig', JSON.stringify(config));
+            setMenuConfig(config);
+            
+            // 触发菜单配置变更事件
+            window.dispatchEvent(new Event('menuConfigChanged'));
+            
+            message.success('菜单配置保存成功！');
+        } catch (error) {
+            console.error('保存菜单配置失败:', error);
+            message.error('保存失败，请重试');
+        }
+    };
+
+    // 切换菜单项状态
+    const toggleMenuItem = (key) => {
+        const currentConfig = getCurrentMenuConfig();
+        const newConfig = {
+            ...currentConfig,
+            [key]: {
+                ...currentConfig[key],
+                enabled: !currentConfig[key]?.enabled
+            }
+        };
+        
+        // 如果禁用一级菜单，自动禁用其子菜单
+        if (currentConfig[key]?.level === 1 && !newConfig[key].enabled) {
+            Object.keys(newConfig).forEach(subKey => {
+                if (newConfig[subKey].parent === key) {
+                    newConfig[subKey] = {
+                        ...newConfig[subKey],
+                        enabled: false
+                    };
+                }
+            });
+        }
+        
+        // 如果启用子菜单，自动启用其父菜单
+        if (currentConfig[key]?.level === 2 && newConfig[key].enabled) {
+            const parentKey = currentConfig[key].parent;
+            if (parentKey && newConfig[parentKey]) {
+                newConfig[parentKey] = {
+                    ...newConfig[parentKey],
+                    enabled: true
+                };
+            }
+        }
+        
+        saveMenuConfig(newConfig);
+    };
+
+    // 批量操作
+    const handleBatchOperation = (operation) => {
+        const currentConfig = getCurrentMenuConfig();
+        const newConfig = { ...currentConfig };
+        
+        Object.keys(newConfig).forEach(key => {
+            switch (operation) {
+                case 'enableAll':
+                    newConfig[key] = { ...newConfig[key], enabled: true };
+                    break;
+                case 'disableAll':
+                    newConfig[key] = { ...newConfig[key], enabled: false };
+                    break;
+                case 'resetDefault':
+                    newConfig[key] = { ...defaultMenuConfig[key] };
+                    break;
+            }
+        });
+        
+        saveMenuConfig(newConfig);
     };
 
     // 渲染基本信息标签页
@@ -786,6 +910,196 @@ const PersonalCenter = () => {
         ]);
     };
 
+    // 渲染菜单管理标签页
+    const renderMenuManagement = () => {
+        const currentConfig = getCurrentMenuConfig();
+        const enabledCount = Object.values(currentConfig).filter(item => item.enabled).length;
+        const totalCount = Object.keys(currentConfig).length;
+        
+        // 构建树形数据
+        const buildTreeData = () => {
+            const level1Items = Object.entries(currentConfig)
+                .filter(([key, config]) => config.level === 1)
+                .map(([key, config]) => {
+                    const children = Object.entries(currentConfig)
+                        .filter(([childKey, childConfig]) => childConfig.parent === key)
+                        .map(([childKey, childConfig]) => ({
+                            key: childKey,
+                            title: React.createElement('div', {
+                                style: { 
+                                    display: 'flex', 
+                                    justifyContent: 'space-between', 
+                                    alignItems: 'center',
+                                    width: '100%'
+                                }
+                            }, [
+                                React.createElement('span', {
+                                    key: 'label',
+                                    style: { 
+                                        textDecoration: childConfig.enabled ? 'none' : 'line-through',
+                                        color: childConfig.enabled ? '#333' : '#999'
+                                    }
+                                }, `└─ ${childConfig.label}`),
+                                React.createElement('div', { key: 'switch' }, React.createElement(antd.Switch, {
+                                    size: 'small',
+                                    checked: childConfig.enabled,
+                                    onChange: () => toggleMenuItem(childKey)
+                                }))
+                            ])
+                        }));
+                    
+                    return {
+                        key: key,
+                        title: React.createElement('div', {
+                            style: { 
+                                display: 'flex', 
+                                justifyContent: 'space-between', 
+                                alignItems: 'center',
+                                width: '100%'
+                            }
+                        }, [
+                            React.createElement('span', {
+                                key: 'label',
+                                style: { 
+                                    fontWeight: 'bold',
+                                    textDecoration: config.enabled ? 'none' : 'line-through',
+                                    color: config.enabled ? '#333' : '#999'
+                                }
+                            }, config.label),
+                            React.createElement('div', { key: 'switch' }, React.createElement(antd.Switch, {
+                                checked: config.enabled,
+                                onChange: () => toggleMenuItem(key)
+                            }))
+                        ]),
+                        children: children
+                    };
+                });
+            
+            return level1Items;
+        };
+
+        return React.createElement('div', {}, [
+            React.createElement(Alert, {
+                key: 'tip',
+                message: '菜单管理',
+                description: '控制系统导航菜单的显示和隐藏。这是系统管理功能的备用入口，即使系统管理被隐藏也能使用。',
+                type: 'warning',
+                showIcon: true,
+                style: { marginBottom: 24 }
+            }),
+            
+            React.createElement(Row, { key: 'stats', gutter: 16, style: { marginBottom: 24 } }, [
+                React.createElement(Col, { key: 'enabled', span: 6 },
+                    React.createElement(Card, { size: 'small' }, [
+                        React.createElement('div', { key: 'content', style: { textAlign: 'center' } }, [
+                            React.createElement('div', { 
+                                key: 'number',
+                                style: { fontSize: 24, fontWeight: 'bold', color: '#52c41a' } 
+                            }, enabledCount),
+                            React.createElement('div', { 
+                                key: 'label',
+                                style: { color: '#666' } 
+                            }, '启用菜单')
+                        ])
+                    ])
+                ),
+                React.createElement(Col, { key: 'disabled', span: 6 },
+                    React.createElement(Card, { size: 'small' }, [
+                        React.createElement('div', { key: 'content', style: { textAlign: 'center' } }, [
+                            React.createElement('div', { 
+                                key: 'number',
+                                style: { fontSize: 24, fontWeight: 'bold', color: '#ff4d4f' } 
+                            }, totalCount - enabledCount),
+                            React.createElement('div', { 
+                                key: 'label',
+                                style: { color: '#666' } 
+                            }, '禁用菜单')
+                        ])
+                    ])
+                ),
+                React.createElement(Col, { key: 'total', span: 6 },
+                    React.createElement(Card, { size: 'small' }, [
+                        React.createElement('div', { key: 'content', style: { textAlign: 'center' } }, [
+                            React.createElement('div', { 
+                                key: 'number',
+                                style: { fontSize: 24, fontWeight: 'bold', color: '#1890ff' } 
+                            }, totalCount),
+                            React.createElement('div', { 
+                                key: 'label',
+                                style: { color: '#666' } 
+                            }, '菜单总数')
+                        ])
+                    ])
+                ),
+                React.createElement(Col, { key: 'rate', span: 6 },
+                    React.createElement(Card, { size: 'small' }, [
+                        React.createElement('div', { key: 'content', style: { textAlign: 'center' } }, [
+                            React.createElement('div', { 
+                                key: 'number',
+                                style: { fontSize: 24, fontWeight: 'bold', color: '#faad14' } 
+                            }, `${Math.round(enabledCount / totalCount * 100)}%`),
+                            React.createElement('div', { 
+                                key: 'label',
+                                style: { color: '#666' } 
+                            }, '启用率')
+                        ])
+                    ])
+                )
+            ]),
+            
+            React.createElement(Card, { key: 'controls' }, [
+                React.createElement('div', {
+                    key: 'header',
+                    style: { 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center',
+                        marginBottom: 16 
+                    }
+                }, [
+                    React.createElement('h3', { 
+                        key: 'title',
+                        style: { margin: 0 } 
+                    }, '菜单配置'),
+                    React.createElement('div', { key: 'buttons' }, [
+                        React.createElement(Button, {
+                            key: 'enableAll',
+                            size: 'small',
+                            onClick: () => handleBatchOperation('enableAll'),
+                            style: { marginRight: 8 }
+                        }, '全部启用'),
+                        React.createElement(Button, {
+                            key: 'disableAll',
+                            size: 'small',
+                            onClick: () => handleBatchOperation('disableAll'),
+                            style: { marginRight: 8 }
+                        }, '全部禁用'),
+                        React.createElement(Button, {
+                            key: 'reset',
+                            size: 'small',
+                            type: 'primary',
+                            onClick: () => {
+                                Modal.confirm({
+                                    title: '确认重置',
+                                    content: '确定要重置为默认菜单配置吗？此操作将恢复所有菜单项的显示。',
+                                    onOk: () => handleBatchOperation('resetDefault')
+                                });
+                            }
+                        }, '重置默认')
+                    ])
+                ]),
+                
+                React.createElement(antd.Tree, {
+                    key: 'tree',
+                    treeData: buildTreeData(),
+                    defaultExpandAll: true,
+                    showLine: true,
+                    style: { padding: 16, background: '#fafafa', borderRadius: 6 }
+                })
+            ])
+        ]);
+    };
+
     const tabItems = [
         {
             key: 'userinfo',
@@ -826,6 +1140,14 @@ const PersonalCenter = () => {
                 React.createElement('span', { key: 'text' }, '操作日志')
             ]),
             children: renderOperationLogs()
+        },
+        {
+            key: 'menuManagement',
+            label: React.createElement('span', {}, [
+                React.createElement('span', { key: 'icon', style: { marginRight: 8 } }, '🗂️'),
+                React.createElement('span', { key: 'text' }, '菜单管理')
+            ]),
+            children: renderMenuManagement()
         }
     ];
 
