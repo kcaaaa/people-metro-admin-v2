@@ -1026,7 +1026,7 @@ const UserManagement = () => {
         {
             title: '操作',
             key: 'actions',
-            width: 260,
+            width: 320,
             render: (record) => React.createElement(Space, { size: 'small' }, [
                 React.createElement(Button, {
                     key: 'detail',
@@ -1040,6 +1040,12 @@ const UserManagement = () => {
                     size: 'small',
                     onClick: () => editUser(record)
                 }, '编辑'),
+                React.createElement(Button, {
+                    key: 'resetPwd',
+                    type: 'link',
+                    size: 'small',
+                    onClick: () => resetPassword(record)
+                }, '重置密码'),
                 record.status === 'active' ? 
                     React.createElement(Button, {
                         key: 'suspend',
@@ -1222,6 +1228,45 @@ const UserManagement = () => {
                     ...prev
                 ]);
                 message.success('用户已删除');
+            }
+        });
+    };
+
+    // 重置密码
+    const resetPassword = (user) => {
+        Modal.confirm({
+            title: '重置密码',
+            content: `确定要重置用户 \"${user.realName}\" 的登录密码？`,
+            okText: '重置',
+            okType: 'primary',
+            cancelText: '取消',
+            onOk() {
+                // 生成新密码（简单模拟）
+                const newPwd = 'P@' + Math.random().toString(36).slice(-8);
+                message.success({
+                    content: React.createElement('span', {}, [
+                        '密码已重置，新密码：',
+                        React.createElement('b', { style: { color: '#faad14', marginLeft: 4 } }, newPwd)
+                    ]),
+                    duration: 6
+                });
+                setAuditLogs(prev => [
+                    {
+                        id: `LOG_RSTPWD_${user.id}_${Date.now()}`,
+                        key: `LOG_RSTPWD_${user.id}_${Date.now()}`,
+                        operator: 'admin_system',
+                        operatorName: '张**',
+                        action: '重置密码',
+                        targetType: 'user',
+                        targetId: user.id,
+                        targetName: user.username,
+                        result: 'success',
+                        details: `重置用户 ${user.realName}（${user.username}）密码，新密码：${newPwd}`,
+                        timestamp: new Date().toLocaleString(),
+                        riskLevel: 'high'
+                    },
+                    ...prev
+                ]);
             }
         });
     };
