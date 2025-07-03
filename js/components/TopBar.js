@@ -14,6 +14,7 @@ const TopBar = ({ currentPage, user, notifications, onNotificationClick, onLogou
         'audit-flow': { title: '审核流程', breadcrumb: ['审核管理', '审核流程'] },
         'booth': { title: '展位管理', breadcrumb: ['展会管理', '展位管理'] },
         'exhibitor': { title: '参展公司管理', breadcrumb: ['展会管理', '参展公司管理'] },
+        'exhibitor-maintenance': { title: '展商维护', breadcrumb: ['展会管理', '展商维护'] },
         'live': { title: '论坛直播', breadcrumb: ['展会管理', '论坛直播'] },
         'stats': { title: '行为统计', breadcrumb: ['运营管理', '行为统计'] },
         'operational': { title: '运营数据统计', breadcrumb: ['运营管理', '运营数据统计'] },

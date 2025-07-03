@@ -248,6 +248,8 @@ const App = () => {
             'BoothManagement': window.BoothManagement,
             'exhibitor': window.ExhibitorManagement,
             'ExhibitorManagement': window.ExhibitorManagement,
+            'exhibitor-maintenance': window.ExhibitorMaintenance,
+            'ExhibitorMaintenance': window.ExhibitorMaintenance,
             'live': window.LiveManagement,
             'LiveManagement': window.LiveManagement,
             'stats': window.BehaviorStats,
