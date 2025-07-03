@@ -1,6 +1,6 @@
 // 简洁白色系统主应用组件 - 集成状态管理和权限控制
 const App = () => {
-    const { Layout } = antd;
+    const { Layout, message } = antd;
     const { Sider, Header, Content } = Layout;
     
     const [currentPage, setCurrentPage] = React.useState('dashboard');
