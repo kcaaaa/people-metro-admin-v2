@@ -194,15 +194,22 @@ const App = () => {
         // 清理本地数据
         localStorage.removeItem('user');
         localStorage.removeItem('token');
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('userData');
+        localStorage.removeItem('userPreferences');
+        localStorage.removeItem('recentActions');
         
-        // 清理状态管理器（可选）
+        // 清理状态管理器
         if (window.StateManager) {
-            // window.StateManager.clearAllState(); // 根据需要决定是否清理所有状态
+            window.StateManager.clearAllState();
         }
         
-        setTimeout(() => {
-            window.location.reload();
-        }, 500);
+        // 更新状态
+        setUser(null);
+        setCurrentPage('dashboard');
+        
+        // 显示退出成功提示
+        message.success('已安全退出系统');
     };
 
     // 实时更新通知数据
