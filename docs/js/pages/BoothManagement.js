@@ -306,7 +306,7 @@ const BoothManagement = () => {
     // 渲染分区列表
     const renderAreasList = () => {
         const currentAreas = boothData.areas.filter(area => area.floorId === selectedFloor.id);
-        
+
         return React.createElement('div', {}, [
             React.createElement(Alert, {
                 key: 'area-info',
@@ -358,7 +358,7 @@ const BoothManagement = () => {
                     style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
                 }, [
                     React.createElement('span', { key: 'title' }, `${selectedVenue.name} - ${selectedFloor.name} - ${selectedArea.name} - 展位管理`),
-                    React.createElement(Button, {
+                            React.createElement(Button, {
                         key: 'back',
                         onClick: () => navigateToAreas(selectedFloor),
                         icon: React.createElement('span', { className: 'anticon' }, '←'),
@@ -950,7 +950,7 @@ const BoothManagement = () => {
                 type: 'primary',
                 htmlType: 'submit',
                 loading: false
-                       }, '保存'))
+            }, '保存'))
         ])),
         BoothDetailsModal(),
         renderAreaSelectModal()

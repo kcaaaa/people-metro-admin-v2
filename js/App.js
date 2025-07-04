@@ -223,6 +223,9 @@ const App = () => {
         }
     }, [notifications.length]);
 
+    // 页面组件导入
+    const LiveStatsManagement = window.LiveStatsManagement;
+
     // 页面组件映射
     const getPageComponent = () => {
         const pageComponents = {
@@ -252,6 +255,7 @@ const App = () => {
             'ExhibitorMaintenance': window.ExhibitorMaintenance,
             'live': window.LiveManagement,
             'LiveManagement': window.LiveManagement,
+            'live-stats': window.LiveStatsManagement,
             'stats': window.BehaviorStats,
             'BehaviorStats': window.BehaviorStats,
             'operational': window.OperationalStats,

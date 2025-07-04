@@ -3,816 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="version" content="2.2-ruoyi-style">
     <title>人民城轨2.0运营管理后台</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚇</text></svg>">
     
-    <!-- Ant Design CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@4.24.15/dist/antd.min.css">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Page-specific CSS -->
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="vendor/css/antd.min.css">
     <link rel="stylesheet" href="js/pages/LiveManagement.css">
     
-    <!-- Clean White System CSS -->
-    <style>
-        /* ========================================= */
-        /* === CLEAN WHITE SYSTEM DESIGN === */
-        /* ========================================= */
-        
-        /* --- 1. CSS Variables --- */
-        :root {
-            /* Primary Colors - 亮蓝色系 */
-            --primary-color: #1890ff;
-            --primary-hover: #40a9ff;
-            --primary-active: #096dd9;
-            --primary-light: #e6f7ff;
-            
-            /* Text Colors - 深色系 */
-            --text-primary: #333333;
-            --text-secondary: #666666;
-            --text-tertiary: #999999;
-            --text-disabled: #cccccc;
-            
-            /* Background Colors - 白色系 */
-            --bg-white: #ffffff;
-            --bg-light: #fafafa;
-            --bg-lighter: #f5f5f5;
-            --bg-nav: #f8f9fa;
-            
-            /* Border Colors */
-            --border-color: #e8e8e8;
-            --border-light: #f0f0f0;
-            
-            /* Status Colors */
-            --success-color: #52c41a;
-            --warning-color: #faad14;
-            --error-color: #ff4d4f;
-            --info-color: #1890ff;
-            
-            /* Shadows */
-            --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.08);
-            --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --shadow-heavy: 0 6px 16px rgba(0, 0, 0, 0.12);
-            
-            /* Layout */
-            --sidebar-width: 260px;
-            --sidebar-collapsed-width: 64px;
-            --header-height: 60px;
-        }
-
-        /* --- 2. Reset & Base Styles --- */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
-        html, body {
-            height: 100%;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            font-size: 14px;
-            line-height: 1.5;
-            color: var(--text-primary);
-            background: var(--bg-white);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* --- 3. Layout System --- */
-        .app-container {
-            display: flex;
-            height: 100vh;
-            width: 100vw;
-            background: var(--bg-white);
-        }
-
-        /* === 4. Sidebar Styles === */
-        .main-nav {
-            width: var(--sidebar-width);
-            min-width: var(--sidebar-width);
-            background: var(--bg-nav);
-            height: 100vh;
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            z-index: 1001;
-            transition: all 0.2s ease;
-        }
-
-        .main-nav.collapsed {
-            width: var(--sidebar-collapsed-width);
-            min-width: var(--sidebar-collapsed-width);
-        }
-
-        .main-nav .nav-header {
-            height: var(--header-height);
-            background: var(--bg-white);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 16px;
-            position: relative;
-        }
-
-        .main-nav .nav-logo {
-            display: flex;
-            align-items: center;
-            color: var(--text-primary);
-            font-size: 18px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .main-nav .nav-logo:hover {
-            color: var(--primary-color);
-        }
-
-        .main-nav .nav-logo .logo-icon {
-            font-size: 24px;
-            margin-right: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            background: var(--primary-color);
-            border-radius: 6px;
-            transition: all 0.3s ease;
-        }
-
-        .main-nav .nav-logo:hover .logo-icon {
-            background: var(--primary-hover);
-            transform: scale(1.05);
-        }
-
-        .main-nav.collapsed .nav-logo .logo-text {
-            opacity: 0;
-            width: 0;
-            overflow: hidden;
-        }
-
-        .main-nav .nav-toggle {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--bg-light);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 6px;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-            font-size: 12px;
-        }
-
-        .main-nav .nav-toggle:hover {
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-            background: var(--primary-light);
-        }
-
-        /* === 5. Navigation Menu Styles === */
-        .main-nav .ant-menu {
-            background: transparent !important;
-            border: none !important;
-            color: var(--text-primary) !important;
-            font-size: 14px;
-            flex: 1;
-            padding: 8px;
-        }
-
-        .main-nav .ant-menu-item {
-            margin: 0 0 4px 0 !important;
-            border-radius: 6px !important;
-            height: 40px !important;
-            line-height: 40px !important;
-            padding: 0 16px !important;
-            display: flex !important;
-            align-items: center !important;
-            color: var(--text-primary) !important;
-            transition: all 0.2s ease !important;
-            border: none !important;
-        }
-
-        .main-nav .ant-menu-item:hover {
-            background: var(--primary-light) !important;
-            color: var(--primary-color) !important;
-        }
-
-        .main-nav .ant-menu-item-selected {
-            background: var(--primary-color) !important;
-            color: var(--bg-white) !important;
-            font-weight: 500;
-        }
-
-        .main-nav .ant-menu-submenu-title {
-            margin: 0 0 4px 0 !important;
-            border-radius: 6px !important;
-            height: 40px !important;
-            line-height: 40px !important;
-            padding: 0 16px !important;
-            color: var(--text-primary) !important;
-            transition: all 0.2s ease !important;
-            border: none !important;
-        }
-
-        .main-nav .ant-menu-submenu-title:hover {
-            background: var(--bg-lighter) !important;
-            color: var(--primary-color) !important;
-        }
-
-        .main-nav .ant-menu-submenu-open > .ant-menu-submenu-title {
-            background: var(--bg-lighter) !important;
-            color: var(--primary-color) !important;
-        }
-
-        .main-nav .ant-menu-sub {
-            background: var(--bg-white) !important;
-            border-radius: 6px !important;
-            margin: 4px 0 !important;
-            box-shadow: var(--shadow-light) !important;
-        }
-
-        .main-nav .ant-menu-sub .ant-menu-item {
-            margin: 2px 8px !important;
-            padding-left: 32px !important;
-            font-size: 13px !important;
-            height: 36px !important;
-            line-height: 36px !important;
-        }
-
-        .main-nav .ant-menu-item .nav-icon {
-            font-size: 16px;
-            width: 20px;
-            margin-right: 12px;
-            text-align: center;
-            transition: all 0.2s ease;
-        }
-
-        .main-nav.collapsed .ant-menu-item {
-            padding: 0 16px !important;
-            justify-content: center;
-        }
-
-        .main-nav.collapsed .ant-menu-item .nav-icon {
-            margin-right: 0;
-            font-size: 18px;
-        }
-
-        /* === 6. Main Content Area === */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-            background: var(--bg-white);
-        }
-
-        /* === 7. Top Bar Styles === */
-        .top-bar {
-            background: var(--bg-white);
-            border-bottom: 1px solid var(--border-color);
-            padding: 0 24px;
-            height: var(--header-height);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
-            z-index: 1000;
-            box-shadow: var(--shadow-light);
-        }
-        
-        .top-bar-left, .top-bar-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .top-bar-left .breadcrumb {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .top-bar-left .breadcrumb .current-page {
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        .top-bar-right .user-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .top-bar-right .user-info:hover {
-            background: var(--bg-light);
-        }
-
-        .top-bar-right .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 500;
-        }
-
-        /* === 8. Content Wrapper === */
-        .content-wrapper {
-            flex: 1;
-            padding: 24px;
-            overflow-y: auto;
-            background: var(--bg-light);
-        }
-
-        .page-content {
-            background: var(--bg-white);
-            border-radius: 8px;
-            padding: 24px;
-            box-shadow: var(--shadow-light);
-            border: 1px solid var(--border-light);
-            min-height: calc(100vh - 108px);
-        }
-
-        /* === 9. Page Header === */
-        .page-header {
-            background: var(--bg-white);
-            padding: 24px;
-            margin-bottom: 24px;
-            border-radius: 8px;
-            box-shadow: var(--shadow-light);
-            border: 1px solid var(--border-light);
-        }
-
-        .page-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin: 0 0 8px 0;
-        }
-
-        .page-description {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin: 0;
-            line-height: 1.5;
-        }
-
-        /* ======================================== */
-        /* === ANT DESIGN COMPONENT OVERRIDES === */
-        /* ======================================== */
-        
-        /* Layout Components */
-        .ant-layout {
-            background: var(--bg-white) !important;
-        }
-
-        .ant-layout-sider {
-            background: var(--bg-nav) !important;
-        }
-
-        .ant-layout-content {
-            background: var(--bg-light) !important;
-        }
-
-        /* Card Components */
-        .ant-card {
-            background: var(--bg-white) !important;
-            border-radius: 8px !important;
-            border: 1px solid var(--border-light) !important;
-            box-shadow: var(--shadow-light) !important;
-            margin-bottom: 16px;
-            transition: all 0.2s ease;
-        }
-
-        .ant-card:hover {
-            box-shadow: var(--shadow-medium) !important;
-            border-color: var(--primary-color) !important;
-        }
-
-        .ant-card-head {
-            border-bottom: 1px solid var(--border-light) !important;
-            padding: 0 24px !important;
-            min-height: 56px !important;
-            background: var(--bg-white) !important;
-        }
-
-        .ant-card-head-title {
-            font-size: 16px !important;
-            font-weight: 600 !important;
-            color: var(--text-primary) !important;
-        }
-
-        .ant-card-body {
-            padding: 24px !important;
-        }
-
-        /* Table Components */
-        .ant-table-wrapper {
-            background: var(--bg-white) !important;
-            border-radius: 8px !important;
-            overflow: hidden;
-            box-shadow: var(--shadow-light) !important;
-            border: 1px solid var(--border-light);
-        }
-
-        .ant-table {
-            background: transparent !important;
-        }
-
-        .ant-table-thead > tr > th {
-            background: var(--bg-light) !important;
-            border-bottom: 1px solid var(--border-color) !important;
-            font-weight: 600 !important;
-            color: var(--text-primary) !important;
-            font-size: 14px;
-            padding: 16px !important;
-        }
-
-        .ant-table-tbody > tr > td {
-            border-bottom: 1px solid var(--border-light) !important;
-            padding: 16px !important;
-            color: var(--text-primary) !important;
-        }
-
-        .ant-table-tbody > tr:hover > td {
-            background: var(--primary-light) !important;
-        }
-
-        /* Button Components */
-        .ant-btn {
-            border-radius: 6px !important;
-            font-weight: 400 !important;
-            height: 32px !important;
-            padding: 0 16px !important;
-            font-size: 14px !important;
-            transition: all 0.2s ease !important;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .ant-btn:hover, .ant-btn:focus {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-medium) !important;
-        }
-
-        .ant-btn-primary {
-            background: var(--primary-color) !important;
-            border-color: var(--primary-color) !important;
-        }
-
-        .ant-btn-primary:hover, .ant-btn-primary:focus {
-            background: var(--primary-hover) !important;
-            border-color: var(--primary-hover) !important;
-        }
-
-        /* Form Components */
-        .ant-form-item-label > label {
-            font-weight: 500 !important;
-            color: var(--text-primary) !important;
-        }
-
-        .ant-input, .ant-select-selector {
-            border-radius: 6px !important;
-            border-color: var(--border-color) !important;
-            transition: all 0.2s ease !important;
-        }
-
-        .ant-input:hover, .ant-select-selector:hover {
-            border-color: var(--primary-color) !important;
-        }
-
-        .ant-input:focus, .ant-input-focused, .ant-select-focused .ant-select-selector {
-            border-color: var(--primary-color) !important;
-            box-shadow: 0 0 0 2px var(--primary-light) !important;
-        }
-
-        /* Modal Components */
-        .ant-modal-content {
-            border-radius: 8px !important;
-            overflow: hidden;
-        }
-
-        .ant-modal-header {
-            background: var(--bg-white) !important;
-            border-bottom: 1px solid var(--border-light) !important;
-            padding: 16px 24px !important;
-        }
-
-        .ant-modal-title {
-            font-size: 16px !important;
-            font-weight: 600 !important;
-            color: var(--text-primary) !important;
-        }
-
-        .ant-modal-body {
-            padding: 24px !important;
-        }
-
-        /* ================================ */
-        /* === UTILITY CLASSES === */
-        /* ================================ */
-        
-        /* Loading States */
-        .loading-spinner {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-            background: var(--bg-white);
-        }
-
-        .loading-content {
-            text-align: center;
-            padding: 24px;
-        }
-
-        .loading-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .loading-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: var(--text-primary);
-        }
-
-        .loading-dots {
-            display: flex;
-            justify-content: center;
-            gap: 4px;
-            margin-bottom: 16px;
-        }
-
-        .loading-dots div {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            animation: loading-bounce 1.4s ease-in-out infinite both;
-        }
-
-        .loading-dots div:nth-child(1) { animation-delay: -0.32s; }
-        .loading-dots div:nth-child(2) { animation-delay: -0.16s; }
-
-        .loading-text {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        /* Page Transitions */
-        .page-fade-in {
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(10px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        @keyframes loading-bounce {
-            0%, 80%, 100% { 
-                transform: scale(0);
-                opacity: 0.5;
-            }
-            40% { 
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        /* Status Badges */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-            line-height: 1.4;
-        }
-
-        .status-badge.success {
-            background: rgba(82, 196, 26, 0.1);
-            color: var(--success-color);
-        }
-
-        .status-badge.warning {
-            background: rgba(250, 173, 20, 0.1);
-            color: var(--warning-color);
-        }
-
-        .status-badge.danger {
-            background: rgba(255, 77, 79, 0.1);
-            color: var(--error-color);
-        }
-
-        .status-badge.info {
-            background: var(--primary-light);
-            color: var(--primary-color);
-        }
-
-        /* ================================ */
-        /* === RESPONSIVE DESIGN === */
-        /* ================================ */
-        
-        @media (max-width: 992px) {
-            .main-nav {
-                width: 200px;
-                min-width: 200px;
-            }
-            
-            .content-wrapper {
-                padding: 16px;
-            }
-            
-            .page-header {
-                padding: 16px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            :root {
-                --sidebar-width: 100%;
-                --header-height: 56px;
-            }
-            
-            .main-nav {
-                position: fixed;
-                left: -100%;
-                z-index: 1100;
-                transition: left 0.3s ease;
-                width: 280px;
-                min-width: 280px;
-            }
-            
-            .main-nav.mobile-open {
-                left: 0;
-            }
-            
-            .main-content {
-                width: 100%;
-                margin-left: 0;
-            }
-            
-            .top-bar {
-                padding: 0 16px;
-            }
-            
-            .content-wrapper {
-                padding: 16px;
-            }
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-light);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-tertiary);
-        }
-    </style>
+    <!-- Core Libraries -->
+    <script src="vendor/js/react.development.js"></script>
+    <script src="vendor/js/react-dom.development.js"></script>
+    <script src="vendor/js/moment.min.js"></script>
+    <script src="vendor/js/antd.min.js"></script>
+    <script src="vendor/js/echarts.min.js"></script>
 </head>
 <body>
-    <div id="app">
-        <div class="loading-spinner">
-            <div class="loading-content">
-                <div class="loading-icon">🚇</div>
-                <div class="loading-title">人民城轨2.0运营管理后台</div>
-                <div class="loading-dots">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-                <div class="loading-text">正在初始化系统...</div>
-            </div>
-        </div>
-    </div>
+    <div id="root"></div>
 
-    <!-- React and dependencies -->
-    <script src="https://cdn.jsdelivr.net/npm/react@17.0.2/umd/react.production.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/antd@4.24.15/dist/antd-with-locales.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
-
-    <!-- Application Scripts -->
-    <script src="js/utils/mockData.js"></script>
+    <!-- Local Scripts: Utilities -->
     <script src="js/utils/auth.js"></script>
     <script src="js/utils/stateManager.js"></script>
     <script src="js/utils/permissionManager.js"></script>
-    <script src="js/components/ErrorBoundary.js"></script>
-    <script src="js/components/LoginPage.js"></script>
+    <script src="js/utils/exhibitorManager.js"></script>
+
+    <!-- Local Scripts: UI Components -->
     <script src="js/components/Navigation.js"></script>
     <script src="js/components/TopBar.js"></script>
+
+    <!-- Local Scripts: Page Components -->
     <script src="js/pages/Dashboard.js"></script>
     <script src="js/pages/ContentManagement.js"></script>
     <script src="js/pages/ComplaintManagement.js"></script>
     <script src="js/pages/ContentTagManagement.js"></script>
     <script src="js/pages/ReviewManagement.js"></script>
-    <script src="js/pages/ExhibitionAuditManagement.js"></script>
     <script src="js/pages/AuditFlowManagement.js"></script>
-    <script src="js/pages/AdminManagement.js"></script>
-    <script src="js/pages/LiveManagement.js"></script>
-    <script src="js/pages/UserManagement.js"></script>
-    <script src="js/pages/FeedbackManagement.js"></script>
-    <script src="js/pages/MessageManagement.js"></script>
-    <script src="js/pages/BehaviorStats.js"></script>
-    <script src="js/pages/OperationalStats.js"></script>
-    <script src="js/pages/DataManagement.js"></script>
-    <script src="js/pages/TrafficAllocation.js"></script>
-    <script src="js/pages/LogManagement.js"></script>
-    <script src="js/pages/SystemSettings.js"></script>
-    <script src="js/pages/VersionManagement.js"></script>
     <script src="js/pages/BoothManagement.js"></script>
     <script src="js/pages/ExhibitorManagement.js"></script>
     <script src="js/pages/ExhibitorMaintenance.js"></script>
+    <script src="js/pages/LiveManagement.js"></script>
+    <script src="js/pages/LiveStatsManagement.js"></script>
+    <script src="js/pages/BehaviorStats.js"></script>
+    <script src="js/pages/OperationalStats.js"></script>
+    <script src="js/pages/DataManagement.js"></script>
+    <script src="js/pages/FeedbackManagement.js"></script>
+    <script src="js/pages/MessageManagement.js"></script>
+    <script src="js/pages/UserManagement.js"></script>
+    <script src="js/pages/AdminManagement.js"></script>
+    <script src="js/pages/LogManagement.js"></script>
+    <script src="js/pages/SystemSettings.js"></script>
+    <script src="js/pages/VersionManagement.js"></script>
+    <script src="js/pages/TrafficAllocation.js"></script>
     <script src="js/pages/MenuManagement.js"></script>
-    <script src="js/pages/UserProfile.js"></script>
     <script src="js/pages/PersonalCenter.js"></script>
+    <script src="js/pages/UserProfile.js"></script>
+    
+    <!-- Main App -->
     <script src="js/App.js"></script>
-
     <script>
-        // 启动应用
-        try {
-            console.log('🚀 启动人民城轨2.0运营管理后台（简洁白色版）...');
-            ReactDOM.render(React.createElement(App), document.getElementById('app'));
-            console.log('✅ 应用启动成功!');
-        } catch (error) {
-            console.error('❌ 应用启动失败:', error);
-            document.getElementById('app').innerHTML = `
-                <div style="
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    height: 100vh;
-                    text-align: center;
-                    background: #ffffff;
-                    color: #333333;
-                    padding: 24px;
-                ">
-                    <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
-                    <h2 style="margin: 0 0 16px 0; color: #333333;">应用启动失败</h2>
-                    <p style="margin: 0 0 24px 0; color: #666666;">${error.message}</p>
-                    <button onclick="location.reload()" style="
-                        padding: 8px 16px; 
-                        background: #1890ff; 
-                        color: white; 
-                        border: none; 
-                        border-radius: 6px; 
-                        cursor: pointer;
-                        font-size: 14px;
-                        transition: all 0.2s ease;
-                    ">重新加载</button>
-                </div>
-            `;
-        }
+        // 等待所有脚本加载完成
+        window.addEventListener('load', function() {
+            console.log('🚀 正在启动应用...');
+            try {
+                // 确保 React 和 ReactDOM 已加载
+                if (!window.React || !window.ReactDOM) {
+                    throw new Error('React 或 ReactDOM 未加载，请检查依赖文件');
+                }
+                
+                // 渲染应用
+                ReactDOM.render(
+                    React.createElement(window.App),
+                    document.getElementById('root')
+                );
+                
+                console.log('✅ 应用启动成功！');
+            } catch (error) {
+                console.error('❌ 应用启动失败:', error);
+                document.getElementById('root').innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h2>应用启动失败</h2>
+                        <pre style="text-align: left; margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px;">${error.stack}</pre>
+                        <button onclick="location.reload()" style="margin-top: 20px; padding: 8px 16px;">重新加载</button>
+                    </div>
+                `;
+            }
+        });
     </script>
 </body>
 </html> 

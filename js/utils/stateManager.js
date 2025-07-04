@@ -20,6 +20,28 @@ const StateManager = {
             pendingComplaints: 0,
             systemLoad: 0,
             lastUpdate: null
+        },
+        // 直播数据状态
+        liveData: {
+            lives: []
+        },
+        liveStats: {
+            realtime: {
+                viewCount: 0,
+                likeCount: 0,
+                shareCount: 0,
+                onlineUsers: 0,
+                peakOnlineUsers: 0,
+                duration: '00:00:00',
+                commentCount: 0
+            },
+            history: [],
+            userPortrait: {
+                regions: [],
+                gender: [],
+                age: [],
+                platform: []
+            }
         }
     },
 
@@ -63,6 +85,12 @@ const StateManager = {
                 if (parsed.systemStatus) {
                     this.state.systemStatus = { ...this.state.systemStatus, ...parsed.systemStatus };
                 }
+                if (parsed.liveData) {
+                    this.state.liveData = { ...this.state.liveData, ...parsed.liveData };
+                }
+                if (parsed.liveStats) {
+                    this.state.liveStats = { ...this.state.liveStats, ...parsed.liveStats };
+                }
             }
         } catch (error) {
             console.warn('Failed to load initial state:', error);
@@ -92,7 +120,9 @@ const StateManager = {
                 complaints: Object.fromEntries(this.state.complaints),
                 permissions: Object.fromEntries(this.state.permissions),
                 notifications: this.state.notifications,
-                systemStatus: this.state.systemStatus
+                systemStatus: this.state.systemStatus,
+                liveData: this.state.liveData,
+                liveStats: this.state.liveStats
             };
             localStorage.setItem('systemState', JSON.stringify(stateToSave));
         } catch (error) {
@@ -320,6 +350,87 @@ const StateManager = {
         return this.state.systemStatus;
     },
 
+    // === 直播数据管理 ===
+    // 初始化直播数据状态
+    initLiveData(initialLives = []) {
+        this.state.liveData.lives = initialLives;
+        this.emit('liveData:initialized', { lives: this.state.liveData.lives });
+    },
+
+    addLive(live) {
+        this.state.liveData.lives.push(live);
+        this.emit('liveData:added', live);
+    },
+
+    updateLive(liveId, updates) {
+        const index = this.state.liveData.lives.findIndex(live => live.id === liveId);
+        if (index > -1) {
+            this.state.liveData.lives[index] = { ...this.state.liveData.lives[index], ...updates };
+            this.emit('liveData:updated', { liveId, updates });
+        }
+    },
+
+    deleteLive(liveId) {
+        const initialLength = this.state.liveData.lives.length;
+        this.state.liveData.lives = this.state.liveData.lives.filter(live => live.id !== liveId);
+        if (this.state.liveData.lives.length < initialLength) {
+            this.emit('liveData:deleted', liveId);
+        }
+    },
+
+    getLiveInfo(liveId) {
+        return this.state.liveData.lives.find(live => live.id === liveId);
+    },
+
+    updateLiveStats(liveId, stats) {
+        // 更新实时数据
+        if (stats.realtime) {
+            this.state.liveStats.realtime = {
+                ...this.state.liveStats.realtime,
+                ...stats.realtime
+            };
+        }
+        
+        // 更新历史数据
+        if (stats.history) {
+            const existingIndex = this.state.liveStats.history.findIndex(h => h.id === liveId);
+            if (existingIndex > -1) {
+                this.state.liveStats.history[existingIndex] = {
+                    ...this.state.liveStats.history[existingIndex],
+                    ...stats.history
+                };
+            } else {
+                this.state.liveStats.history.push({
+                    id: liveId,
+                    ...stats.history
+                });
+            }
+        }
+        
+        // 更新用户画像
+        if (stats.userPortrait) {
+            this.state.liveStats.userPortrait = {
+                ...this.state.liveStats.userPortrait,
+                ...stats.userPortrait
+            };
+        }
+        
+        // 触发更新事件
+        this.emit('liveStats:updated', {
+            liveId,
+            stats: this.state.liveStats
+        });
+    },
+
+    // 获取直播统计数据
+    getLiveStats(liveId) {
+        return {
+            realtime: this.state.liveStats.realtime,
+            history: this.state.liveStats.history.find(h => h.id === liveId),
+            userPortrait: this.state.liveStats.userPortrait
+        };
+    },
+
     // === 操作日志记录 ===
     recordOperationLog(event, data) {
         const log = {
@@ -399,7 +510,9 @@ const StateManager = {
             complaints: Object.fromEntries(this.state.complaints),
             permissions: Object.fromEntries(this.state.permissions),
             notifications: this.state.notifications,
-            systemStatus: this.state.systemStatus
+            systemStatus: this.state.systemStatus,
+            liveData: this.state.liveData,
+            liveStats: this.state.liveStats
         };
     },
 
@@ -416,6 +529,23 @@ const StateManager = {
             pendingComplaints: 0,
             systemLoad: 0,
             lastUpdate: null
+        };
+        this.state.liveData.lives = [];
+        this.state.liveStats.realtime = {
+            viewCount: 0,
+            likeCount: 0,
+            shareCount: 0,
+            onlineUsers: 0,
+            peakOnlineUsers: 0,
+            duration: '00:00:00',
+            commentCount: 0
+        };
+        this.state.liveStats.history = [];
+        this.state.liveStats.userPortrait = {
+            regions: [],
+            gender: [],
+            age: [],
+            platform: []
         };
         localStorage.removeItem('systemState');
         this.emit('system:stateCleared', {});

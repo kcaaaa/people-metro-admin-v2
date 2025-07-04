@@ -261,7 +261,7 @@ const BoothManagement = () => {
     const renderFloorsList = () => {
         const { floors } = boothData;
         const currentFloors = floors.filter(floor => floor.venueId === selectedVenue.id);
-        
+
         return React.createElement('div', {}, [
             React.createElement(Alert, {
                 key: 'floor-info',

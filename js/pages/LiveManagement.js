@@ -1278,19 +1278,30 @@ const LiveManagement = () => {
             const newViewers = live.status === 'live' ? 
                 Math.max(0, live.viewers + Math.floor(Math.random() * 200 - 100)) : 
                 live.viewers;
+        
+            const updatedLive = {
+                ...live,
+                viewers: newViewers,
+                peakViewers: Math.max(live.peakViewers, newViewers)
+            };
 
             setLiveData(prev => ({
                 ...prev,
                 lives: prev.lives.map(l => 
-                    l.id === live.id 
-                        ? { 
-                            ...l, 
-                            viewers: newViewers,
-                            peakViewers: Math.max(l.peakViewers, newViewers)
-                        }
-                        : l
+                    l.id === live.id ? updatedLive : l
                 )
             }));
+
+            // 同步更新到状态管理器
+            window.StateManager.updateLive(live.id, updatedLive);
+            
+            // 更新统计数据
+            window.StateManager.updateLiveStats(live.id, {
+                realtime: {
+                    viewCount: newViewers,
+                    peakOnlineUsers: Math.max(live.peakViewers, newViewers)
+                }
+            });
 
             message.success(`"${live.title}"状态刷新成功！`);
         } catch (error) {
