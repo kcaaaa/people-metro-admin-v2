@@ -93,13 +93,6 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     page: 'ReviewManagement'
                 },
                 {
-                    key: 'exhibition-audit',
-                    icon: '🏢',
-                    label: '展会内容审核',
-                    title: '展会板块内容专项审核管理',
-                    page: 'ExhibitionAuditManagement'
-                },
-                {
                     key: 'audit-flow',
                     icon: '⚙️',
                     label: '审核流程管理',
