@@ -1,236 +1,254 @@
-// 展商维护页面（展会管理 > 展商维护）
-const { useState } = React;
-const { Form, Input, Button, Card, Row, Col, Select, Upload, message, Modal, Table, Space, Image } = antd;
-const { Option } = Select;
-const { TextArea } = Input;
+// 展商维护页面
+const ExhibitorMaintenance = () => {
+    console.log('ExhibitorMaintenance component is rendering...');
+    
+    const { Table, Card, Button, Space, Modal, Form, Input, message, Alert, Tag } = antd;
+    const [loading, setLoading] = React.useState(false);
+    const [exhibitorModalVisible, setExhibitorModalVisible] = React.useState(false);
+    const [editingExhibitor, setEditingExhibitor] = React.useState(null);
+    const [exhibitorForm] = Form.useForm();
+    
+    // 模拟数据
+    const [exhibitors, setExhibitors] = React.useState([
+        { id: 'ex_001', name: '北京地铁集团', contact: '张经理', phone: '13800138001', email: 'zhang@bjmetro.com', status: 'active' },
+        { id: 'ex_002', name: '上海申通地铁', contact: '李经理', phone: '13800138002', email: 'li@shtmetro.com', status: 'active' },
+        { id: 'ex_003', name: '广州地铁集团', contact: '王经理', phone: '13800138003', email: 'wang@gzmetro.com', status: 'active' }
+    ]);
 
-function ExhibitorMaintenance() {
-    // 基础信息初始值
-    const [companyInfo, setCompanyInfo] = useState({
-        logo: '',
-        name: '',
-        code: '',
-        type: '',
-        description: '',
-        contact: {
-            name: '',
-            phone: '',
-            email: ''
-        }
-    });
-    // 产品列表
-    const [products, setProducts] = useState([]);
-    // 产品编辑弹窗
-    const [productModalVisible, setProductModalVisible] = useState(false);
-    const [editingProduct, setEditingProduct] = useState(null);
-    const [productForm] = Form.useForm();
-    const [companyForm] = Form.useForm();
-    // LOGO上传
-    const [logoFileList, setLogoFileList] = useState([]);
-
-    // 公司信息保存
-    const handleCompanySave = (values) => {
-        setCompanyInfo({ ...companyInfo, ...values, logo: logoFileList[0]?.url || companyInfo.logo });
-        message.success('公司信息已保存');
-    };
-
-    // LOGO上传处理
-    const handleLogoChange = ({ fileList }) => {
-        fileList = fileList.slice(-1);
-        fileList.forEach(file => {
-            if (!file.url && !file.preview) {
-                file.url = URL.createObjectURL(file.originFileObj);
-            }
-        });
-        setLogoFileList(fileList);
-    };
-
-    // 产品弹窗保存
-    const handleProductSave = () => {
-        productForm.validateFields().then(values => {
-            let imgUrl = values.image && values.image[0]?.url;
-            if (!imgUrl && values.image && values.image[0]?.originFileObj) {
-                imgUrl = URL.createObjectURL(values.image[0].originFileObj);
-            }
-            const product = { ...values, image: imgUrl };
-            if (editingProduct !== null) {
-                const newList = [...products];
-                newList[editingProduct] = product;
-                setProducts(newList);
-                message.success('产品已更新');
-            } else {
-                setProducts([...products, product]);
-                message.success('产品已添加');
-            }
-            setProductModalVisible(false);
-            setEditingProduct(null);
-            productForm.resetFields();
-        });
-    };
-
-    // 产品编辑
-    const handleEditProduct = (record, idx) => {
-        setEditingProduct(idx);
-        productForm.setFieldsValue({ ...record, image: record.image ? [{ url: record.image }] : [] });
-        setProductModalVisible(true);
-    };
-
-    // 产品删除
-    const handleDeleteProduct = (idx) => {
-        Modal.confirm({
-            title: '确认删除该产品？',
-            onOk: () => {
-                setProducts(products.filter((_, i) => i !== idx));
-                message.success('已删除');
-            }
-        });
-    };
-
-    // 产品图片上传
-    const handleProductImgChange = ({ fileList }) => {
-        return fileList.slice(-1).map(file => {
-            if (!file.url && !file.preview) {
-                file.url = URL.createObjectURL(file.originFileObj);
-            }
-            return file;
-        });
-    };
-
-    // 产品表格列
-    const productColumns = [
+    // 表格列配置
+    const columns = [
         {
-            title: '图片',
-            dataIndex: 'image',
-            render: (img) => img ? React.createElement(Image, { src: img, width: 60 }) : '无'
+            title: '展商信息',
+            dataIndex: 'name',
+            width: 300,
+            render: (text, record) => React.createElement('div', {}, [
+                React.createElement('div', {
+                    key: 'name',
+                    style: { fontWeight: 'bold', fontSize: '16px', marginBottom: '4px' }
+                }, text),
+                React.createElement('div', {
+                    key: 'contact',
+                    style: { color: '#666', fontSize: '12px' }
+                }, `联系人：${record.contact}`)
+            ])
         },
-        { title: '名称', dataIndex: 'name' },
-        { title: '规格', dataIndex: 'spec' },
-        { title: '描述', dataIndex: 'desc' },
+        {
+            title: '联系方式',
+            dataIndex: 'contact',
+            width: 250,
+            render: (_, record) => React.createElement('div', {}, [
+                React.createElement('div', {
+                    key: 'phone',
+                    style: { marginBottom: '4px' }
+                }, `电话：${record.phone}`),
+                React.createElement('div', {
+                    key: 'email',
+                    style: { color: '#1890ff' }
+                }, `邮箱：${record.email}`)
+            ])
+        },
+        {
+            title: '状态',
+            dataIndex: 'status',
+            width: 100,
+            render: (status) => React.createElement(Tag, {
+                color: status === 'active' ? 'green' : 'orange'
+            }, status === 'active' ? '正常' : '禁用')
+        },
         {
             title: '操作',
-            render: (_, record, idx) => React.createElement(Space, {}, [
-                React.createElement('a', { onClick: () => handleEditProduct(record, idx), key: 'edit' }, '编辑'),
-                React.createElement('a', { onClick: () => handleDeleteProduct(idx), key: 'delete', style: { color: 'red' } }, '删除')
+            width: 150,
+            render: (_, record) => React.createElement(Space, { size: 'small' }, [
+                React.createElement(Button, {
+                    key: 'edit',
+                    size: 'small',
+                    onClick: () => handleEdit(record)
+                }, '编辑'),
+                React.createElement(Button, {
+                    key: 'delete',
+                    size: 'small',
+                    danger: true,
+                    onClick: () => handleDelete(record)
+                }, '删除')
             ])
         }
     ];
 
-    return React.createElement('div', { style: { maxWidth: 900, margin: '0 auto', padding: 24 } }, [
-        React.createElement('h2', { style: { marginBottom: 24 } }, '展商维护'),
-        React.createElement(Card, { title: '公司基础信息', style: { marginBottom: 24 } },
-            React.createElement(Form, {
-                form: companyForm,
-                layout: 'vertical',
-                initialValues: companyInfo,
-                onFinish: handleCompanySave
+    // 处理编辑
+    const handleEdit = (exhibitor) => {
+        setEditingExhibitor(exhibitor);
+        exhibitorForm.setFieldsValue(exhibitor);
+        setExhibitorModalVisible(true);
+    };
+
+    // 处理删除
+    const handleDelete = (exhibitor) => {
+        Modal.confirm({
+            title: '确认删除',
+            content: `确定要删除展商"${exhibitor.name}"吗？此操作不可恢复。`,
+            okText: '确认',
+            cancelText: '取消',
+            onOk: () => {
+                const newExhibitors = exhibitors.filter(ex => ex.id !== exhibitor.id);
+                setExhibitors(newExhibitors);
+                message.success('展商删除成功');
+            }
+        });
+    };
+
+    // 处理保存
+    const handleSave = async (values) => {
+        try {
+            const newExhibitor = {
+                ...values,
+                id: editingExhibitor ? editingExhibitor.id : `ex_${Date.now()}`,
+                status: 'active'
+            };
+
+            if (editingExhibitor) {
+                // 编辑
+                setExhibitors(prev => prev.map(ex => 
+                    ex.id === editingExhibitor.id ? newExhibitor : ex
+                ));
+                message.success('展商信息更新成功');
+            } else {
+                // 新建
+                setExhibitors(prev => [...prev, newExhibitor]);
+                message.success('展商创建成功');
+            }
+
+            setExhibitorModalVisible(false);
+            setEditingExhibitor(null);
+            exhibitorForm.resetFields();
+        } catch (error) {
+            message.error('操作失败，请重试');
+        }
+    };
+
+    return React.createElement('div', { className: 'exhibitor-maintenance-page' }, [
+        React.createElement('div', {
+            key: 'header',
+            style: {
+                marginBottom: '24px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+            }
+        }, [
+            React.createElement('h2', {
+                key: 'title',
+                style: { margin: 0, fontSize: '24px', fontWeight: 'bold', color: '#1e293b' }
+            }, '🏢 展商维护'),
+            React.createElement(Space, {
+                key: 'actions'
             }, [
-                React.createElement(Row, { gutter: 24 }, [
-                    React.createElement(Col, { span: 6 },
-                        React.createElement(Form.Item, { label: '公司LOGO', name: 'logo' },
-                            React.createElement(Upload, {
-                                listType: 'picture-card',
-                                fileList: logoFileList,
-                                onChange: handleLogoChange,
-                                beforeUpload: () => false,
-                                maxCount: 1
-                            }, logoFileList.length < 1 && '+ 上传')
-                        )
-                    ),
-                    React.createElement(Col, { span: 18 }, [
-                        React.createElement(Row, { gutter: 16 }, [
-                            React.createElement(Col, { span: 12 },
-                                React.createElement(Form.Item, { label: '公司名称', name: 'name', rules: [{ required: true, message: '请输入公司名称' }] },
-                                    React.createElement(Input, null)
-                                )
-                            ),
-                            React.createElement(Col, { span: 12 },
-                                React.createElement(Form.Item, { label: '公司编号', name: 'code', rules: [{ required: true, message: '请输入公司编号' }] },
-                                    React.createElement(Input, null)
-                                )
-                            )
-                        ]),
-                        React.createElement(Row, { gutter: 16 }, [
-                            React.createElement(Col, { span: 12 },
-                                React.createElement(Form.Item, { label: '企业属性', name: 'type', rules: [{ required: true, message: '请选择企业属性' }] },
-                                    React.createElement(Select, { placeholder: '请选择' }, [
-                                        React.createElement(Option, { value: '国有企业', key: '国有企业' }, '国有企业'),
-                                        React.createElement(Option, { value: '民营企业', key: '民营企业' }, '民营企业'),
-                                        React.createElement(Option, { value: '合资企业', key: '合资企业' }, '合资企业')
-                                    ])
-                                )
-                            )
-                        ]),
-                        React.createElement(Form.Item, { label: '公司简介', name: 'description', rules: [{ required: true, message: '请输入公司简介' }] },
-                            React.createElement(TextArea, { rows: 3 })
-                        )
-                    ])
-                ]),
-                React.createElement(Row, { gutter: 16 }, [
-                    React.createElement(Col, { span: 8 },
-                        React.createElement(Form.Item, { label: '业务联系人姓名', name: ['contact', 'name'], rules: [{ required: true, message: '请输入联系人姓名' }] },
-                            React.createElement(Input, null)
-                        )
-                    ),
-                    React.createElement(Col, { span: 8 },
-                        React.createElement(Form.Item, { label: '手机', name: ['contact', 'phone'], rules: [{ required: true, message: '请输入手机' }, { pattern: /^1\d{10}$/, message: '请输入正确的手机号' }] },
-                            React.createElement(Input, null)
-                        )
-                    ),
-                    React.createElement(Col, { span: 8 },
-                        React.createElement(Form.Item, { label: '邮箱', name: ['contact', 'email'], rules: [{ required: true, message: '请输入邮箱' }, { type: 'email', message: '请输入有效邮箱' }] },
-                            React.createElement(Input, null)
-                        )
-                    )
-                ]),
-                React.createElement(Form.Item, null,
-                    React.createElement(Button, { type: 'primary', htmlType: 'submit' }, '保存')
-                )
+                React.createElement(Button, {
+                    key: 'refresh',
+                    onClick: () => setLoading(true)
+                }, '刷新'),
+                React.createElement(Button, {
+                    key: 'help',
+                    type: 'default',
+                    onClick: () => message.info('展商维护帮助文档')
+                }, '使用帮助')
             ])
-        ),
+        ]),
+
+        React.createElement(Alert, {
+            key: 'info',
+            message: '展商维护',
+            description: '管理展会展商信息，包括展商基本信息、联系方式等',
+            type: 'info',
+            showIcon: true,
+            style: { marginBottom: '24px' }
+        }),
+
         React.createElement(Card, {
-            title: '产品列表',
+            key: 'exhibitor-table',
+            title: '展商列表',
             extra: React.createElement(Button, {
                 type: 'primary',
-                onClick: () => { setProductModalVisible(true); setEditingProduct(null); productForm.resetFields(); }
-            }, '新增产品')
-        },
-            React.createElement(Table, {
-                columns: productColumns,
-                dataSource: products,
-                rowKey: (r, i) => i,
-                pagination: false
-            })
-        ),
-        React.createElement(Modal, {
-            title: editingProduct !== null ? '编辑产品' : '新增产品',
-            open: productModalVisible,
-            onCancel: () => { setProductModalVisible(false); setEditingProduct(null); productForm.resetFields(); },
-            onOk: handleProductSave,
-            destroyOnClose: true
-        },
-            React.createElement(Form, { form: productForm, layout: 'vertical' }, [
-                React.createElement(Form.Item, {
-                    label: '产品图片',
-                    name: 'image',
-                    valuePropName: 'fileList',
-                    getValueFromEvent: handleProductImgChange,
-                    rules: [{ required: true, message: '请上传产品图片' }]
-                },
-                    React.createElement(Upload, { listType: 'picture-card', beforeUpload: () => false, maxCount: 1 }, '+上传')
-                ),
-                React.createElement(Form.Item, { label: '产品名称', name: 'name', rules: [{ required: true, message: '请输入产品名称' }] },
-                    React.createElement(Input, null)
-                ),
-                React.createElement(Form.Item, { label: '产品规格', name: 'spec', rules: [{ required: true, message: '请输入产品规格' }] },
-                    React.createElement(Input, null)
-                ),
-                React.createElement(Form.Item, { label: '产品描述', name: 'desc', rules: [{ required: true, message: '请输入产品描述' }] },
-                    React.createElement(TextArea, { rows: 2 })
-                )
-            ])
-        )
-    ]);
-}
+                onClick: () => {
+                    setEditingExhibitor(null);
+                    exhibitorForm.resetFields();
+                    setExhibitorModalVisible(true);
+                }
+            }, '新建展商')
+        }, React.createElement(Table, {
+            dataSource: exhibitors.map((item, index) => ({ ...item, key: index })),
+            columns: columns,
+            pagination: false,
+            size: 'small',
+            loading: loading
+        })),
 
-// 导出组件
-window.ExhibitorMaintenance = ExhibitorMaintenance; 
+        exhibitorModalVisible && React.createElement(Modal, {
+            key: 'exhibitor-modal',
+            title: editingExhibitor ? '编辑展商' : '新建展商',
+            visible: exhibitorModalVisible,
+            onCancel: () => {
+                setExhibitorModalVisible(false);
+                setEditingExhibitor(null);
+                exhibitorForm.resetFields();
+            },
+            footer: null,
+            destroyOnClose: true,
+            width: 500
+        }, React.createElement(Form, {
+            form: exhibitorForm,
+            layout: 'vertical',
+            onFinish: handleSave
+        }, [
+            React.createElement(Form.Item, {
+                key: 'name',
+                label: '展商名称',
+                name: 'name',
+                rules: [{ required: true, message: '请输入展商名称' }]
+            }, React.createElement(Input, { placeholder: '请输入展商名称' })),
+            React.createElement(Form.Item, {
+                key: 'contact',
+                label: '联系人',
+                name: 'contact',
+                rules: [{ required: true, message: '请输入联系人' }]
+            }, React.createElement(Input, { placeholder: '请输入联系人姓名' })),
+            React.createElement(Form.Item, {
+                key: 'phone',
+                label: '联系电话',
+                name: 'phone',
+                rules: [{ required: true, message: '请输入联系电话' }]
+            }, React.createElement(Input, { placeholder: '请输入联系电话' })),
+            React.createElement(Form.Item, {
+                key: 'email',
+                label: '电子邮箱',
+                name: 'email',
+                rules: [
+                    { required: true, message: '请输入电子邮箱' },
+                    { type: 'email', message: '请输入有效的电子邮箱' }
+                ]
+            }, React.createElement(Input, { placeholder: '请输入电子邮箱' })),
+            React.createElement(Form.Item, {
+                key: 'submit',
+                style: { textAlign: 'right', marginTop: '24px' }
+            }, React.createElement(Space, null, [
+                React.createElement(Button, {
+                    key: 'cancel',
+                    onClick: () => {
+                        setExhibitorModalVisible(false);
+                        setEditingExhibitor(null);
+                        exhibitorForm.resetFields();
+                    }
+                }, '取消'),
+                React.createElement(Button, {
+                    key: 'submit',
+                    type: 'primary',
+                    htmlType: 'submit',
+                    loading: loading
+                }, '保存')
+            ]))
+        ]))
+    ]);
+};
+
+console.log('ExhibitorMaintenance component defined');
+window.ExhibitorMaintenance = ExhibitorMaintenance;
+console.log('[ExhibitorMaintenance] window.ExhibitorMaintenance 挂载成功'); 
