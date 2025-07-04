@@ -119,28 +119,28 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     icon: '🏢',
                     label: '展位管理',
                     title: '展会展位信息管理',
-                    page: 'BoothManagement'
+                    page: 'booth' // 修正为小写，与App.js映射一致
                 },
                 {
                     key: 'exhibitor',
                     icon: '🏭',
                     label: '展商管理',
                     title: '展商信息管理与审核',
-                    page: 'ExhibitorManagement'
+                    page: 'exhibitor'
                 },
                 {
                     key: 'exhibitor-maintenance',
                     icon: '🔧',
                     label: '展商维护',
                     title: '展商用户维护本公司基础信息',
-                    page: 'ExhibitorMaintenance'
+                    page: 'exhibitor-maintenance'
                 },
                 {
                     key: 'live',
                     icon: '📺',
                     label: '论坛直播',
                     title: '论坛直播内容管理',
-                    page: 'LiveManagement'
+                    page: 'live'
                 }
             ]
         },
