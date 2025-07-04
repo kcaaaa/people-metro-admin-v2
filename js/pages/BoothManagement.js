@@ -271,7 +271,7 @@ const BoothManagement = () => {
                     React.createElement('span', { key: 'title' }, `${selectedVenue.name} - 楼层管理`),
                     React.createElement(Button, {
                         key: 'back',
-                        onClick: () => navigateToVenues(),
+                        onClick: navigateToVenues,
                         icon: React.createElement('span', { className: 'anticon' }, '←'),
                         size: 'small'
                     }, '返回场馆列表')
@@ -499,37 +499,25 @@ const BoothManagement = () => {
     const getBreadcrumbItems = () => {
         const items = [];
         if (currentView === 'venues') {
-            items.push({ title: '场馆列表', onClick: navigateToVenues });
+            items.push(React.createElement(Breadcrumb.Item, { key: 'venues' }, '场馆列表'));
         } else if (currentView === 'floors') {
-            const venue = selectedVenue;
-            if (venue) {
-                items.push({ title: venue.name, onClick: navigateToVenues });
-                items.push({ title: '楼层列表', onClick: () => navigateToFloors(venue) });
-            }
+            items.push(
+                React.createElement(Breadcrumb.Item, { key: 'venues', onClick: () => navigateToVenues() }, '场馆列表'),
+                React.createElement(Breadcrumb.Item, { key: 'floors' }, `${selectedVenue.name} - 楼层管理`)
+            );
         } else if (currentView === 'areas') {
-            const venue = selectedVenue;
-            const floor = selectedFloor;
-            if (venue) {
-                items.push({ title: venue.name, onClick: navigateToVenues });
-                if (floor) {
-                    items.push({ title: floor.name, onClick: () => navigateToFloors(venue) });
-                    items.push({ title: '分区列表', onClick: () => navigateToAreas(floor) });
-                }
-            }
+            items.push(
+                React.createElement(Breadcrumb.Item, { key: 'venues', onClick: () => navigateToVenues() }, '场馆列表'),
+                React.createElement(Breadcrumb.Item, { key: 'floors', onClick: () => navigateToFloors(selectedVenue) }, `${selectedVenue.name} - 楼层管理`),
+                React.createElement(Breadcrumb.Item, { key: 'areas' }, `${selectedFloor.name} - 分区管理`)
+            );
         } else if (currentView === 'booths') {
-            const venue = selectedVenue;
-            const floor = selectedFloor;
-            const area = selectedArea;
-            if (venue) {
-                items.push({ title: venue.name, onClick: navigateToVenues });
-                if (floor) {
-                    items.push({ title: floor.name, onClick: () => navigateToFloors(venue) });
-                    if (area) {
-                        items.push({ title: area.name, onClick: () => navigateToAreas(floor) });
-                        items.push({ title: '展位列表', onClick: () => navigateToBooths(area) });
-                    }
-                }
-            }
+            items.push(
+                React.createElement(Breadcrumb.Item, { key: 'venues', onClick: () => navigateToVenues() }, '场馆列表'),
+                React.createElement(Breadcrumb.Item, { key: 'floors', onClick: () => navigateToFloors(selectedVenue) }, `${selectedVenue.name} - 楼层管理`),
+                React.createElement(Breadcrumb.Item, { key: 'areas', onClick: () => navigateToAreas(selectedFloor) }, `${selectedFloor.name} - 分区管理`),
+                React.createElement(Breadcrumb.Item, { key: 'booths' }, `${selectedArea.name} - 展位管理`)
+            );
         }
         return items;
     };
@@ -755,7 +743,7 @@ const BoothManagement = () => {
             key: 'breadcrumb',
             style: { marginBottom: '16px' }
         }, getBreadcrumbItems().map((item, idx) =>
-            React.createElement(Breadcrumb.Item, { key: idx }, item.title)
+            React.createElement(Breadcrumb.Item, { key: idx }, item)
         )),
 
         renderCurrentView(),
