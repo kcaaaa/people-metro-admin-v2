@@ -14,7 +14,6 @@ const MenuManagement = () => {
         'content-tags': { enabled: true, label: '内容标签', level: 2, parent: 'content-management' },
         'audit-management': { enabled: true, label: '审核管理', level: 1 },
         'review': { enabled: true, label: 'AI审核', level: 2, parent: 'audit-management' },
-        'exhibition-audit': { enabled: true, label: '展会内容审核', level: 2, parent: 'audit-management' },
         'audit-flow': { enabled: true, label: '审核流程管理', level: 2, parent: 'audit-management' },
         'exhibition-management': { enabled: true, label: '展会管理', level: 1 },
         'booth': { enabled: true, label: '展位管理', level: 2, parent: 'exhibition-management' },
