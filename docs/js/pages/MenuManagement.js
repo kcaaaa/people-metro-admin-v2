@@ -23,6 +23,7 @@ const MenuManagement = () => {
         'operation-statistics': { enabled: true, label: '运营管理', level: 1 },
         'stats': { enabled: true, label: '行为统计', level: 2, parent: 'operation-statistics' },
         'operational': { enabled: true, label: '运营数据统计', level: 2, parent: 'operation-statistics' },
+        'live-stats': { enabled: true, label: '直播数据管理', level: 2, parent: 'operation-statistics' },
         'data': { enabled: true, label: '运营数据管理', level: 2, parent: 'operation-statistics' },
         'feedback': { enabled: true, label: '用户反馈管理', level: 2, parent: 'operation-statistics' },
         'message': { enabled: true, label: '消息管理', level: 2, parent: 'operation-statistics' },
