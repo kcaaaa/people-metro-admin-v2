@@ -263,23 +263,28 @@ const BoothManagement = () => {
         const venue = selectedVenue;
         if (!venue) return React.createElement(Alert, { message: '请先选择场馆', type: 'info' });
 
+        const currentFloors = floors.filter(floor => floor.venueId === venue.id);
+        
         return React.createElement('div', {}, [
-            React.createElement('div', {
-                key: 'floors-header',
-                style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }
-            }, [
-                React.createElement(Button, {
-                    key: 'back',
-                    type: 'default',
-                    onClick: navigateToVenues
-                }, '返回场馆列表'),
-                React.createElement(Button, {
-                    key: 'add',
-                    type: 'primary',
-                    onClick: createNewFloor
-                }, '新建楼层')
-            ]),
-            React.createElement(Row, { gutter: [16, 16] }, floors.filter(floor => floor.venueId === venue.id).map(floor => (
+            React.createElement(Alert, {
+                key: 'floor-info',
+                message: React.createElement('div', {
+                    style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
+                }, [
+                    React.createElement('span', { key: 'title' }, `${venue.name} - 楼层管理`),
+                    React.createElement(Button, {
+                        key: 'back',
+                        onClick: () => navigateToVenues(),
+                        icon: React.createElement('span', { className: 'anticon' }, '←'),
+                        size: 'small'
+                    }, '返回场馆列表')
+                ]),
+                description: '管理场馆内的楼层信息，点击"管理分区"进入分区管理',
+                type: 'info',
+                showIcon: true,
+                style: { marginBottom: '24px' }
+            }),
+            React.createElement(Row, { gutter: [16, 16] }, currentFloors.map(floor => (
                 React.createElement(Col, { span: 8, key: floor.id },
                     React.createElement(Card, {
             key: floor.id,
@@ -303,27 +308,28 @@ const BoothManagement = () => {
 
     // 渲染分区列表
     const renderAreasList = () => {
-        const { areas } = boothData;
-        const floor = selectedFloor; // 直接用对象
-        if (!floor) return React.createElement(Alert, { message: '请先选择楼层', type: 'info' });
-
+        const currentAreas = boothData.areas.filter(area => area.floorId === selectedFloor.id);
+        
         return React.createElement('div', {}, [
-            React.createElement('div', {
-                key: 'areas-header',
-                style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }
-            }, [
-                React.createElement(Button, {
-                    key: 'back',
-                    type: 'default',
-                    onClick: () => navigateToFloors(selectedVenue)
-                }, '返回楼层列表'),
-                React.createElement(Button, {
-                    key: 'add',
-                    type: 'primary',
-                    onClick: () => { setEditingArea(null); areaForm.resetFields(); setAreaModalVisible(true); }
-                }, '新建分区')
-            ]),
-            React.createElement(Row, { gutter: [16, 16] }, areas.filter(area => area.floorId === floor.id).map(area => (
+            React.createElement(Alert, {
+                key: 'area-info',
+                message: React.createElement('div', {
+                    style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
+                }, [
+                    React.createElement('span', { key: 'title' }, `${selectedVenue.name} - ${selectedFloor.name} - 分区管理`),
+                    React.createElement(Button, {
+                        key: 'back',
+                        onClick: () => navigateToFloors(selectedVenue),
+                        icon: React.createElement('span', { className: 'anticon' }, '←'),
+                        size: 'small'
+                    }, '返回楼层列表')
+                ]),
+                description: '管理楼层内的分区信息，点击"管理展位"进入展位管理',
+                type: 'info',
+                showIcon: true,
+                style: { marginBottom: '24px' }
+            }),
+            React.createElement(Row, { gutter: [16, 16] }, currentAreas.map(area => (
                 React.createElement(Col, { span: 8, key: area.id },
                     React.createElement(Card, {
                         key: area.id,
@@ -346,86 +352,28 @@ const BoothManagement = () => {
 
     // 渲染展位列表
     const renderBoothsList = () => {
-        const { booths, exhibitors } = boothData;
-        const area = selectedArea;
-        if (!area) return React.createElement(Alert, { message: '请先选择分区', type: 'info' });
-
-        // 新建展位按钮
-        const handleCreateBooth = () => {
-            setEditingBooth(null);
-            boothForm.resetFields();
-            setBoothModalVisible(true);
-        };
-
-        // 编辑展位
-        const handleEditBooth = (booth) => {
-            setEditingBooth(booth);
-            boothForm.setFieldsValue(booth);
-            setBoothModalVisible(true);
-        };
-
-        // 删除展位
-        const handleDeleteBooth = (booth) => {
-            Modal.confirm({
-                title: '确认删除',
-                content: `确定要删除展位“${booth.boothNumber}”吗？此操作不可恢复。`,
-                okText: '确认',
-                cancelText: '取消',
-                onOk: () => {
-                    const newBooths = booths.filter(b => b.id !== booth.id);
-                    setBoothData({ ...boothData, booths: newBooths });
-                    message.success('展位删除成功');
-                }
-            });
-        };
-
-        // 绑定展商
-        const handleBindExhibitor = (booth) => {
-            setEditingBooth(booth);
-            boothForm.setFieldsValue(booth);
-            setBoothModalVisible(true);
-        };
-
-        // 解绑展商
-        const handleUnbindExhibitor = (booth) => {
-            Modal.confirm({
-                title: '确认解绑',
-                content: `确定要解绑展位“${booth.boothNumber}”的展商吗？`,
-                okText: '确认',
-                cancelText: '取消',
-                onOk: () => {
-                    const newBooths = booths.map(b => b.id === booth.id ? { ...b, exhibitorId: null, exhibitorName: null, status: 'available' } : b);
-                    setBoothData({ ...boothData, booths: newBooths });
-                    message.success('展商解绑成功');
-                }
-            });
-        };
-
-        // 状态流转
-        const handleStatusChange = (booth, status) => {
-            const newBooths = booths.map(b => b.id === booth.id ? { ...b, status } : b);
-            setBoothData({ ...boothData, booths: newBooths });
-            message.success('展位状态已更新');
-        };
-
+        const currentBooths = boothData.booths.filter(booth => booth.areaId === selectedArea.id);
+        
         return React.createElement('div', {}, [
-            React.createElement('div', {
-                key: 'booths-header',
-                style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }
-            }, [
-                            React.createElement(Button, {
-                    key: 'back',
-                    type: 'default',
-                    onClick: () => navigateToAreas(selectedFloor)
-                }, '返回分区列表'),
-                            React.createElement(Button, {
-                    key: 'add',
-                    type: 'primary',
-                    onClick: handleCreateBooth,
-                    disabled: !selectedArea
-                }, '新建展位')
-            ]),
-            React.createElement(Row, { gutter: [16, 16] }, booths.filter(booth => booth.areaId === area.id).map(booth => (
+            React.createElement(Alert, {
+                key: 'booth-info',
+                message: React.createElement('div', {
+                    style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
+                }, [
+                    React.createElement('span', { key: 'title' }, `${selectedVenue.name} - ${selectedFloor.name} - ${selectedArea.name} - 展位管理`),
+                    React.createElement(Button, {
+                        key: 'back',
+                        onClick: () => navigateToAreas(selectedFloor),
+                        icon: React.createElement('span', { className: 'anticon' }, '←'),
+                        size: 'small'
+                    }, '返回分区列表')
+                ]),
+                description: '管理分区内的展位信息，支持展商绑定和状态管理',
+                type: 'info',
+                showIcon: true,
+                style: { marginBottom: '24px' }
+            }),
+            React.createElement(Row, { gutter: [16, 16] }, currentBooths.map(booth => (
                 React.createElement(Col, { span: 8, key: booth.id },
                     React.createElement(Card, {
                         key: booth.id,
