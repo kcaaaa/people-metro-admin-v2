@@ -260,10 +260,7 @@ const BoothManagement = () => {
     // 渲染楼层列表
     const renderFloorsList = () => {
         const { floors } = boothData;
-        const venue = selectedVenue;
-        if (!venue) return React.createElement(Alert, { message: '请先选择场馆', type: 'info' });
-
-        const currentFloors = floors.filter(floor => floor.venueId === venue.id);
+        const currentFloors = floors.filter(floor => floor.venueId === selectedVenue.id);
         
         return React.createElement('div', {}, [
             React.createElement(Alert, {
@@ -271,7 +268,7 @@ const BoothManagement = () => {
                 message: React.createElement('div', {
                     style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
                 }, [
-                    React.createElement('span', { key: 'title' }, `${venue.name} - 楼层管理`),
+                    React.createElement('span', { key: 'title' }, `${selectedVenue.name} - 楼层管理`),
                     React.createElement(Button, {
                         key: 'back',
                         onClick: () => navigateToVenues(),
