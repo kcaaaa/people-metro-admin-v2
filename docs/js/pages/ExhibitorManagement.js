@@ -794,53 +794,11 @@ const ExhibitorManagement = () => {
             }, '管理展会展商信息，包括公司资料、展位分配、审核状态等')
         ]),
 
-        // 统计卡片
-        React.createElement(Row, {
-            key: 'stats',
-            gutter: 16,
+        // 统计数据
+        React.createElement('div', {
+            key: 'statistics',
             style: { marginBottom: '24px' }
-        }, [
-            React.createElement(Col, { key: 'total', span: 6 },
-                React.createElement(Card, {
-                    style: { textAlign: 'center' }
-                }, React.createElement(Statistic, {
-                    title: '参展公司总数',
-                    value: statistics.total,
-                    valueStyle: { color: '#1890ff' },
-                    suffix: '家'
-                }))
-            ),
-            React.createElement(Col, { key: 'confirmed', span: 6 },
-                React.createElement(Card, {
-                    style: { textAlign: 'center' }
-                }, React.createElement(Statistic, {
-                    title: '已审核',
-                    value: statistics.confirmed,
-                    valueStyle: { color: '#52c41a' },
-                    suffix: '家'
-                }))
-            ),
-            React.createElement(Col, { key: 'pending', span: 6 },
-                React.createElement(Card, {
-                    style: { textAlign: 'center' }
-                }, React.createElement(Statistic, {
-                    title: '待审核',
-                    value: statistics.pending,
-                    valueStyle: { color: '#faad14' },
-                    suffix: '家'
-                }))
-            ),
-            React.createElement(Col, { key: 'occupancy', span: 6 },
-                React.createElement(Card, {
-                    style: { textAlign: 'center' }
-                }, React.createElement(Statistic, {
-                    title: '展位使用',
-                    value: statistics.boothUsage,
-                    valueStyle: { color: '#722ed1' },
-                    suffix: '%'
-                }))
-            )
-        ]),
+        }, renderStatistics()),
 
         // 搜索和筛选
         React.createElement(Card, {
