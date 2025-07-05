@@ -38,6 +38,93 @@ const ContentManagement = () => {
     const [selectedContent, setSelectedContent] = React.useState(null);
     const [detailModalVisible, setDetailModalVisible] = React.useState(false);
 
+    // 富文本编辑器工具栏配置
+    const editorTools = [
+        { key: 'bold', icon: 'B', tooltip: '粗体' },
+        { key: 'italic', icon: 'I', tooltip: '斜体' },
+        { key: 'h1', icon: 'H1', tooltip: '一级标题' },
+        { key: 'h2', icon: 'H2', tooltip: '二级标题' },
+        { key: 'link', icon: '🔗', tooltip: '插入链接' },
+        { key: 'image', icon: '🖼️', tooltip: '插入图片' },
+        { key: 'list', icon: '📝', tooltip: '无序列表' }
+    ];
+
+    // 富文本编辑器
+    const RichTextEditor = () => {
+        const insertTag = (tag) => {
+            const textarea = document.getElementById('richTextEditor');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = richTextContent.substring(start, end);
+            const beforeText = richTextContent.substring(0, start);
+            const afterText = richTextContent.substring(end);
+            
+            let newText = '';
+            switch(tag) {
+                case 'bold':
+                    newText = beforeText + `**${selectedText || '粗体文字'}**` + afterText;
+                    break;
+                case 'italic':
+                    newText = beforeText + `*${selectedText || '斜体文字'}*` + afterText;
+                    break;
+                case 'h1':
+                    newText = beforeText + `# ${selectedText || '一级标题'}` + afterText;
+                    break;
+                case 'h2':
+                    newText = beforeText + `## ${selectedText || '二级标题'}` + afterText;
+                    break;
+                case 'link':
+                    newText = beforeText + `[${selectedText || '链接文字'}](http://example.com)` + afterText;
+                    break;
+                case 'image':
+                    newText = beforeText + `![图片描述](图片地址)` + afterText;
+                    break;
+                case 'list':
+                    newText = beforeText + `\n- ${selectedText || '列表项'}\n- 列表项2\n- 列表项3\n` + afterText;
+                    break;
+                default:
+                    return;
+            }
+            setRichTextContent(newText);
+        };
+
+        return React.createElement('div', {
+            style: { border: '1px solid #d9d9d9', borderRadius: '6px' }
+        }, [
+            React.createElement('div', {
+                key: 'toolbar',
+                style: {
+                    padding: '8px 12px',
+                    borderBottom: '1px solid #f0f0f0',
+                    background: '#fafafa',
+                    display: 'flex',
+                    gap: '8px'
+                }
+            }, editorTools.map(tool => 
+                React.createElement(Button, {
+                    key: tool.key,
+                    size: 'small',
+                    onClick: () => insertTag(tool.key),
+                    title: tool.tooltip
+                }, tool.icon)
+            )),
+            React.createElement(TextArea, {
+                key: 'editor',
+                id: 'richTextEditor',
+                value: richTextContent,
+                onChange: (e) => setRichTextContent(e.target.value),
+                placeholder: '请输入文章内容...\n\n支持Markdown格式：\n**粗体** *斜体* # 标题\n[链接](url) ![图片](url)\n- 列表项',
+                rows: 12,
+                style: { 
+                    border: 'none',
+                    resize: 'vertical',
+                    fontSize: '14px',
+                    lineHeight: '1.6'
+                }
+            })
+        ]);
+    };
+
     // 模拟数据
     const mockContentData = [
         {
@@ -234,117 +321,6 @@ const ContentManagement = () => {
         fileList: uploadedFiles,
     };
 
-    // 简易富文本编辑器
-    const RichTextEditor = () => {
-        const [showTools, setShowTools] = React.useState(false);
-        
-        const insertTag = (tag) => {
-            const textarea = document.getElementById('richTextEditor');
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const selectedText = richTextContent.substring(start, end);
-            const beforeText = richTextContent.substring(0, start);
-            const afterText = richTextContent.substring(end);
-            
-            let newText = '';
-            switch(tag) {
-                case 'bold':
-                    newText = beforeText + `**${selectedText || '粗体文字'}**` + afterText;
-                    break;
-                case 'italic':
-                    newText = beforeText + `*${selectedText || '斜体文字'}*` + afterText;
-                    break;
-                case 'h1':
-                    newText = beforeText + `# ${selectedText || '一级标题'}` + afterText;
-                    break;
-                case 'h2':
-                    newText = beforeText + `## ${selectedText || '二级标题'}` + afterText;
-                    break;
-                case 'link':
-                    newText = beforeText + `[${selectedText || '链接文字'}](http://example.com)` + afterText;
-                    break;
-                case 'image':
-                    newText = beforeText + `![图片描述](图片地址)` + afterText;
-                    break;
-                case 'list':
-                    newText = beforeText + `\n- ${selectedText || '列表项'}\n- 列表项2\n- 列表项3\n` + afterText;
-                    break;
-                default:
-                    return;
-            }
-            setRichTextContent(newText);
-        };
-
-        return React.createElement('div', {
-            style: { border: '1px solid #d9d9d9', borderRadius: '6px' }
-        }, [
-            React.createElement('div', {
-                key: 'toolbar',
-                style: {
-                    padding: '8px 12px',
-                    borderBottom: '1px solid #f0f0f0',
-                    background: '#fafafa'
-                }
-            }, [
-                React.createElement(Button, {
-                    key: 'bold',
-                    size: 'small',
-                    onClick: () => insertTag('bold'),
-                    style: { marginRight: '8px' }
-                }, 'B'),
-                React.createElement(Button, {
-                    key: 'italic',
-                    size: 'small',
-                    onClick: () => insertTag('italic'),
-                    style: { marginRight: '8px' }
-                }, 'I'),
-                React.createElement(Button, {
-                    key: 'h1',
-                    size: 'small',
-                    onClick: () => insertTag('h1'),
-                    style: { marginRight: '8px' }
-                }, 'H1'),
-                React.createElement(Button, {
-                    key: 'h2',
-                    size: 'small',
-                    onClick: () => insertTag('h2'),
-                    style: { marginRight: '8px' }
-                }, 'H2'),
-                React.createElement(Button, {
-                    key: 'link',
-                    size: 'small',
-                    onClick: () => insertTag('link'),
-                    style: { marginRight: '8px' }
-                }, '🔗'),
-                React.createElement(Button, {
-                    key: 'image',
-                    size: 'small',
-                    onClick: () => insertTag('image'),
-                    style: { marginRight: '8px' }
-                }, '🖼️'),
-                React.createElement(Button, {
-                    key: 'list',
-                    size: 'small',
-                    onClick: () => insertTag('list')
-                }, '📝')
-            ]),
-            React.createElement(TextArea, {
-                key: 'editor',
-                id: 'richTextEditor',
-                value: richTextContent,
-                onChange: (e) => setRichTextContent(e.target.value),
-                placeholder: '请输入文章内容...\n\n支持Markdown格式：\n**粗体** *斜体* # 标题\n[链接](url) ![图片](url)\n- 列表项',
-                rows: 12,
-                style: { 
-                    border: 'none',
-                    resize: 'vertical',
-                    fontSize: '14px',
-                    lineHeight: '1.6'
-                }
-            })
-        ]);
-    };
-
     const getStatusTag = (status) => {
         const statusMap = {
             published: { color: 'green', text: '已发布' },
@@ -416,10 +392,16 @@ const ContentManagement = () => {
                             label: '内容类型'
                         }, React.createElement(Radio.Group, {
                             value: contentType,
-                            onChange: (e) => setContentType(e.target.value)
+                            onChange: (e) => {
+                                setContentType(e.target.value);
+                                // 当切换内容类型时，清空内容详情
+                                publishForm.setFieldValue('content', '');
+                                setRichTextContent('');
+                            }
                         }, [
                             React.createElement(Radio.Button, { key: 'article', value: 'article' }, '📄 图文'),
-                            React.createElement(Radio.Button, { key: 'video', value: 'video' }, '🎬 视频')
+                            React.createElement(Radio.Button, { key: 'video', value: 'video' }, '🎬 视频'),
+                            React.createElement(Radio.Button, { key: 'news', value: 'news' }, '📰 资讯')
                         ])),
 
                         React.createElement(Form.Item, {
@@ -465,17 +447,25 @@ const ContentManagement = () => {
                     ])
                 ]),
 
-                React.createElement(Form.Item, {
-                    key: 'content',
-                    label: '内容详情',
-                    name: 'content',
-                    rules: [{ required: true, message: '请输入内容详情' }]
-                }, React.createElement(TextArea, {
-                    placeholder: '请输入内容详情',
-                    rows: 6,
-                    maxLength: 2000,
-                    showCount: true
-                })),
+                // 根据内容类型渲染不同的内容编辑器
+                contentType === 'news' ?
+                    React.createElement(Form.Item, {
+                        key: 'content',
+                        label: '内容详情',
+                        required: true,
+                        help: '支持富文本编辑，可使用Markdown语法'
+                    }, RichTextEditor()) :
+                    React.createElement(Form.Item, {
+                        key: 'content',
+                        label: '内容详情',
+                        name: 'content',
+                        rules: [{ required: true, message: '请输入内容详情' }]
+                    }, React.createElement(TextArea, {
+                        placeholder: '请输入内容详情',
+                        rows: 6,
+                        maxLength: 2000,
+                        showCount: true
+                    })),
 
                 React.createElement(Form.Item, {
                     key: 'upload',
@@ -694,7 +684,8 @@ const ContentManagement = () => {
                     }, [
                         React.createElement(Option, { key: 'all', value: 'all' }, '全部类型'),
                         React.createElement(Option, { key: 'video', value: 'video' }, '视频'),
-                        React.createElement(Option, { key: 'article', value: 'article' }, '图文')
+                        React.createElement(Option, { key: 'article', value: 'article' }, '图文'),
+                        React.createElement(Option, { key: 'news', value: 'news' }, '资讯')
                     ])
                 ),
                 React.createElement(Col, { key: 'status', span: 4 },
@@ -822,7 +813,7 @@ const ContentManagement = () => {
                     React.createElement('span', {
                         key: 'type',
                         style: { marginLeft: '8px' }
-                    }, previewData.contentType === 'video' ? '视频内容' : '图文内容'),
+                    }, previewData.contentType === 'video' ? '视频内容' : previewData.contentType === 'news' ? '资讯内容' : '图文内容'),
                     React.createElement('span', {
                         key: 'time',
                         style: { marginLeft: '8px' }
@@ -897,7 +888,7 @@ const ContentManagement = () => {
                 React.createElement('p', { key: 'publisher' }, `发布者：${selectedContent.publisher}`),
                 React.createElement('p', { key: 'time' }, `发布时间：${selectedContent.publishTime}`),
                 React.createElement('p', { key: 'board' }, ['发布板块：', getBoardTag(selectedContent.board)]),
-                React.createElement('p', { key: 'type' }, `内容类型：${selectedContent.type === 'video' ? '视频' : '图文'}`),
+                React.createElement('p', { key: 'type' }, `内容类型：${selectedContent.type === 'video' ? '视频' : selectedContent.type === 'news' ? '资讯' : '图文'}`),
                 selectedContent.duration && React.createElement('p', { key: 'duration' }, `视频时长：${selectedContent.duration}`),
                 selectedContent.imageCount && React.createElement('p', { key: 'images' }, `图片数量：${selectedContent.imageCount}张`)
             ])
