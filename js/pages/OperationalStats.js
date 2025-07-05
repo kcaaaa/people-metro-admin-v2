@@ -905,6 +905,8 @@ const OperationalStats = () => {
     ]);
 };
 
-// 导出组件
-window.OperationalStats = OperationalStats;
+// 确保组件被正确挂载到全局对象
+if (typeof window !== 'undefined') {
+    window.OperationalStats = OperationalStats;
+}
 export default OperationalStats; 

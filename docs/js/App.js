@@ -287,6 +287,7 @@ const App = () => {
 
         const Component = pageComponents[currentPage];
         if (Component) {
+            console.log('Found component for page:', currentPage);
             // 使用权限HOC包装组件（如果需要）
             if (window.PermissionManager) {
                 const requiredPermissions = window.PermissionManager.PAGE_PERMISSIONS[currentPage];
@@ -315,6 +316,7 @@ const App = () => {
             return React.createElement(Component);
         }
         
+        console.log('Page component not found:', currentPage);
         return React.createElement('div', {
             style: {
                 display: 'flex',

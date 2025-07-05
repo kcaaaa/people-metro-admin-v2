@@ -155,7 +155,7 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     icon: '📊',
                     label: '运营数据统计',
                     title: '全面的运营数据分析与统计',
-                    page: 'OperationalStats'
+                    page: 'operational'  // 确保这里使用正确的页面标识符
                 },
                 {
                     key: 'stats',
