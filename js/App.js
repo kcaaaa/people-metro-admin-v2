@@ -288,12 +288,17 @@ const App = () => {
             'PersonalCenter': window.PersonalCenter
         };
 
+        console.log('Looking for component:', currentPage);
+        console.log('Component mapping:', {
+            operational: window.OperationalStats,
+            OperationalStats: window.OperationalStats
+        });
+        
         const Component = pageComponents[currentPage];
-        console.log('Looking for component:', currentPage, 'Found:', !!Component);
-        console.log('OperationalStats component:', window.OperationalStats);
+        console.log('Found component:', Component ? 'yes' : 'no');
         
         if (Component) {
-            console.log('Found component for page:', currentPage);
+            console.log('Rendering component for page:', currentPage);
             // 使用权限HOC包装组件（如果需要）
             if (window.PermissionManager) {
                 const requiredPermissions = window.PermissionManager.PAGE_PERMISSIONS[currentPage];

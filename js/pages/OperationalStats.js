@@ -1,5 +1,5 @@
 // 运营数据统计页面 - 基于新功能规范重构
-const OperationalStats = () => {
+window.OperationalStats = () => {
     const { Row, Col, Card, Statistic, Button, Space, Select, DatePicker, Tabs, Table, Progress, Tag, Alert, Modal, Form, Tooltip, Badge, message } = antd;
     
     const [activeTab, setActiveTab] = React.useState('overview');

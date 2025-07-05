@@ -63,7 +63,34 @@
         // 等待所有脚本加载完成
         window.addEventListener('load', function() {
             console.log('🚀 正在启动应用...');
-            console.log('Available components:', Object.keys(window).filter(key => key.endsWith('Management') || key === 'Dashboard' || key === 'OperationalStats'));
+            
+            // 检查组件加载情况
+            const requiredComponents = [
+                'Dashboard',
+                'OperationalStats',
+                'Navigation',
+                'TopBar'
+            ];
+            
+            const missingComponents = requiredComponents.filter(comp => !window[comp]);
+            if (missingComponents.length > 0) {
+                console.error('❌ 以下组件未正确加载:', missingComponents);
+                document.getElementById('root').innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h2>组件加载失败</h2>
+                        <p>以下组件未能正确加载：${missingComponents.join(', ')}</p>
+                        <button onclick="location.reload()" style="margin-top: 20px; padding: 8px 16px;">重新加载</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            console.log('✅ 所有必需组件已加载');
+            console.log('Available components:', Object.keys(window).filter(key => 
+                key.endsWith('Management') || 
+                key === 'Dashboard' || 
+                key === 'OperationalStats'
+            ));
             
             try {
                 // 确保 React 和 ReactDOM 已加载
