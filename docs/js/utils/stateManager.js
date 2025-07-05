@@ -20,6 +20,28 @@ const StateManager = {
             pendingComplaints: 0,
             systemLoad: 0,
             lastUpdate: null
+        },
+        // 直播数据状态
+        liveData: {
+            lives: []
+        },
+        liveStats: {
+            realtime: {
+                viewCount: 0,
+                likeCount: 0,
+                shareCount: 0,
+                onlineUsers: 0,
+                peakOnlineUsers: 0,
+                duration: '00:00:00',
+                commentCount: 0
+            },
+            history: [],
+            userPortrait: {
+                regions: [],
+                gender: [],
+                age: [],
+                platform: []
+            }
         }
     },
 
@@ -63,6 +85,12 @@ const StateManager = {
                 if (parsed.systemStatus) {
                     this.state.systemStatus = { ...this.state.systemStatus, ...parsed.systemStatus };
                 }
+                if (parsed.liveData) {
+                    this.state.liveData = { ...this.state.liveData, ...parsed.liveData };
+                }
+                if (parsed.liveStats) {
+                    this.state.liveStats = { ...this.state.liveStats, ...parsed.liveStats };
+                }
             }
         } catch (error) {
             console.warn('Failed to load initial state:', error);
@@ -92,7 +120,9 @@ const StateManager = {
                 complaints: Object.fromEntries(this.state.complaints),
                 permissions: Object.fromEntries(this.state.permissions),
                 notifications: this.state.notifications,
-                systemStatus: this.state.systemStatus
+                systemStatus: this.state.systemStatus,
+                liveData: this.state.liveData,
+                liveStats: this.state.liveStats
             };
             localStorage.setItem('systemState', JSON.stringify(stateToSave));
         } catch (error) {
@@ -320,6 +350,87 @@ const StateManager = {
         return this.state.systemStatus;
     },
 
+    // === 直播数据管理 ===
+    // 初始化直播数据状态
+    initLiveData(initialLives = []) {
+        this.state.liveData.lives = initialLives;
+        this.emit('liveData:initialized', { lives: this.state.liveData.lives });
+    },
+
+    addLive(live) {
+        this.state.liveData.lives.push(live);
+        this.emit('liveData:added', live);
+    },
+
+    updateLive(liveId, updates) {
+        const index = this.state.liveData.lives.findIndex(live => live.id === liveId);
+        if (index > -1) {
+            this.state.liveData.lives[index] = { ...this.state.liveData.lives[index], ...updates };
+            this.emit('liveData:updated', { liveId, updates });
+        }
+    },
+
+    deleteLive(liveId) {
+        const initialLength = this.state.liveData.lives.length;
+        this.state.liveData.lives = this.state.liveData.lives.filter(live => live.id !== liveId);
+        if (this.state.liveData.lives.length < initialLength) {
+            this.emit('liveData:deleted', liveId);
+        }
+    },
+
+    getLiveInfo(liveId) {
+        return this.state.liveData.lives.find(live => live.id === liveId);
+    },
+
+    updateLiveStats(liveId, stats) {
+        // 更新实时数据
+        if (stats.realtime) {
+            this.state.liveStats.realtime = {
+                ...this.state.liveStats.realtime,
+                ...stats.realtime
+            };
+        }
+        
+        // 更新历史数据
+        if (stats.history) {
+            const existingIndex = this.state.liveStats.history.findIndex(h => h.id === liveId);
+            if (existingIndex > -1) {
+                this.state.liveStats.history[existingIndex] = {
+                    ...this.state.liveStats.history[existingIndex],
+                    ...stats.history
+                };
+            } else {
+                this.state.liveStats.history.push({
+                    id: liveId,
+                    ...stats.history
+                });
+            }
+        }
+        
+        // 更新用户画像
+        if (stats.userPortrait) {
+            this.state.liveStats.userPortrait = {
+                ...this.state.liveStats.userPortrait,
+                ...stats.userPortrait
+            };
+        }
+        
+        // 触发更新事件
+        this.emit('liveStats:updated', {
+            liveId,
+            stats: this.state.liveStats
+        });
+    },
+
+    // 获取直播统计数据
+    getLiveStats(liveId) {
+        return {
+            realtime: this.state.liveStats.realtime,
+            history: this.state.liveStats.history.find(h => h.id === liveId),
+            userPortrait: this.state.liveStats.userPortrait
+        };
+    },
+
     // === 操作日志记录 ===
     recordOperationLog(event, data) {
         const log = {
@@ -399,102 +510,9 @@ const StateManager = {
             complaints: Object.fromEntries(this.state.complaints),
             permissions: Object.fromEntries(this.state.permissions),
             notifications: this.state.notifications,
-            systemStatus: this.state.systemStatus
-        };
-    },
-
-    // === 直播数据管理 ===
-    getLiveStats() {
-        // 返回模拟的直播数据
-        return {
-            realtime: {
-                viewCount: 1234,
-                likeCount: 567,
-                shareCount: 89,
-                onlineUsers: 432,
-                peakOnlineUsers: 1500,
-                duration: '01:23:45',
-                commentCount: 234,
-                trendData: this.initTrendData()
-            },
-            history: [
-                {
-                    id: 'live_001',
-                    title: '2024城轨创新发展论坛',
-                    startTime: '2024-03-15 14:00:00',
-                    endTime: '2024-03-15 16:30:00',
-                    status: 'ended',
-                    viewCount: 12345,
-                    peakOnlineUsers: 2000,
-                    uniqueViewers: 8000,
-                    duration: '02:30:00',
-                    avgWatchTime: '00:45:30',
-                    likeCount: 3456,
-                    commentCount: 789,
-                    shareCount: 234,
-                    replayViews: 5678
-                }
-            ],
-            userPortrait: {
-                regions: [
-                    { name: '北京', value: 25 },
-                    { name: '上海', value: 20 },
-                    { name: '广州', value: 15 },
-                    { name: '深圳', value: 12 },
-                    { name: '其他', value: 28 }
-                ],
-                gender: [
-                    { name: '男', value: 65 },
-                    { name: '女', value: 35 }
-                ],
-                age: [
-                    { range: '18-24', value: 15 },
-                    { range: '25-34', value: 35 },
-                    { range: '35-44', value: 30 },
-                    { range: '45+', value: 20 }
-                ],
-                platform: [
-                    { name: 'PC', value: 45 },
-                    { name: '微信', value: 40 },
-                    { name: '其他', value: 15 }
-                ]
-            }
-        };
-    },
-
-    initTrendData() {
-        const now = new Date();
-        const timestamps = Array(20).fill(0).map((_, i) => {
-            const date = new Date(now);
-            date.setMinutes(date.getMinutes() - (19 - i));
-            return date.toLocaleTimeString();
-        });
-        return {
-            timestamps,
-            onlineUsers: Array(20).fill(0).map(() => Math.floor(Math.random() * 500 + 200)),
-            viewCounts: Array(20).fill(0).map((_, i) => 1000 + i * 50),
-            likeCounts: Array(20).fill(0).map((_, i) => 500 + i * 20),
-            commentCounts: Array(20).fill(0).map((_, i) => 200 + i * 10)
-        };
-    },
-
-    getLiveInfo(liveId) {
-        // 返回指定直播的详细信息
-        return {
-            id: liveId,
-            title: '2024城轨创新发展论坛',
-            startTime: '2024-03-15 14:00:00',
-            endTime: '2024-03-15 16:30:00',
-            status: 'ended',
-            viewCount: 12345,
-            peakOnlineUsers: 2000,
-            uniqueViewers: 8000,
-            duration: '02:30:00',
-            avgWatchTime: '00:45:30',
-            likeCount: 3456,
-            commentCount: 789,
-            shareCount: 234,
-            replayViews: 5678
+            systemStatus: this.state.systemStatus,
+            liveData: this.state.liveData,
+            liveStats: this.state.liveStats
         };
     },
 
@@ -511,6 +529,23 @@ const StateManager = {
             pendingComplaints: 0,
             systemLoad: 0,
             lastUpdate: null
+        };
+        this.state.liveData.lives = [];
+        this.state.liveStats.realtime = {
+            viewCount: 0,
+            likeCount: 0,
+            shareCount: 0,
+            onlineUsers: 0,
+            peakOnlineUsers: 0,
+            duration: '00:00:00',
+            commentCount: 0
+        };
+        this.state.liveStats.history = [];
+        this.state.liveStats.userPortrait = {
+            regions: [],
+            gender: [],
+            age: [],
+            platform: []
         };
         localStorage.removeItem('systemState');
         this.emit('system:stateCleared', {});

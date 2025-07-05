@@ -28,7 +28,7 @@ const ContentManagement = () => {
     // 发布相关状态
     const [publishForm] = Form.useForm();
     const [contentType, setContentType] = React.useState('article');
-    const [publishBoard, setPublishBoard] = React.useState('association');
+    const [publishBoard, setPublishBoard] = React.useState('exhibition');
     const [previewVisible, setPreviewVisible] = React.useState(false);
     const [previewData, setPreviewData] = React.useState(null);
     const [uploadedFiles, setUploadedFiles] = React.useState([]);
@@ -392,7 +392,7 @@ const ContentManagement = () => {
                 React.createElement('p', {
                     key: 'description',
                     style: { color: '#666', fontSize: '14px', margin: '0' }
-                }, '发布视频、图文等内容到协会、推荐板块，支持富文本编辑和预览')
+                }, '发布视频、图文等内容到展会、协会、推荐板块，支持富文本编辑和预览')
             ]),
 
             React.createElement(Form, {
@@ -424,6 +424,7 @@ const ContentManagement = () => {
                             value: publishBoard,
                             onChange: (e) => setPublishBoard(e.target.value)
                         }, [
+                            React.createElement(Radio.Button, { key: 'exhibition', value: 'exhibition' }, '🏢 展会板块'),
                             React.createElement(Radio.Button, { key: 'association', value: 'association' }, '🏛️ 协会板块'),
                             React.createElement(Radio.Button, { key: 'recommended', value: 'recommended' }, '⭐ 推荐板块')
                         ]))
@@ -459,6 +460,18 @@ const ContentManagement = () => {
                         }))
                     ])
                 ]),
+
+                React.createElement(Form.Item, {
+                    key: 'description',
+                    label: '内容摘要',
+                    name: 'description',
+                    rules: [{ required: true, message: '请输入内容摘要' }]
+                }, React.createElement(TextArea, {
+                    placeholder: '请输入内容摘要，将显示在内容列表中',
+                    rows: 3,
+                    maxLength: 200,
+                    showCount: true
+                })),
 
                 React.createElement(Form.Item, {
                     key: 'content',

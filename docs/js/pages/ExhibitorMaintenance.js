@@ -250,5 +250,5 @@ const ExhibitorMaintenance = () => {
 };
 
 console.log('ExhibitorMaintenance component defined');
-window.ExhibitorMaintenance = ExhibitorMaintenance;
+window.ExhibitorMaintenance = ExhibitorMaintenance; 
 console.log('[ExhibitorMaintenance] window.ExhibitorMaintenance 挂载成功'); 

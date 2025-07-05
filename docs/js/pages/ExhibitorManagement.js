@@ -130,11 +130,7 @@ const ExhibitorManagement = () => {
         const confirmed = companies.filter(c => c.status === 'confirmed').length;
         const pending = companies.filter(c => c.status === 'pending').length;
         const rejected = companies.filter(c => c.status === 'rejected').length;
-        
-        // 计算实际使用的展位数
-        const usedBooths = companies.filter(c => c.status === 'confirmed' || c.status === 'pending').length;
-        const totalBooths = 100; // 总展位数
-        const boothUsage = `${usedBooths}/${totalBooths}`; // 展位使用率
+        const boothUsage = `${confirmed}/100`; // 展位使用率
         
         return { total, confirmed, pending, rejected, boothUsage };
     }, [companies]);
