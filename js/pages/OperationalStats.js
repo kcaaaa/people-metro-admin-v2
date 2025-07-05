@@ -1,28 +1,6 @@
 // 运营数据统计页面 - 基于新功能规范重构
-import React, { useState, useEffect } from 'react';
-import { 
-    Row, 
-    Col, 
-    Card, 
-    Statistic, 
-    Button, 
-    Space, 
-    Select, 
-    DatePicker, 
-    Tabs, 
-    Table, 
-    Progress, 
-    Tag, 
-    Alert, 
-    Modal, 
-    Form, 
-    Tooltip, 
-    Badge,
-    message
-} from 'antd';
-import { Line } from '@ant-design/charts';
-
 const OperationalStats = () => {
+    const { Row, Col, Card, Statistic, Button, Space, Select, DatePicker, Tabs, Table, Progress, Tag, Alert, Modal, Form, Tooltip, Badge, message } = antd;
     
     const [activeTab, setActiveTab] = React.useState('overview');
     const [coreData, setCoreData] = React.useState({});
@@ -34,7 +12,6 @@ const OperationalStats = () => {
     const [errorData, setErrorData] = React.useState({});
     const [loading, setLoading] = React.useState(false);
     const [dateRange, setDateRange] = React.useState(null);
-    // 添加导出相关状态
     const [exportModalVisible, setExportModalVisible] = React.useState(false);
     const [exportType, setExportType] = React.useState('excel');
     const [exportLoading, setExportLoading] = React.useState(false);
@@ -928,6 +905,6 @@ const OperationalStats = () => {
     ]);
 };
 
-// 修改导出方式
+// 导出组件
 window.OperationalStats = OperationalStats;
 export default OperationalStats; 
