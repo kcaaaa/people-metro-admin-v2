@@ -1,4 +1,9 @@
 // 内容管理页面 - 支持内容发布和管理
+// Version: 2024-03-21
+// Features:
+// - 支持图文、视频、资讯三种内容类型
+// - 支持封面和背景音乐上传
+// - 资讯类型支持富文本编辑
 const ContentManagement = () => {
     const { Card, Table, Button, Input, Select, Space, Tag, Modal, Form, Switch, message, Row, Col, Statistic, DatePicker, Tabs, Upload, Radio, Divider } = antd;
     const { Search } = Input;
