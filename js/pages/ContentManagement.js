@@ -33,6 +33,8 @@ const ContentManagement = () => {
     const [previewData, setPreviewData] = React.useState(null);
     const [uploadedFiles, setUploadedFiles] = React.useState([]);
     const [richTextContent, setRichTextContent] = React.useState('');
+    const [coverFile, setCoverFile] = React.useState(null);
+    const [bgmFile, setBgmFile] = React.useState(null);
     
     // 详情模态框状态
     const [selectedContent, setSelectedContent] = React.useState(null);
@@ -233,8 +235,91 @@ const ContentManagement = () => {
         }
     };
 
+    // 封面上传配置
+    const coverUploadProps = {
+        name: 'cover',
+        accept: 'image/*',
+        maxCount: 1,
+        fileList: coverFile ? [coverFile] : [],
+        beforeUpload: (file) => {
+            const isImage = file.type.startsWith('image/');
+            if (!isImage) {
+                message.error('请上传图片格式的封面！');
+                return false;
+            }
+            const isLt5M = file.size / 1024 / 1024 < 5;
+            if (!isLt5M) {
+                message.error('封面图片大小不能超过5MB！');
+                return false;
+            }
+            
+            // 创建预览URL
+            const newFile = {
+                uid: Date.now(),
+                name: file.name,
+                status: 'done',
+                url: URL.createObjectURL(file),
+                originFileObj: file
+            };
+            setCoverFile(newFile);
+            return false;
+        },
+        onRemove: () => {
+            setCoverFile(null);
+        }
+    };
+
+    // 背景音乐上传配置
+    const bgmUploadProps = {
+        name: 'bgm',
+        accept: 'audio/*',
+        maxCount: 1,
+        fileList: bgmFile ? [bgmFile] : [],
+        beforeUpload: (file) => {
+            const isAudio = file.type.startsWith('audio/');
+            if (!isAudio) {
+                message.error('请上传音频格式的背景音乐！');
+                return false;
+            }
+            const isLt10M = file.size / 1024 / 1024 < 10;
+            if (!isLt10M) {
+                message.error('背景音乐大小不能超过10MB！');
+                return false;
+            }
+            
+            // 创建预览URL
+            const newFile = {
+                uid: Date.now(),
+                name: file.name,
+                status: 'done',
+                url: URL.createObjectURL(file),
+                originFileObj: file
+            };
+            setBgmFile(newFile);
+            return false;
+        },
+        onRemove: () => {
+            setBgmFile(null);
+        }
+    };
+
+    // 重置所有表单数据
+    const resetFormData = () => {
+        publishForm.resetFields();
+        setRichTextContent('');
+        setUploadedFiles([]);
+        setCoverFile(null);
+        setBgmFile(null);
+    };
+
     // 发布内容处理函数
     const handlePublish = async (values) => {
+        // 检查封面是否已上传
+        if (!coverFile) {
+            message.error('请上传内容封面！');
+            return;
+        }
+
         try {
             setLoading(true);
             
@@ -244,6 +329,8 @@ const ContentManagement = () => {
                 publishBoard,
                 richTextContent,
                 uploadedFiles,
+                cover: coverFile,
+                bgm: bgmFile,
                 publishTime: new Date().toISOString(),
                 status: 'pending',
                 auditStatus: 'ai_pending'
@@ -257,9 +344,7 @@ const ContentManagement = () => {
             message.success('内容发布成功，已提交审核！');
             
             // 重置表单
-            publishForm.resetFields();
-            setRichTextContent('');
-            setUploadedFiles([]);
+            resetFormData();
             setActiveTab('management');
             
         } catch (error) {
@@ -277,7 +362,9 @@ const ContentManagement = () => {
             contentType,
             publishBoard,
             richTextContent,
-            uploadedFiles
+            uploadedFiles,
+            cover: coverFile, // 添加封面预览
+            bgm: bgmFile // 添加背景音乐预览
         });
         setPreviewVisible(true);
     };
@@ -359,6 +446,9 @@ const ContentManagement = () => {
             labelCol: { span: 24 },
             wrapperCol: { span: 24 }
         };
+
+        // 是否显示背景音乐上传
+        const showBgmUpload = contentType === 'article' || contentType === 'news';
 
         return React.createElement('div', { key: 'publish-page' }, [
             React.createElement('div', {
@@ -447,6 +537,43 @@ const ContentManagement = () => {
                     ])
                 ]),
 
+                // 封面上传
+                React.createElement(Form.Item, {
+                    key: 'cover',
+                    label: '内容封面',
+                    required: true,
+                    help: '支持jpg、png格式，建议尺寸800x600，大小不超过5MB'
+                }, React.createElement(Upload, {
+                    ...coverUploadProps,
+                    listType: 'picture-card'
+                }, !coverFile && [
+                    React.createElement('div', {
+                        key: 'upload-button',
+                        style: { padding: '8px 0' }
+                    }, [
+                        React.createElement('div', { 
+                            key: 'icon',
+                            style: { marginBottom: 8 }
+                        }, '📷'),
+                        React.createElement('div', { 
+                            key: 'text',
+                            style: { fontSize: 12 }
+                        }, '上传封面')
+                    ])
+                ])),
+
+                // 背景音乐上传（仅在图文和资讯类型时显示）
+                showBgmUpload && React.createElement(Form.Item, {
+                    key: 'bgm',
+                    label: '背景音乐',
+                    help: '支持mp3格式，大小不超过10MB'
+                }, React.createElement(Upload, {
+                    ...bgmUploadProps,
+                    listType: 'text'
+                }, !bgmFile && React.createElement(Button, {
+                    icon: React.createElement('span', null, '🎵'),
+                }, '上传背景音乐'))),
+
                 // 根据内容类型渲染不同的内容编辑器
                 contentType === 'news' ?
                     React.createElement(Form.Item, {
@@ -467,6 +594,7 @@ const ContentManagement = () => {
                         showCount: true
                     })),
 
+                // 文件上传（根据内容类型显示不同的提示）
                 React.createElement(Form.Item, {
                     key: 'upload',
                     label: contentType === 'video' ? '上传视频' : '上传图片/视频'
@@ -771,7 +899,7 @@ const ContentManagement = () => {
         ]);
     };
 
-    // 渲染预览模态框
+    // 更新预览模态框，显示封面和背景音乐信息
     const renderPreviewModal = () => {
         if (!previewData) return null;
 
@@ -797,6 +925,38 @@ const ContentManagement = () => {
         }, React.createElement('div', {
             style: { padding: '16px 0' }
         }, [
+            // 封面预览
+            coverFile && React.createElement('div', {
+                key: 'cover',
+                style: { 
+                    marginBottom: '24px',
+                    textAlign: 'center'
+                }
+            }, React.createElement('img', {
+                src: coverFile.url,
+                alt: '内容封面',
+                style: {
+                    maxWidth: '100%',
+                    maxHeight: '300px',
+                    borderRadius: '8px'
+                }
+            })),
+
+            // 背景音乐信息
+            bgmFile && React.createElement('div', {
+                key: 'bgm',
+                style: {
+                    marginBottom: '16px',
+                    padding: '8px 16px',
+                    background: '#f5f5f5',
+                    borderRadius: '4px'
+                }
+            }, [
+                React.createElement('span', { key: 'icon' }, '🎵 '),
+                React.createElement('span', null, '背景音乐：'),
+                React.createElement('span', null, bgmFile.name)
+            ]),
+
             React.createElement('div', {
                 key: 'header',
                 style: { marginBottom: '24px', textAlign: 'center' }
