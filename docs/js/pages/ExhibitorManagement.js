@@ -130,8 +130,9 @@ const ExhibitorManagement = () => {
         const confirmed = companies.filter(c => c.status === 'confirmed').length;
         const pending = companies.filter(c => c.status === 'pending').length;
         const rejected = companies.filter(c => c.status === 'rejected').length;
+        const boothUsage = `${confirmed}/100`; // 展位使用率
         
-        return { total, confirmed, pending, rejected };
+        return { total, confirmed, pending, rejected, boothUsage };
     }, [companies]);
 
     React.useEffect(() => {
@@ -287,12 +288,53 @@ const ExhibitorManagement = () => {
     // 状态渲染
     const renderStatus = (status) => {
         const statusConfig = {
-            'confirmed': { color: 'green', text: '已确认' },
+            'confirmed': { color: 'green', text: '已审核' },
             'pending': { color: 'orange', text: '待审核' },
             'rejected': { color: 'red', text: '已拒绝' }
         };
         const config = statusConfig[status] || statusConfig['pending'];
         return React.createElement(Tag, { color: config.color }, config.text);
+    };
+
+    // 渲染统计卡片
+    const renderStatistics = () => {
+        return React.createElement(Row, { gutter: 16 }, [
+            React.createElement(Col, { span: 6, key: 'total' },
+                React.createElement(Card, {},
+                    React.createElement(Statistic, {
+                        title: '参展公司总数',
+                        value: statistics.total,
+                        suffix: '家'
+                    })
+                )
+            ),
+            React.createElement(Col, { span: 6, key: 'confirmed' },
+                React.createElement(Card, {},
+                    React.createElement(Statistic, {
+                        title: '已审核',
+                        value: statistics.confirmed,
+                        suffix: '家'
+                    })
+                )
+            ),
+            React.createElement(Col, { span: 6, key: 'pending' },
+                React.createElement(Card, {},
+                    React.createElement(Statistic, {
+                        title: '待审核',
+                        value: statistics.pending,
+                        suffix: '家'
+                    })
+                )
+            ),
+            React.createElement(Col, { span: 6, key: 'usage' },
+                React.createElement(Card, {},
+                    React.createElement(Statistic, {
+                        title: '展位使用',
+                        value: statistics.boothUsage
+                    })
+                )
+            )
+        ]);
     };
 
     // 表格列定义
@@ -767,7 +809,7 @@ const ExhibitorManagement = () => {
                 React.createElement(Card, {
                     style: { textAlign: 'center' }
                 }, React.createElement(Statistic, {
-                    title: '已确认',
+                    title: '已审核',
                     value: statistics.confirmed,
                     valueStyle: { color: '#52c41a' },
                     suffix: '家'
@@ -787,8 +829,8 @@ const ExhibitorManagement = () => {
                 React.createElement(Card, {
                     style: { textAlign: 'center' }
                 }, React.createElement(Statistic, {
-                    title: '展位占用率',
-                    value: ((statistics.confirmed / 150) * 100).toFixed(1),
+                    title: '展位使用',
+                    value: statistics.boothUsage,
                     valueStyle: { color: '#722ed1' },
                     suffix: '%'
                 }))
@@ -820,7 +862,7 @@ const ExhibitorManagement = () => {
                     placeholder: '筛选状态'
                 }, [
                     React.createElement(Option, { key: 'all', value: 'all' }, '全部状态'),
-                    React.createElement(Option, { key: 'confirmed', value: 'confirmed' }, '已确认'),
+                    React.createElement(Option, { key: 'confirmed', value: 'confirmed' }, '已审核'),
                     React.createElement(Option, { key: 'pending', value: 'pending' }, '待审核'),
                     React.createElement(Option, { key: 'rejected', value: 'rejected' }, '已拒绝')
                 ])
