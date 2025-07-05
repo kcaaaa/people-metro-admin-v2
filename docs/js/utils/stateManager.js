@@ -403,6 +403,101 @@ const StateManager = {
         };
     },
 
+    // === 直播数据管理 ===
+    getLiveStats() {
+        // 返回模拟的直播数据
+        return {
+            realtime: {
+                viewCount: 1234,
+                likeCount: 567,
+                shareCount: 89,
+                onlineUsers: 432,
+                peakOnlineUsers: 1500,
+                duration: '01:23:45',
+                commentCount: 234,
+                trendData: this.initTrendData()
+            },
+            history: [
+                {
+                    id: 'live_001',
+                    title: '2024城轨创新发展论坛',
+                    startTime: '2024-03-15 14:00:00',
+                    endTime: '2024-03-15 16:30:00',
+                    status: 'ended',
+                    viewCount: 12345,
+                    peakOnlineUsers: 2000,
+                    uniqueViewers: 8000,
+                    duration: '02:30:00',
+                    avgWatchTime: '00:45:30',
+                    likeCount: 3456,
+                    commentCount: 789,
+                    shareCount: 234,
+                    replayViews: 5678
+                }
+            ],
+            userPortrait: {
+                regions: [
+                    { name: '北京', value: 25 },
+                    { name: '上海', value: 20 },
+                    { name: '广州', value: 15 },
+                    { name: '深圳', value: 12 },
+                    { name: '其他', value: 28 }
+                ],
+                gender: [
+                    { name: '男', value: 65 },
+                    { name: '女', value: 35 }
+                ],
+                age: [
+                    { range: '18-24', value: 15 },
+                    { range: '25-34', value: 35 },
+                    { range: '35-44', value: 30 },
+                    { range: '45+', value: 20 }
+                ],
+                platform: [
+                    { name: 'PC', value: 45 },
+                    { name: '微信', value: 40 },
+                    { name: '其他', value: 15 }
+                ]
+            }
+        };
+    },
+
+    initTrendData() {
+        const now = new Date();
+        const timestamps = Array(20).fill(0).map((_, i) => {
+            const date = new Date(now);
+            date.setMinutes(date.getMinutes() - (19 - i));
+            return date.toLocaleTimeString();
+        });
+        return {
+            timestamps,
+            onlineUsers: Array(20).fill(0).map(() => Math.floor(Math.random() * 500 + 200)),
+            viewCounts: Array(20).fill(0).map((_, i) => 1000 + i * 50),
+            likeCounts: Array(20).fill(0).map((_, i) => 500 + i * 20),
+            commentCounts: Array(20).fill(0).map((_, i) => 200 + i * 10)
+        };
+    },
+
+    getLiveInfo(liveId) {
+        // 返回指定直播的详细信息
+        return {
+            id: liveId,
+            title: '2024城轨创新发展论坛',
+            startTime: '2024-03-15 14:00:00',
+            endTime: '2024-03-15 16:30:00',
+            status: 'ended',
+            viewCount: 12345,
+            peakOnlineUsers: 2000,
+            uniqueViewers: 8000,
+            duration: '02:30:00',
+            avgWatchTime: '00:45:30',
+            likeCount: 3456,
+            commentCount: 789,
+            shareCount: 234,
+            replayViews: 5678
+        };
+    },
+
     // 清空所有状态（用于测试或重置）
     clearAllState() {
         this.state.contents.clear();
