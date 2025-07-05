@@ -2,7 +2,7 @@
 const LiveStatsManagement = () => {
     console.log('LiveStatsManagement component is rendering...');
     
-    const { Row, Col, Card, Button, Space, Alert, Table, Modal, Form, Input, Select, message, Tabs, Statistic, DatePicker, Progress, Tooltip, Badge } = antd;
+    const { Row, Col, Card, Button, Space, Alert, Table, Modal, Form, Input, Select, message, Tabs, Statistic, DatePicker, Progress, Tooltip, Badge, Descriptions } = antd;
     const { RangePicker } = DatePicker;
     const { TabPane } = Tabs;
     
@@ -12,20 +12,74 @@ const LiveStatsManagement = () => {
     const [selectedLive, setSelectedLive] = React.useState(null);
     const [reportModalVisible, setReportModalVisible] = React.useState(false);
     const [dateRange, setDateRange] = React.useState([]);
+    const [compareModalVisible, setCompareModalVisible] = React.useState(false);
+    const [selectedLives, setSelectedLives] = React.useState([]);
+    const [chartInstance, setChartInstance] = React.useState(null);
+
+    // 初始化实时数据
+    const initTrendData = () => {
+        const now = new Date();
+        const timestamps = Array(20).fill(0).map((_, i) => {
+            const date = new Date(now);
+            date.setMinutes(date.getMinutes() - (19 - i));
+            return date.toLocaleTimeString();
+        });
+        return {
+            timestamps,
+            onlineUsers: Array(20).fill(0).map(() => Math.floor(Math.random() * 500 + 200)),
+            viewCounts: Array(20).fill(0).map((_, i) => 1000 + i * 50),
+            likeCounts: Array(20).fill(0).map((_, i) => 500 + i * 20),
+            commentCounts: Array(20).fill(0).map((_, i) => 200 + i * 10)
+        };
+    };
     
     // 模拟实时数据
-    const [realtimeStats, setRealtimeStats] = React.useState({
+    const [realtimeStats, setRealtimeStats] = React.useState(() => ({
         viewCount: 1234,
         likeCount: 567,
         shareCount: 89,
         onlineUsers: 432,
         peakOnlineUsers: 1500,
         duration: '01:23:45',
-        commentCount: 234
-    });
+        commentCount: 234,
+        trendData: initTrendData()
+    }));
+
+    // 更新图表数据
+    const updateChartData = React.useCallback((trendData) => {
+        if (!chartInstance || !trendData) return;
+
+        try {
+            chartInstance.setOption({
+                xAxis: {
+                    data: trendData.timestamps
+                },
+                series: [
+                    {
+                        name: '在线人数',
+                        data: trendData.onlineUsers
+                    },
+                    {
+                        name: '观看次数',
+                        data: trendData.viewCounts
+                    },
+                    {
+                        name: '点赞数',
+                        data: trendData.likeCounts
+                    },
+                    {
+                        name: '评论数',
+                        data: trendData.commentCounts
+                    }
+                ]
+            });
+        } catch (error) {
+            console.error('更新图表数据失败:', error);
+        }
+    }, [chartInstance]);
 
     // 模拟历史直播数据
-    const [liveHistory] = React.useState([
+    const [liveHistory, setLiveHistory] = React.useState([
         {
             id: 'live_001',
             title: '2024城轨创新发展论坛',
@@ -60,8 +114,8 @@ const LiveStatsManagement = () => {
         }
     ]);
 
-    // 模拟用户画像数据
-    const userPortrait = {
+    // 用户画像数据状态
+    const [userPortrait, setUserPortrait] = React.useState({
         // 地域分布
         regions: [
             { name: '北京', value: 25 },
@@ -88,7 +142,7 @@ const LiveStatsManagement = () => {
             { name: '微信', value: 40 },
             { name: '其他', value: 15 }
         ]
-    };
+    });
 
     // 表格列配置
     const columns = [
@@ -162,7 +216,7 @@ const LiveStatsManagement = () => {
         },
         {
             title: '操作',
-            width: 120,
+            width: 200,
             render: (_, record) => React.createElement(Space, { size: 'small' }, [
                 React.createElement(Button, {
                     key: 'report',
@@ -172,14 +226,251 @@ const LiveStatsManagement = () => {
                         setSelectedLive(record);
                         setReportModalVisible(true);
                     }
-                }, '查看报告')
+                }, '查看报告'),
+                React.createElement(Button, {
+                    key: 'compare',
+                    size: 'small',
+                    disabled: selectedLives.length === 2 && !selectedLives.find(live => live.id === record.id),
+                    onClick: () => {
+                        if (selectedLives.find(live => live.id === record.id)) {
+                            setSelectedLives(selectedLives.filter(live => live.id !== record.id));
+                        } else {
+                            const newSelectedLives = [...selectedLives, record].slice(-2);
+                            setSelectedLives(newSelectedLives);
+                            if (newSelectedLives.length === 2) {
+                                setCompareModalVisible(true);
+                            }
+                        }
+                    }
+                }, selectedLives.find(live => live.id === record.id) ? '取消选择' : '选择对比')
             ])
         }
     ];
 
-    // 渲染实时监控面板
+    // 添加状态管理器集成
+    React.useEffect(() => {
+        // 从状态管理器获取初始数据
+        const stats = window.StateManager.getLiveStats();
+        if (stats) {
+            setRealtimeStats(stats.realtime);
+            if (stats.history) {
+                setLiveHistory(stats.history);
+            }
+            if (stats.userPortrait) {
+                setUserPortrait(stats.userPortrait);
+            }
+        }
+
+        // 监听数据更新
+        const handleStatsUpdate = ({ liveId, stats }) => {
+            if (!stats) return; // 添加空值检查
+            
+            setRealtimeStats(prev => ({
+                ...prev,
+                ...(stats.realtime || {})
+            }));
+            
+            if (stats.history) {
+                const historyItem = stats.history.find(h => h.id === liveId);
+                if (historyItem) {
+                    setLiveHistory(prev => {
+                        const existingIndex = prev.findIndex(h => h.id === liveId);
+                        if (existingIndex > -1) {
+                            const updated = [...prev];
+                            updated[existingIndex] = historyItem;
+                            return updated;
+                        }
+                        return [...prev, historyItem];
+                    });
+                }
+            }
+            
+            if (stats.userPortrait) {
+                setUserPortrait(prev => ({
+                    ...prev,
+                    ...stats.userPortrait
+                }));
+            }
+        };
+
+        // 监听导航参数
+        const handleNavigation = (event) => {
+            const { page, params } = event.detail;
+            if (page === 'live-stats' && params?.liveId) {
+                const live = window.StateManager.getLiveInfo(params.liveId);
+                if (live) {
+                    setSelectedLive(live);
+                    setReportModalVisible(true);
+                }
+            }
+        };
+
+        // 添加事件监听
+        window.StateManager.on('liveStats:updated', handleStatsUpdate);
+        window.addEventListener('navigation:change', handleNavigation);
+
+        // 清理函数
+        return () => {
+            window.StateManager.off('liveStats:updated', handleStatsUpdate);
+            window.removeEventListener('navigation:change', handleNavigation);
+        };
+    }, []);
+
+    // 初始化图表
+    React.useEffect(() => {
+        let chart = null;
+
+        const initChart = () => {
+            const chartDom = document.getElementById('realtimeChart');
+            if (!chartDom) return;
+
+            try {
+                chart = echarts.init(chartDom);
+                const option = {
+                    title: {
+                        text: '实时数据趋势'
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: ['在线人数', '观看次数', '点赞数', '评论数']
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: realtimeStats.trendData.timestamps
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [
+                        {
+                            name: '在线人数',
+                            type: 'line',
+                            data: realtimeStats.trendData.onlineUsers,
+                            smooth: true
+                        },
+                        {
+                            name: '观看次数',
+                            type: 'line',
+                            data: realtimeStats.trendData.viewCounts,
+                            smooth: true
+                        },
+                        {
+                            name: '点赞数',
+                            type: 'line',
+                            data: realtimeStats.trendData.likeCounts,
+                            smooth: true
+                        },
+                        {
+                            name: '评论数',
+                            type: 'line',
+                            data: realtimeStats.trendData.commentCounts,
+                            smooth: true
+                        }
+                    ]
+                };
+                chart.setOption(option);
+                setChartInstance(chart);
+            } catch (error) {
+                console.error('初始化图表失败:', error);
+            }
+        };
+
+        // 确保 echarts 已加载
+        if (typeof echarts === 'undefined') {
+            console.error('ECharts 未加载');
+            return;
+        }
+
+        const timer = setTimeout(initChart, 100);
+
+        return () => {
+            clearTimeout(timer);
+            if (chart) {
+                chart.dispose();
+                setChartInstance(null);
+            }
+        };
+    }, []);
+
+    // 监听窗口大小变化
+    React.useEffect(() => {
+        const handleResize = () => {
+            if (chartInstance) {
+                try {
+                    chartInstance.resize();
+                } catch (error) {
+                    console.error('图表重置大小失败:', error);
+                }
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [chartInstance]);
+
+    // 自动更新数据
+    React.useEffect(() => {
+        const updateInterval = setInterval(() => {
+            setRealtimeStats(prev => {
+                if (!prev || !prev.trendData) {
+                    return {
+                        viewCount: 1234,
+                        likeCount: 567,
+                        shareCount: 89,
+                        onlineUsers: 432,
+                        peakOnlineUsers: 1500,
+                        duration: '01:23:45',
+                        commentCount: 234,
+                        trendData: initTrendData()
+                    };
+                }
+
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString();
+                const newOnlineUsers = Math.max(100, prev.onlineUsers + Math.floor(Math.random() * 21) - 10);
+                const newViewCount = prev.viewCount + Math.floor(Math.random() * 5);
+                const newLikeCount = prev.likeCount + Math.floor(Math.random() * 3);
+                const newCommentCount = prev.commentCount + Math.floor(Math.random() * 2);
+
+                const newTrendData = {
+                    timestamps: [...prev.trendData.timestamps.slice(1), timeStr],
+                    onlineUsers: [...prev.trendData.onlineUsers.slice(1), newOnlineUsers],
+                    viewCounts: [...prev.trendData.viewCounts.slice(1), newViewCount],
+                    likeCounts: [...prev.trendData.likeCounts.slice(1), newLikeCount],
+                    commentCounts: [...prev.trendData.commentCounts.slice(1), newCommentCount]
+                };
+
+                // 更新图表数据
+                updateChartData(newTrendData);
+
+                return {
+                    ...prev,
+                    onlineUsers: newOnlineUsers,
+                    viewCount: newViewCount,
+                    likeCount: newLikeCount,
+                    commentCount: newCommentCount,
+                    trendData: newTrendData
+                };
+            });
+        }, 5000);
+
+        return () => clearInterval(updateInterval);
+    }, [updateChartData]);
+
+    // 修改实时数据面板渲染函数
     const renderRealtimePanel = () => {
-        return React.createElement(Card, {
+        return [
+            React.createElement(Card, {
+                key: 'stats',
             title: '实时数据监控',
             extra: React.createElement(Button, {
                 type: 'primary',
@@ -270,21 +561,66 @@ const LiveStatsManagement = () => {
                     }))
                 )
             ])
-        ]);
+            ]),
+            React.createElement(Card, {
+                key: 'chart',
+                style: { marginTop: '16px' }
+            }, React.createElement('div', {
+                id: 'realtimeChart',
+                style: { height: '400px', width: '100%' }
+            }))
+        ];
     };
 
-    // 渲染历史直播列表
+    // 修改表格的数据源绑定
     const renderHistoryList = () => {
         return React.createElement(Card, {
             title: '历史直播记录',
             extra: React.createElement(Space, {}, [
                 React.createElement(RangePicker, {
                     value: dateRange,
-                    onChange: setDateRange
+                    onChange: (dates) => {
+                        setDateRange(dates);
+                        // 可以在这里添加日期筛选逻辑
+                    }
                 }),
                 React.createElement(Button, {
-                    type: 'primary'
-                }, '查询')
+                    onClick: () => {
+                        // 这里可以添加查询逻辑
+                        message.success('数据已更新');
+                    }
+                }, '查询'),
+                React.createElement(Button, {
+                    type: 'primary',
+                    onClick: () => {
+                        // 导出数据为CSV
+                        const headers = ['直播标题', '开始时间', '结束时间', '总观看', '独立观众', '点赞数', '评论数', '分享数', '直播时长', '平均观看时长', '回放次数'];
+                        const data = liveHistory.map(item => [
+                            item.title,
+                            item.startTime,
+                            item.endTime,
+                            item.viewCount,
+                            item.uniqueViewers,
+                            item.likeCount,
+                            item.commentCount,
+                            item.shareCount,
+                            item.duration,
+                            item.avgWatchTime,
+                            item.replayViews
+                        ]);
+                        
+                        const csvContent = [headers, ...data].map(row => row.join(',')).join('\n');
+                        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                        const link = document.createElement('a');
+                        const url = URL.createObjectURL(blob);
+                        link.setAttribute('href', url);
+                        link.setAttribute('download', `直播数据统计_${new Date().toISOString().split('T')[0]}.csv`);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        message.success('数据导出成功');
+                    }
+                }, '导出数据')
             ])
         }, React.createElement(Table, {
             dataSource: liveHistory,
@@ -294,7 +630,8 @@ const LiveStatsManagement = () => {
                 total: liveHistory.length,
                 pageSize: 10,
                 showTotal: (total) => `共 ${total} 条记录`
-            }
+            },
+            loading: loading
         }));
     };
 
@@ -501,6 +838,104 @@ const LiveStatsManagement = () => {
         ]);
     };
 
+    // 添加数据对比功能
+    const renderCompareModal = () => {
+        if (selectedLives.length !== 2) return null;
+
+        const compareData = [
+            {
+                title: '观看数据',
+                items: [
+                    { label: '总观看次数', key: 'viewCount' },
+                    { label: '独立观众数', key: 'uniqueViewers' },
+                    { label: '最高在线', key: 'peakOnlineUsers' }
+                ]
+            },
+            {
+                title: '互动数据',
+                items: [
+                    { label: '点赞数', key: 'likeCount' },
+                    { label: '评论数', key: 'commentCount' },
+                    { label: '分享数', key: 'shareCount' }
+                ]
+            },
+            {
+                title: '时长数据',
+                items: [
+                    { label: '直播时长', key: 'duration' },
+                    { label: '平均观看时长', key: 'avgWatchTime' }
+                ]
+            }
+        ];
+
+        return React.createElement(Modal, {
+            title: '直播数据对比',
+            visible: compareModalVisible,
+            width: 1000,
+            footer: React.createElement(Button, {
+                type: 'primary',
+                onClick: () => {
+                    setCompareModalVisible(false);
+                    setSelectedLives([]);
+                }
+            }, '关闭'),
+            onCancel: () => {
+                setCompareModalVisible(false);
+                setSelectedLives([]);
+            }
+        }, [
+            // 基础信息对比
+            React.createElement(Card, {
+                key: 'basic',
+                title: '基础信息',
+                style: { marginBottom: '16px' }
+            }, React.createElement(Row, {}, [
+                React.createElement(Col, { span: 12 }, [
+                    React.createElement('h3', { style: { textAlign: 'center' } }, selectedLives[0].title),
+                    React.createElement('p', { style: { textAlign: 'center' } }, selectedLives[0].startTime)
+                ]),
+                React.createElement(Col, { span: 12 }, [
+                    React.createElement('h3', { style: { textAlign: 'center' } }, selectedLives[1].title),
+                    React.createElement('p', { style: { textAlign: 'center' } }, selectedLives[1].startTime)
+                ])
+            ])),
+
+            // 详细数据对比
+            ...compareData.map((section, index) => 
+                React.createElement(Card, {
+                    key: `section-${index}`,
+                    title: section.title,
+                    style: { marginBottom: '16px' }
+                }, React.createElement(Row, {}, section.items.map(item => [
+                    React.createElement(Col, { span: 8 }, 
+                        React.createElement('div', { style: { textAlign: 'right', paddingRight: '20px' } },
+                            selectedLives[0][item.key]
+                        )
+                    ),
+                    React.createElement(Col, { span: 8 }, 
+                        React.createElement('div', { style: { textAlign: 'center', fontWeight: 'bold' } },
+                            item.label
+                        )
+                    ),
+                    React.createElement(Col, { span: 8 },
+                        React.createElement('div', { style: { textAlign: 'left', paddingLeft: '20px' } },
+                            selectedLives[1][item.key]
+                        )
+                    )
+                ])))
+            ),
+
+            // 数据对比图表
+            React.createElement(Card, {
+                key: 'chart',
+                title: '数据对比图表'
+            }, React.createElement('div', {
+                id: 'compareChart',
+                style: { height: '400px' }
+            }))
+        ]);
+    };
+
     return React.createElement('div', { className: 'live-stats-page' }, [
         // 页面标题
         React.createElement('div', {
@@ -540,7 +975,8 @@ const LiveStatsManagement = () => {
         ]),
 
         // 直播报告弹窗
-        renderReportModal()
+        renderReportModal(),
+        renderCompareModal()
     ]);
 };
 
