@@ -18,6 +18,7 @@ const TopBar = ({ currentPage, user, notifications, onNotificationClick, onLogou
         'live': { title: '论坛直播', breadcrumb: ['展会管理', '论坛直播'] },
         'stats': { title: '行为统计', breadcrumb: ['运营管理', '行为统计'] },
         'operational': { title: '运营数据统计', breadcrumb: ['运营管理', '运营数据统计'] },
+        'live-stats': { title: '直播数据管理', breadcrumb: ['运营管理', '直播数据管理'] },
         'data': { title: '运营数据管理', breadcrumb: ['运营管理', '运营数据管理'] },
         'feedback': { title: '用户反馈管理', breadcrumb: ['运营管理', '用户反馈管理'] },
         'message': { title: '消息管理', breadcrumb: ['运营管理', '消息管理'] },
@@ -28,8 +29,8 @@ const TopBar = ({ currentPage, user, notifications, onNotificationClick, onLogou
         'version': { title: 'APP版本管理', breadcrumb: ['系统管理', 'APP版本管理'] },
         'traffic': { title: '流量分配', breadcrumb: ['系统管理', '流量分配'] },
         'menu': { title: '菜单管理', breadcrumb: ['系统管理', '菜单管理'] },
-        'personal-center': { title: '个人中心', breadcrumb: ['个人中心'] },
-        'profile': { title: '用户画像', breadcrumb: ['用户画像分析'] }
+        'personal-center': { title: '个人中心', breadcrumb: ['系统管理', '个人中心'] },
+        'profile': { title: '用户画像', breadcrumb: ['系统管理', '用户画像'] }
     };
 
     const currentPageInfo = pageTitleMap[currentPage] || { title: '未知页面', breadcrumb: ['未知页面'] };
