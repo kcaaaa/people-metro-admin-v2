@@ -93,6 +93,13 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     page: 'ReviewManagement'
                 },
                 {
+                    key: 'exhibition-audit',
+                    icon: '🏢',
+                    label: '展会内容审核',
+                    title: '展会相关内容审核与管理',
+                    page: 'ExhibitionAuditManagement'
+                },
+                {
                     key: 'audit-flow',
                     icon: '⚙️',
                     label: '审核流程管理',
@@ -156,6 +163,13 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     label: '运营数据统计',
                     title: '核心运营指标与分模块统计',
                     page: 'OperationalStats'
+                },
+                {
+                    key: 'live-stats',
+                    icon: '📺',
+                    label: '直播数据管理',
+                    title: '直播数据统计与分析',
+                    page: 'LiveStatsManagement'
                 },
                 {
                     key: 'data',
@@ -234,6 +248,20 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     label: '菜单管理',
                     title: '动态控制系统导航菜单显隐',
                     page: 'MenuManagement'
+                },
+                {
+                    key: 'personal-center',
+                    icon: '👤',
+                    label: '个人中心',
+                    title: '个人信息设置与管理',
+                    page: 'PersonalCenter'
+                },
+                {
+                    key: 'profile',
+                    icon: '📊',
+                    label: '用户画像',
+                    title: '用户行为分析与画像管理',
+                    page: 'UserProfile'
                 }
             ]
         }
