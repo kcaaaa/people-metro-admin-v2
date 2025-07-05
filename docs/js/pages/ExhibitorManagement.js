@@ -334,7 +334,8 @@ const ExhibitorManagement = () => {
                 React.createElement(Card, {},
                     React.createElement(Statistic, {
                         title: '展位使用',
-                        value: statistics.boothUsage
+                        value: statistics.boothUsage,
+                        valueStyle: { color: '#722ed1' }
                     })
                 )
             )
