@@ -906,7 +906,10 @@ const OperationalStats = () => {
 };
 
 // 确保组件被正确挂载到全局对象
-if (typeof window !== 'undefined') {
-    window.OperationalStats = OperationalStats;
-}
+(function(window) {
+    if (window) {
+        window.OperationalStats = OperationalStats;
+        console.log('OperationalStats component registered to window object');
+    }
+})(window);
 export default OperationalStats; 

@@ -228,6 +228,9 @@ const App = () => {
 
     // 页面组件映射
     const getPageComponent = () => {
+        console.log('Current page:', currentPage);
+        console.log('Available components:', Object.keys(window).filter(key => key.endsWith('Management') || key === 'Dashboard' || key === 'OperationalStats'));
+        
         const pageComponents = {
             'dashboard': window.Dashboard,
             'Dashboard': window.Dashboard,
@@ -286,6 +289,9 @@ const App = () => {
         };
 
         const Component = pageComponents[currentPage];
+        console.log('Looking for component:', currentPage, 'Found:', !!Component);
+        console.log('OperationalStats component:', window.OperationalStats);
+        
         if (Component) {
             console.log('Found component for page:', currentPage);
             // 使用权限HOC包装组件（如果需要）

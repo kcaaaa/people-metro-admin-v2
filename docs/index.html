@@ -31,6 +31,7 @@
     <script src="js/components/TopBar.js"></script>
 
     <!-- Local Scripts: Page Components -->
+    <script src="js/pages/OperationalStats.js"></script>
     <script src="js/pages/Dashboard.js"></script>
     <script src="js/pages/ContentManagement.js"></script>
     <script src="js/pages/ComplaintManagement.js"></script>
@@ -43,7 +44,6 @@
     <script src="js/pages/LiveManagement.js"></script>
     <script src="js/pages/LiveStatsManagement.js"></script>
     <script src="js/pages/BehaviorStats.js"></script>
-    <script src="js/pages/OperationalStats.js"></script>
     <script src="js/pages/DataManagement.js"></script>
     <script src="js/pages/FeedbackManagement.js"></script>
     <script src="js/pages/MessageManagement.js"></script>
@@ -63,6 +63,8 @@
         // 等待所有脚本加载完成
         window.addEventListener('load', function() {
             console.log('🚀 正在启动应用...');
+            console.log('Available components:', Object.keys(window).filter(key => key.endsWith('Management') || key === 'Dashboard' || key === 'OperationalStats'));
+            
             try {
                 // 确保 React 和 ReactDOM 已加载
                 if (!window.React || !window.ReactDOM) {
