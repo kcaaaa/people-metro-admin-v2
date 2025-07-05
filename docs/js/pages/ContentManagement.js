@@ -379,7 +379,12 @@ const ContentManagement = () => {
 
     // 渲染发布页面
     const renderPublishPage = () => {
-        return React.createElement('div', {}, [
+        const formItemLayout = {
+            labelCol: { span: 24 },
+            wrapperCol: { span: 24 }
+        };
+
+        return React.createElement('div', { key: 'publish-page' }, [
             React.createElement('div', {
                 key: 'header',
                 style: { marginBottom: '24px' }
@@ -398,13 +403,14 @@ const ContentManagement = () => {
                 key: 'publishForm',
                 form: publishForm,
                 layout: 'vertical',
-                onFinish: handlePublish
+                onFinish: handlePublish,
+                ...formItemLayout
             }, [
                 React.createElement(Row, {
                     key: 'basicInfo',
                     gutter: 24
                 }, [
-                    React.createElement(Col, { span: 12 }, [
+                    React.createElement(Col, { key: 'left-col', span: 12 }, [
                         React.createElement(Form.Item, {
                             key: 'contentType',
                             label: '内容类型'
@@ -428,7 +434,7 @@ const ContentManagement = () => {
                         ]))
                     ]),
 
-                    React.createElement(Col, { span: 12 }, [
+                    React.createElement(Col, { key: 'right-col', span: 12 }, [
                         React.createElement(Form.Item, {
                             key: 'title',
                             label: '标题',
@@ -449,11 +455,11 @@ const ContentManagement = () => {
                             placeholder: '请输入或选择标签',
                             style: { width: '100%' },
                             options: [
-                                { value: '城轨建设' },
-                                { value: '技术创新' },
-                                { value: '展会活动' },
-                                { value: '行业动态' },
-                                { value: '产品展示' }
+                                { key: 'tag1', value: '城轨建设' },
+                                { key: 'tag2', value: '技术创新' },
+                                { key: 'tag3', value: '展会活动' },
+                                { key: 'tag4', value: '行业动态' },
+                                { key: 'tag5', value: '产品展示' }
                             ]
                         }))
                     ])
@@ -499,7 +505,7 @@ const ContentManagement = () => {
                         paddingTop: '24px',
                         borderTop: '1px solid #f0f0f0'
                     }
-                }, React.createElement(Space, { size: 'large' }, [
+                }, React.createElement(Space, { key: 'action-space', size: 'large' }, [
                     React.createElement(Button, {
                         key: 'preview',
                         size: 'large',

@@ -28,7 +28,7 @@ const ContentManagement = () => {
     // 发布相关状态
     const [publishForm] = Form.useForm();
     const [contentType, setContentType] = React.useState('article');
-    const [publishBoard, setPublishBoard] = React.useState('exhibition');
+    const [publishBoard, setPublishBoard] = React.useState('association');
     const [previewVisible, setPreviewVisible] = React.useState(false);
     const [previewData, setPreviewData] = React.useState(null);
     const [uploadedFiles, setUploadedFiles] = React.useState([]);
@@ -371,7 +371,6 @@ const ContentManagement = () => {
     const getBoardTag = (board) => {
         const boardMap = {
             association: { color: 'blue', text: '协会板块' },
-            exhibition: { color: 'purple', text: '展会板块' },
             recommended: { color: 'gold', text: '推荐板块' }
         };
         const config = boardMap[board] || { color: 'gray', text: '未知' };
@@ -380,7 +379,12 @@ const ContentManagement = () => {
 
     // 渲染发布页面
     const renderPublishPage = () => {
-        return React.createElement('div', {}, [
+        const formItemLayout = {
+            labelCol: { span: 24 },
+            wrapperCol: { span: 24 }
+        };
+
+        return React.createElement('div', { key: 'publish-page' }, [
             React.createElement('div', {
                 key: 'header',
                 style: { marginBottom: '24px' }
@@ -392,20 +396,21 @@ const ContentManagement = () => {
                 React.createElement('p', {
                     key: 'description',
                     style: { color: '#666', fontSize: '14px', margin: '0' }
-                }, '发布视频、图文等内容到展会、协会、推荐板块，支持富文本编辑和预览')
+                }, '发布视频、图文等内容到协会、推荐板块，支持富文本编辑和预览')
             ]),
 
             React.createElement(Form, {
                 key: 'publishForm',
                 form: publishForm,
                 layout: 'vertical',
-                onFinish: handlePublish
+                onFinish: handlePublish,
+                ...formItemLayout
             }, [
                 React.createElement(Row, {
                     key: 'basicInfo',
                     gutter: 24
                 }, [
-                    React.createElement(Col, { span: 12 }, [
+                    React.createElement(Col, { key: 'left-col', span: 12 }, [
                         React.createElement(Form.Item, {
                             key: 'contentType',
                             label: '内容类型'
@@ -424,13 +429,12 @@ const ContentManagement = () => {
                             value: publishBoard,
                             onChange: (e) => setPublishBoard(e.target.value)
                         }, [
-                            React.createElement(Radio.Button, { key: 'exhibition', value: 'exhibition' }, '🏢 展会板块'),
                             React.createElement(Radio.Button, { key: 'association', value: 'association' }, '🏛️ 协会板块'),
                             React.createElement(Radio.Button, { key: 'recommended', value: 'recommended' }, '⭐ 推荐板块')
                         ]))
                     ]),
 
-                    React.createElement(Col, { span: 12 }, [
+                    React.createElement(Col, { key: 'right-col', span: 12 }, [
                         React.createElement(Form.Item, {
                             key: 'title',
                             label: '标题',
@@ -451,33 +455,27 @@ const ContentManagement = () => {
                             placeholder: '请输入或选择标签',
                             style: { width: '100%' },
                             options: [
-                                { value: '城轨建设' },
-                                { value: '技术创新' },
-                                { value: '展会活动' },
-                                { value: '行业动态' },
-                                { value: '产品展示' }
+                                { key: 'tag1', value: '城轨建设' },
+                                { key: 'tag2', value: '技术创新' },
+                                { key: 'tag3', value: '展会活动' },
+                                { key: 'tag4', value: '行业动态' },
+                                { key: 'tag5', value: '产品展示' }
                             ]
                         }))
                     ])
                 ]),
 
                 React.createElement(Form.Item, {
-                    key: 'description',
-                    label: '内容摘要',
-                    name: 'description',
-                    rules: [{ required: true, message: '请输入内容摘要' }]
-                }, React.createElement(TextArea, {
-                    placeholder: '请输入内容摘要，将显示在内容列表中',
-                    rows: 3,
-                    maxLength: 200,
-                    showCount: true
-                })),
-
-                React.createElement(Form.Item, {
                     key: 'content',
                     label: '内容详情',
-                    required: true
-                }, RichTextEditor()),
+                    name: 'content',
+                    rules: [{ required: true, message: '请输入内容详情' }]
+                }, React.createElement(TextArea, {
+                    placeholder: '请输入内容详情',
+                    rows: 6,
+                    maxLength: 2000,
+                    showCount: true
+                })),
 
                 React.createElement(Form.Item, {
                     key: 'upload',
@@ -507,7 +505,7 @@ const ContentManagement = () => {
                         paddingTop: '24px',
                         borderTop: '1px solid #f0f0f0'
                     }
-                }, React.createElement(Space, { size: 'large' }, [
+                }, React.createElement(Space, { key: 'action-space', size: 'large' }, [
                     React.createElement(Button, {
                         key: 'preview',
                         size: 'large',
@@ -722,7 +720,6 @@ const ContentManagement = () => {
                     }, [
                         React.createElement(Option, { key: 'all', value: 'all' }, '全部板块'),
                         React.createElement(Option, { key: 'association', value: 'association' }, '协会板块'),
-                        React.createElement(Option, { key: 'exhibition', value: 'exhibition' }, '展会板块'),
                         React.createElement(Option, { key: 'recommended', value: 'recommended' }, '推荐板块')
                     ])
                 ),
@@ -911,7 +908,7 @@ const ContentManagement = () => {
         React.createElement('div', { key: 'header', className: 'page-header' }, [
             React.createElement('h1', { key: 'title', className: 'page-title' }, '内容管理'),
             React.createElement('p', { key: 'desc', className: 'page-description' }, 
-                '发布和管理平台内容，支持视频、图文发布到展会、协会、推荐板块'
+                '发布和管理平台内容，支持视频、图文发布到协会、推荐板块'
             )
         ]),
 
