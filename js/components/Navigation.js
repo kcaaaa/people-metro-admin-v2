@@ -146,23 +146,23 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
         },
         {
             key: 'operation-statistics',
-            icon: '📊',
+            icon: '📈',
             label: '运营管理',
-            title: '运营管理模块',
+            title: '运营数据统计与分析',
             children: [
-                {
-                    key: 'stats',
-                    icon: '📈',
-                    label: '行为统计',
-                    title: '用户行为数据统计',
-                    page: 'BehaviorStats'
-                },
                 {
                     key: 'operational',
                     icon: '📊',
                     label: '运营数据统计',
-                    title: '核心运营指标与分模块统计',
+                    title: '全面的运营数据分析与统计',
                     page: 'OperationalStats'
+                },
+                {
+                    key: 'stats',
+                    icon: '📉',
+                    label: '行为统计',
+                    title: '用户行为数据分析',
+                    page: 'BehaviorStats'
                 },
                 {
                     key: 'live-stats',
