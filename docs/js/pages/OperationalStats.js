@@ -905,11 +905,5 @@ window.OperationalStats = () => {
     ]);
 };
 
-// 确保组件被正确挂载到全局对象
-(function(window) {
-    if (window) {
-        window.OperationalStats = OperationalStats;
-        console.log('OperationalStats component registered to window object');
-    }
-})(window);
-export default OperationalStats; 
+// 添加调试日志
+console.log('OperationalStats component loaded'); 
