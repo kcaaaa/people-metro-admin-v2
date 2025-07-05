@@ -169,7 +169,7 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     icon: '📺',
                     label: '直播数据管理',
                     title: '直播数据统计与分析',
-                    page: 'LiveStatsManagement'
+                    page: 'live-stats'
                 },
                 {
                     key: 'data',
