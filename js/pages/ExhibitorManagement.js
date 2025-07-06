@@ -2,17 +2,25 @@
 const ExhibitorManagement = () => {
     console.log('ExhibitorManagement component is rendering...');
     
-    const { Row, Col, Card, Button, Space, Alert, Tag, Table, Modal, Form, Input, Select, message, Upload, Image, Divider, Statistic, Progress, InputNumber, Radio, Switch, DatePicker, Tooltip, Steps, Descriptions } = antd;
+    const { Row, Col, Card, Button, Space, Alert, Tag, Table, Modal, Form, Input, Select, message, Upload, Image, Divider, Statistic, Progress, InputNumber, Radio, Switch, DatePicker, Tooltip, Steps, Descriptions, Tabs } = antd;
     const { TextArea } = Input;
     const { Option } = Select;
     const { RangePicker: DateRangePicker } = DatePicker;
     const { Dragger } = Upload;
+    const { TabPane } = Tabs;
     
     // 状态管理
     const [companyModalVisible, setCompanyModalVisible] = React.useState(false);
     const [editingCompany, setEditingCompany] = React.useState(null);
     const [loading, setLoading] = React.useState(false);
     const [companyForm] = Form.useForm();
+    
+    // 审核相关状态
+    const [auditModalVisible, setAuditModalVisible] = React.useState(false);
+    const [currentAuditRecord, setCurrentAuditRecord] = React.useState(null);
+    const [auditForm] = Form.useForm();
+    const [pendingChanges, setPendingChanges] = React.useState([]);
+    const [activeTab, setActiveTab] = React.useState('companies');
     
     // 导入功能状态
     const [importModalVisible, setImportModalVisible] = React.useState(false);
@@ -124,6 +132,111 @@ const ExhibitorManagement = () => {
         }
     ]);
 
+    // 模拟待审核变更数据
+    React.useEffect(() => {
+        // 初始化待审核变更数据
+        const mockPendingChanges = [
+            {
+                id: 'change_001',
+                exhibitorId: 'company_001',
+                exhibitorName: '中车集团',
+                changeType: 'exhibitor_info',
+                submitTime: '2024-01-20 10:30:00',
+                status: 'pending',
+                changes: {
+                    before: {
+                        name: '中车集团',
+                        description: '中国中车股份有限公司',
+                        contactPerson: '张经理',
+                        email: 'zhang@crrc.com',
+                        website: 'https://www.crrcgc.cc'
+                    },
+                    after: {
+                        name: '中车集团有限公司',
+                        description: '中国中车股份有限公司是全球规模最大、品种最全、技术领先的轨道交通装备供应商',
+                        contactPerson: '张总经理',
+                        email: 'zhang.manager@crrc.com',
+                        website: 'https://www.crrcgc.cc/cn'
+                    }
+                }
+            },
+            {
+                id: 'change_002',
+                exhibitorId: 'company_002',
+                exhibitorName: '比亚迪轨道交通',
+                changeType: 'product_info',
+                submitTime: '2024-01-20 14:15:00',
+                status: 'pending',
+                changes: {
+                    action: 'add_product',
+                    product: {
+                        name: '比亚迪云巴',
+                        description: '新型轨道交通系统，适用于中小运量城市轨道交通',
+                        category: '轨道交通',
+                        images: []
+                    }
+                }
+            },
+            {
+                id: 'change_003',
+                exhibitorId: 'company_003',
+                exhibitorName: '华为技术',
+                changeType: 'exhibitor_info',
+                submitTime: '2024-01-19 16:20:00',
+                status: 'pending',
+                changes: {
+                    before: {
+                        description: '华为技术有限公司',
+                        contactPerson: '王工程师'
+                    },
+                    after: {
+                        description: '华为技术有限公司，全球领先的ICT（信息与通信）基础设施和智能终端提供商',
+                        contactPerson: '王高级工程师'
+                    }
+                }
+            }
+        ];
+        setPendingChanges(mockPendingChanges);
+    }, []);
+
+    // 产品状态定义
+    const PRODUCT_STATUS = {
+        DRAFT: 'draft',           // 草稿
+        PENDING_REVIEW: 'pending_review', // 待审核
+        ONLINE: 'online',         // 已上架
+        OFFLINE: 'offline',       // 已下架
+        REJECTED: 'rejected'      // 审核拒绝
+    };
+
+    // 产品审核相关状态
+    const [productAuditModalVisible, setProductAuditModalVisible] = React.useState(false);
+    const [currentProductAudit, setCurrentProductAudit] = React.useState(null);
+    const [productAuditForm] = Form.useForm();
+    const [pendingProductChanges, setPendingProductChanges] = React.useState([]);
+
+    // 模拟待审核产品数据
+    React.useEffect(() => {
+        const mockPendingProducts = [
+            {
+                id: 'change_p001',
+                exhibitorId: 'company_001',
+                exhibitorName: '中车集团',
+                changeType: 'product_online',
+                submitTime: '2024-01-20 11:30:00',
+                status: 'pending',
+                product: {
+                    id: 'p_001',
+                    name: '和谐号动车组',
+                    description: '高速动车组列车，最高运营速度350km/h',
+                    category: '动车组',
+                    specifications: '8节编组',
+                    features: '高速、节能、环保'
+                }
+            }
+        ];
+        setPendingProductChanges(mockPendingProducts);
+    }, []);
+
     // 统计数据
     const statistics = React.useMemo(() => {
         const total = companies.length;
@@ -131,9 +244,10 @@ const ExhibitorManagement = () => {
         const pending = companies.filter(c => c.status === 'pending').length;
         const rejected = companies.filter(c => c.status === 'rejected').length;
         const boothUsage = `${confirmed}/100`; // 展位使用率
+        const pendingAuditCount = pendingChanges.filter(c => c.status === 'pending').length;
         
-        return { total, confirmed, pending, rejected, boothUsage };
-    }, [companies]);
+        return { total, confirmed, pending, rejected, boothUsage, pendingAuditCount };
+    }, [companies, pendingChanges]);
 
     React.useEffect(() => {
         loadCompanyData();
@@ -147,6 +261,102 @@ const ExhibitorManagement = () => {
             message.success('参展公司数据加载成功');
         } catch (error) {
             message.error('数据加载失败');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 审核变更申请
+    const handleAuditChange = (record) => {
+        setCurrentAuditRecord(record);
+        setAuditModalVisible(true);
+    };
+
+    // 提交审核结果
+    const handleAuditSubmit = async (values) => {
+        try {
+            setLoading(true);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const { action, comment } = values;
+            const newStatus = action === 'approve' ? 'approved' : 'rejected';
+            
+            // 更新待审核列表
+            setPendingChanges(prev => prev.map(change => 
+                change.id === currentAuditRecord.id 
+                    ? { 
+                        ...change, 
+                        status: newStatus,
+                        reviewer: '运营人员',
+                        reviewTime: new Date().toLocaleString(),
+                        reviewComment: comment
+                    }
+                    : change
+            ));
+            
+            // 如果审核通过，更新展商信息
+            if (action === 'approve' && currentAuditRecord.changeType === 'exhibitor_info') {
+                setCompanies(prev => prev.map(company => 
+                    company.id === currentAuditRecord.exhibitorId
+                        ? { ...company, ...currentAuditRecord.changes.after }
+                        : company
+                ));
+            }
+            
+            setAuditModalVisible(false);
+            setCurrentAuditRecord(null);
+            auditForm.resetFields();
+            
+            message.success(`${action === 'approve' ? '审核通过' : '审核拒绝'}操作完成`);
+        } catch (error) {
+            message.error('审核操作失败');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 处理产品审核
+    const handleProductAudit = (record) => {
+        setCurrentProductAudit(record);
+        setProductAuditModalVisible(true);
+    };
+
+    // 提交产品审核结果
+    const handleProductAuditSubmit = async (values) => {
+        try {
+            setLoading(true);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const { action, comment } = values;
+            const newStatus = action === 'approve' ? 'approved' : 'rejected';
+            
+            // 更新待审核列表
+            setPendingProductChanges(prev => prev.map(change => 
+                change.id === currentProductAudit.id 
+                    ? { 
+                        ...change, 
+                        status: newStatus,
+                        reviewer: '运营人员',
+                        reviewTime: new Date().toLocaleString(),
+                        reviewComment: comment
+                    }
+                    : change
+            ));
+            
+            // 如果审核通过，更新产品状态
+            if (action === 'approve') {
+                // 这里应该调用API更新产品状态
+                message.success('产品已上架');
+            } else {
+                message.success('已拒绝产品上架申请');
+            }
+            
+            setProductAuditModalVisible(false);
+            setCurrentProductAudit(null);
+            productAuditForm.resetFields();
+            
+        } catch (error) {
+            message.error('审核操作失败');
         } finally {
             setLoading(false);
         }
@@ -294,48 +504,6 @@ const ExhibitorManagement = () => {
         };
         const config = statusConfig[status] || statusConfig['pending'];
         return React.createElement(Tag, { color: config.color }, config.text);
-    };
-
-    // 渲染统计卡片
-    const renderStatistics = () => {
-        return React.createElement(Row, { gutter: 16 }, [
-            React.createElement(Col, { span: 6, key: 'total' },
-                React.createElement(Card, {},
-                    React.createElement(Statistic, {
-                        title: '参展公司总数',
-                        value: statistics.total,
-                        suffix: '家'
-                    })
-                )
-            ),
-            React.createElement(Col, { span: 6, key: 'confirmed' },
-                React.createElement(Card, {},
-                    React.createElement(Statistic, {
-                        title: '已审核',
-                        value: statistics.confirmed,
-                        suffix: '家'
-                    })
-                )
-            ),
-            React.createElement(Col, { span: 6, key: 'pending' },
-                React.createElement(Card, {},
-                    React.createElement(Statistic, {
-                        title: '待审核',
-                        value: statistics.pending,
-                        suffix: '家'
-                    })
-                )
-            ),
-            React.createElement(Col, { span: 6, key: 'usage' },
-                React.createElement(Card, {},
-                    React.createElement(Statistic, {
-                        title: '展位使用',
-                        value: statistics.boothUsage,
-                        valueStyle: { color: '#722ed1' }
-                    })
-                )
-            )
-        ]);
     };
 
     // 表格列定义
@@ -680,22 +848,6 @@ const ExhibitorManagement = () => {
             setImportResults(results);
             setImportStep(3);
             
-            // 写入操作日志
-            const auditLog = {
-                id: `audit_${Date.now()}`,
-                action: '批量导入参展公司',
-                operator: '管理员',
-                target: '参展公司管理',
-                details: `导入${results.success}家公司，失败${results.failed}条记录`,
-                timestamp: new Date().toLocaleString('zh-CN'),
-                type: 'import',
-                risk: 'medium'
-            };
-            
-            const existingLogs = JSON.parse(localStorage.getItem('auditLogs') || '[]');
-            existingLogs.unshift(auditLog);
-            localStorage.setItem('auditLogs', JSON.stringify(existingLogs));
-            
             message.success(`导入成功！共导入${results.success}家参展公司`);
             
         } catch (error) {
@@ -764,6 +916,276 @@ const ExhibitorManagement = () => {
         }
     };
 
+    // 渲染统计卡片
+    const renderStatistics = () => {
+        return React.createElement(Row, { gutter: 16 }, [
+            React.createElement(Col, { span: 4, key: 'total' },
+                React.createElement(Card, {},
+                    React.createElement(Statistic, {
+                        title: '参展公司总数',
+                        value: statistics.total,
+                        suffix: '家'
+                    })
+                )
+            ),
+            React.createElement(Col, { span: 4, key: 'confirmed' },
+                React.createElement(Card, {},
+                    React.createElement(Statistic, {
+                        title: '已审核',
+                        value: statistics.confirmed,
+                        suffix: '家'
+                    })
+                )
+            ),
+            React.createElement(Col, { span: 4, key: 'pending' },
+                React.createElement(Card, {},
+                    React.createElement(Statistic, {
+                        title: '待审核',
+                        value: statistics.pending,
+                        suffix: '家'
+                    })
+                )
+            ),
+            React.createElement(Col, { span: 4, key: 'pending-changes' },
+                React.createElement(Card, {},
+                    React.createElement(Statistic, {
+                        title: '待审核变更',
+                        value: statistics.pendingAuditCount,
+                        suffix: '个',
+                        valueStyle: { color: '#ff4d4f' }
+                    })
+                )
+            ),
+            React.createElement(Col, { span: 4, key: 'rejected' },
+                React.createElement(Card, {},
+                    React.createElement(Statistic, {
+                        title: '已拒绝',
+                        value: statistics.rejected,
+                        suffix: '家'
+                    })
+                )
+            ),
+            React.createElement(Col, { span: 4, key: 'usage' },
+                React.createElement(Card, {},
+                    React.createElement(Statistic, {
+                        title: '展位使用',
+                        value: statistics.boothUsage,
+                        valueStyle: { color: '#722ed1' }
+                    })
+                )
+            )
+        ]);
+    };
+
+    // 渲染变更对比
+    const renderChangeComparison = (changes, changeType) => {
+        if (changeType === 'product_info') {
+            return React.createElement('div', {}, [
+                React.createElement('h4', { key: 'title' }, '新增产品信息'),
+                React.createElement(Descriptions, {
+                    key: 'product-info',
+                    column: 1,
+                    bordered: true,
+                    size: 'small'
+                }, [
+                    React.createElement(Descriptions.Item, {
+                        key: 'name',
+                        label: '产品名称'
+                    }, changes.product.name),
+                    React.createElement(Descriptions.Item, {
+                        key: 'category',
+                        label: '产品分类'
+                    }, changes.product.category),
+                    React.createElement(Descriptions.Item, {
+                        key: 'description',
+                        label: '产品描述'
+                    }, changes.product.description)
+                ])
+            ]);
+        }
+
+        // 展商信息变更对比
+        const { before, after } = changes;
+        const changedFields = Object.keys(after).filter(key => before[key] !== after[key]);
+
+        return React.createElement('div', {}, [
+            React.createElement('h4', { key: 'title' }, '信息变更对比'),
+            React.createElement(Table, {
+                key: 'comparison',
+                size: 'small',
+                pagination: false,
+                columns: [
+                    {
+                        title: '字段',
+                        dataIndex: 'field',
+                        width: 120
+                    },
+                    {
+                        title: '变更前',
+                        dataIndex: 'before',
+                        render: (text) => React.createElement('span', {
+                            style: { color: '#ff4d4f' }
+                        }, text || '-')
+                    },
+                    {
+                        title: '变更后',
+                        dataIndex: 'after',
+                        render: (text) => React.createElement('span', {
+                            style: { color: '#52c41a' }
+                        }, text || '-')
+                    }
+                ],
+                dataSource: changedFields.map((field, index) => ({
+                    key: index,
+                    field: {
+                        'name': '公司名称',
+                        'description': '公司描述',
+                        'contactPerson': '联系人',
+                        'email': '邮箱',
+                        'website': '网站'
+                    }[field] || field,
+                    before: before[field],
+                    after: after[field]
+                }))
+            })
+        ]);
+    };
+
+    // 渲染审核页面内容
+    const renderAuditContent = () => {
+        const auditColumns = [
+            {
+                title: '展商名称',
+                dataIndex: 'exhibitorName',
+                key: 'exhibitorName',
+                width: 150
+            },
+            {
+                title: '变更类型',
+                dataIndex: 'changeType',
+                key: 'changeType',
+                width: 120,
+                render: (type) => React.createElement(Tag, {
+                    color: type === 'exhibitor_info' ? 'blue' : 
+                           type === 'product_online' ? 'green' :
+                           type === 'product_offline' ? 'orange' : 'default'
+                }, type === 'exhibitor_info' ? '展商信息' : 
+                   type === 'product_online' ? '产品上架' :
+                   type === 'product_offline' ? '产品下架' : '产品信息')
+            },
+            {
+                title: '提交时间',
+                dataIndex: 'submitTime',
+                key: 'submitTime',
+                width: 180
+            },
+            {
+                title: '状态',
+                dataIndex: 'status',
+                key: 'status',
+                width: 100,
+                render: (status) => {
+                    const statusConfig = {
+                        'pending': { color: 'orange', text: '待审核' },
+                        'approved': { color: 'green', text: '已通过' },
+                        'rejected': { color: 'red', text: '已拒绝' }
+                    };
+                    const config = statusConfig[status] || statusConfig['pending'];
+                    return React.createElement(Tag, { color: config.color }, config.text);
+                }
+            },
+            {
+                title: '审核人',
+                dataIndex: 'reviewer',
+                key: 'reviewer',
+                width: 100,
+                render: (reviewer) => reviewer || '-'
+            },
+            {
+                title: '审核时间',
+                dataIndex: 'reviewTime',
+                key: 'reviewTime',
+                width: 180,
+                render: (time) => time || '-'
+            },
+            {
+                title: '操作',
+                key: 'actions',
+                width: 120,
+                render: (_, record) => React.createElement(Space, { size: 'small' }, [
+                    record.status === 'pending' && React.createElement(Button, {
+                        key: 'audit',
+                        size: 'small',
+                        type: 'primary',
+                        onClick: () => handleProductAudit(record)
+                    }, '审核'),
+                    React.createElement(Button, {
+                        key: 'view',
+                        size: 'small',
+                        onClick: () => {
+                            Modal.info({
+                                title: '变更详情',
+                                width: 600,
+                                content: renderChangeComparison(record.changes, record.changeType)
+                            });
+                        }
+                    }, '详情')
+                ])
+            }
+        ];
+
+        return React.createElement('div', {}, [
+            React.createElement(Alert, {
+                key: 'audit-info',
+                message: '审核说明',
+                description: '展商通过展商中心提交的信息变更和产品上架申请需要运营人员审核，审核通过后变更才会生效并在APP中展示。',
+                type: 'info',
+                showIcon: true,
+                style: { marginBottom: '16px' }
+            }),
+            React.createElement(Tabs, {
+                key: 'audit-tabs',
+                defaultActiveKey: 'all'
+            }, [
+                React.createElement(TabPane, {
+                    key: 'all',
+                    tab: '全部变更'
+                }, React.createElement(Table, {
+                    columns: auditColumns,
+                    dataSource: [...pendingChanges, ...pendingProductChanges].map((item, index) => ({ ...item, key: index })),
+                    pagination: {
+                        pageSize: 10,
+                        showTotal: (total) => `共 ${total} 条`
+                    }
+                })),
+                React.createElement(TabPane, {
+                    key: 'products',
+                    tab: React.createElement('span', null, [
+                        '产品上架',
+                        pendingProductChanges.filter(c => c.status === 'pending').length > 0 && 
+                        React.createElement('sup', {
+                            style: {
+                                marginLeft: '4px',
+                                padding: '2px 6px',
+                                background: '#ff4d4f',
+                                color: '#fff',
+                                borderRadius: '10px',
+                                fontSize: '12px'
+                            }
+                        }, pendingProductChanges.filter(c => c.status === 'pending').length)
+                    ])
+                }, React.createElement(Table, {
+                    columns: auditColumns,
+                    dataSource: pendingProductChanges.map((item, index) => ({ ...item, key: index })),
+                    pagination: {
+                        pageSize: 10,
+                        showTotal: (total) => `共 ${total} 条`
+                    }
+                }))
+            ])
+        ]);
+    };
+
     return React.createElement('div', {
         style: { padding: '0' }
     }, [
@@ -796,96 +1218,326 @@ const ExhibitorManagement = () => {
             style: { marginBottom: '24px' }
         }, renderStatistics()),
 
-        // 搜索和筛选
-        React.createElement(Card, {
-            key: 'filters',
-            style: { marginBottom: '16px' }
-        }, React.createElement(Row, {
-            gutter: 16,
-            align: 'middle'
+        // 主要内容区域 - 使用Tabs
+        React.createElement(Tabs, {
+            key: 'main-tabs',
+            activeKey: activeTab,
+            onChange: setActiveTab,
+            size: 'large'
         }, [
-            React.createElement(Col, { key: 'search', span: 6 },
-                React.createElement(Input, {
-                    placeholder: '搜索公司名称、联系人或展位号',
-                    value: searchText,
-                    onChange: (e) => setSearchText(e.target.value),
-                    style: { width: '100%' },
-                    prefix: React.createElement('span', {}, '🔍')
-                })
-            ),
-            React.createElement(Col, { key: 'status', span: 4 },
-                React.createElement(Select, {
-                    value: statusFilter,
-                    onChange: setStatusFilter,
-                    style: { width: '100%' },
-                    placeholder: '筛选状态'
+            // 展商管理标签页
+            React.createElement(TabPane, {
+                key: 'companies',
+                tab: React.createElement('span', null, ['🏢 ', '展商管理'])
+            }, [
+                // 搜索和筛选
+                React.createElement(Card, {
+                    key: 'filters',
+                    style: { marginBottom: '16px' }
+                }, React.createElement(Row, {
+                    gutter: 16,
+                    align: 'middle'
                 }, [
-                    React.createElement(Option, { key: 'all', value: 'all' }, '全部状态'),
-                    React.createElement(Option, { key: 'confirmed', value: 'confirmed' }, '已审核'),
-                    React.createElement(Option, { key: 'pending', value: 'pending' }, '待审核'),
-                    React.createElement(Option, { key: 'rejected', value: 'rejected' }, '已拒绝')
+                    React.createElement(Col, { key: 'search', span: 6 },
+                        React.createElement(Input, {
+                            placeholder: '搜索公司名称、联系人或展位号',
+                            value: searchText,
+                            onChange: (e) => setSearchText(e.target.value),
+                            style: { width: '100%' },
+                            prefix: React.createElement('span', {}, '🔍')
+                        })
+                    ),
+                    React.createElement(Col, { key: 'status', span: 4 },
+                        React.createElement(Select, {
+                            value: statusFilter,
+                            onChange: setStatusFilter,
+                            style: { width: '100%' },
+                            placeholder: '筛选状态'
+                        }, [
+                            React.createElement(Option, { key: 'all', value: 'all' }, '全部状态'),
+                            React.createElement(Option, { key: 'confirmed', value: 'confirmed' }, '已审核'),
+                            React.createElement(Option, { key: 'pending', value: 'pending' }, '待审核'),
+                            React.createElement(Option, { key: 'rejected', value: 'rejected' }, '已拒绝')
+                        ])
+                    ),
+                    React.createElement(Col, { key: 'category', span: 4 },
+                        React.createElement(Select, {
+                            value: categoryFilter,
+                            onChange: setCategoryFilter,
+                            style: { width: '100%' },
+                            placeholder: '筛选分类'
+                        }, [
+                            React.createElement(Option, { key: 'all', value: 'all' }, '全部分类'),
+                            React.createElement(Option, { key: '车辆制造', value: '车辆制造' }, '车辆制造'),
+                            React.createElement(Option, { key: '智能交通', value: '智能交通' }, '智能交通'),
+                            React.createElement(Option, { key: '通信技术', value: '通信技术' }, '通信技术'),
+                            React.createElement(Option, { key: '数字化解决方案', value: '数字化解决方案' }, '数字化解决方案'),
+                            React.createElement(Option, { key: '信号系统', value: '信号系统' }, '信号系统')
+                        ])
+                    ),
+                    React.createElement(Col, { key: 'actions', span: 10 },
+                        React.createElement(Space, { size: 'small' }, [
+                            React.createElement(Button, {
+                                key: 'import',
+                                onClick: () => setImportModalVisible(true),
+                                style: { color: '#52c41a', borderColor: '#52c41a' }
+                            }, '批量导入'),
+                            React.createElement(Button, {
+                                key: 'reset',
+                                onClick: resetFilters
+                            }, '重置筛选'),
+                            React.createElement(Button, {
+                                key: 'export',
+                                onClick: handleExport
+                            }, '导出数据'),
+                            React.createElement(Button, {
+                                key: 'refresh',
+                                onClick: loadCompanyData,
+                                loading: loading
+                            }, '刷新数据'),
+                            React.createElement(Button, {
+                                key: 'create',
+                                type: 'primary',
+                                onClick: createNewCompany
+                            }, '新增公司')
+                        ])
+                    )
+                ])),
+
+                // 数据表格
+                React.createElement(Card, {
+                    key: 'table',
+                    title: `参展公司列表 (${filteredCompanies.length}家)`
+                }, React.createElement(Table, {
+                    columns: columns,
+                    dataSource: filteredCompanies.map((item, index) => ({ ...item, key: index })),
+                    loading: loading,
+                    pagination: {
+                        pageSize: 10,
+                        showSizeChanger: true,
+                        showQuickJumper: true,
+                        showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`
+                    },
+                    scroll: { x: 1400 }
+                }))
+            ]),
+
+            // 审核变更标签页
+            React.createElement(TabPane, {
+                key: 'audit',
+                tab: React.createElement('span', null, [
+                    '🔍 ', 
+                    '审核变更',
+                    statistics.pendingAuditCount > 0 && React.createElement('span', {
+                        key: 'badge',
+                        style: {
+                            marginLeft: '8px',
+                            background: '#ff4d4f',
+                            color: '#fff',
+                            borderRadius: '10px',
+                            padding: '0 6px',
+                            fontSize: '12px'
+                        }
+                    }, statistics.pendingAuditCount)
                 ])
-            ),
-            React.createElement(Col, { key: 'category', span: 4 },
-                React.createElement(Select, {
-                    value: categoryFilter,
-                    onChange: setCategoryFilter,
-                    style: { width: '100%' },
-                    placeholder: '筛选分类'
-                }, [
-                    React.createElement(Option, { key: 'all', value: 'all' }, '全部分类'),
-                    React.createElement(Option, { key: '车辆制造', value: '车辆制造' }, '车辆制造'),
-                    React.createElement(Option, { key: '智能交通', value: '智能交通' }, '智能交通'),
-                    React.createElement(Option, { key: '通信技术', value: '通信技术' }, '通信技术'),
-                    React.createElement(Option, { key: '数字化解决方案', value: '数字化解决方案' }, '数字化解决方案'),
-                    React.createElement(Option, { key: '信号系统', value: '信号系统' }, '信号系统')
-                ])
-            ),
-            React.createElement(Col, { key: 'actions', span: 10 },
-                React.createElement(Space, { size: 'small' }, [
+            }, renderAuditContent())
+        ]),
+
+        // 审核模态框
+        auditModalVisible && React.createElement(Modal, {
+            key: 'audit-modal',
+            title: '审核变更申请',
+            visible: auditModalVisible,
+            onCancel: () => {
+                setAuditModalVisible(false);
+                setCurrentAuditRecord(null);
+                auditForm.resetFields();
+            },
+            footer: null,
+            width: 800
+        }, currentAuditRecord && React.createElement('div', {}, [
+            React.createElement(Descriptions, {
+                key: 'basic-info',
+                title: '基本信息',
+                column: 2,
+                bordered: true,
+                style: { marginBottom: '16px' }
+            }, [
+                React.createElement(Descriptions.Item, {
+                    key: 'exhibitor',
+                    label: '展商名称'
+                }, currentAuditRecord.exhibitorName),
+                React.createElement(Descriptions.Item, {
+                    key: 'type',
+                    label: '变更类型'
+                }, currentAuditRecord.changeType === 'exhibitor_info' ? '展商信息' : '产品信息'),
+                React.createElement(Descriptions.Item, {
+                    key: 'submit-time',
+                    label: '提交时间'
+                }, currentAuditRecord.submitTime),
+                React.createElement(Descriptions.Item, {
+                    key: 'status',
+                    label: '当前状态'
+                }, React.createElement(Tag, {
+                    color: 'orange'
+                }, '待审核'))
+            ]),
+
+            React.createElement(Divider, { key: 'divider' }),
+
+            renderChangeComparison(currentAuditRecord.changes, currentAuditRecord.changeType),
+
+            React.createElement(Divider, { key: 'divider2' }),
+
+            React.createElement(Form, {
+                key: 'audit-form',
+                form: auditForm,
+                layout: 'vertical',
+                onFinish: handleAuditSubmit
+            }, [
+                React.createElement(Form.Item, {
+                    key: 'action',
+                    label: '审核决定',
+                    name: 'action',
+                    rules: [{ required: true, message: '请选择审核结果' }]
+                }, React.createElement(Radio.Group, null, [
+                    React.createElement(Radio, {
+                        key: 'approve',
+                        value: 'approve',
+                        style: { color: '#52c41a' }
+                    }, '通过'),
+                    React.createElement(Radio, {
+                        key: 'reject',
+                        value: 'reject',
+                        style: { color: '#ff4d4f' }
+                    }, '拒绝')
+                ])),
+                React.createElement(Form.Item, {
+                    key: 'comment',
+                    label: '审核备注',
+                    name: 'comment',
+                    rules: [{ required: true, message: '请输入审核备注' }]
+                }, React.createElement(TextArea, {
+                    rows: 3,
+                    placeholder: '请输入审核备注，说明通过或拒绝的原因'
+                })),
+                React.createElement(Form.Item, {
+                    key: 'submit',
+                    style: { textAlign: 'right', marginTop: '24px' }
+                }, React.createElement(Space, null, [
                     React.createElement(Button, {
-                        key: 'import',
-                        onClick: () => setImportModalVisible(true),
-                        style: { color: '#52c41a', borderColor: '#52c41a' }
-                    }, '批量导入'),
+                        key: 'cancel',
+                        onClick: () => {
+                            setAuditModalVisible(false);
+                            setCurrentAuditRecord(null);
+                            auditForm.resetFields();
+                        }
+                    }, '取消'),
                     React.createElement(Button, {
-                        key: 'reset',
-                        onClick: resetFilters
-                    }, '重置筛选'),
-                    React.createElement(Button, {
-                        key: 'export',
-                        onClick: handleExport
-                    }, '导出数据'),
-                    React.createElement(Button, {
-                        key: 'refresh',
-                        onClick: loadCompanyData,
-                        loading: loading
-                    }, '刷新数据'),
-                    React.createElement(Button, {
-                        key: 'create',
+                        key: 'submit',
                         type: 'primary',
-                        onClick: createNewCompany
-                    }, '新增公司')
-                ])
-            )
+                        htmlType: 'submit',
+                        loading: loading
+                    }, '提交审核')
+                ]))
+            ])
         ])),
 
-        // 数据表格
-        React.createElement(Card, {
-            key: 'table',
-            title: `参展公司列表 (${filteredCompanies.length}家)`
-        }, React.createElement(Table, {
-            columns: columns,
-            dataSource: filteredCompanies.map((item, index) => ({ ...item, key: index })),
-            loading: loading,
-            pagination: {
-                pageSize: 10,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`
+        // 产品审核模态框
+        productAuditModalVisible && React.createElement(Modal, {
+            key: 'product-audit-modal',
+            title: '产品上架审核',
+            visible: productAuditModalVisible,
+            onCancel: () => {
+                setProductAuditModalVisible(false);
+                setCurrentProductAudit(null);
+                productAuditForm.resetFields();
             },
-            scroll: { x: 1400 }
-        })),
+            footer: null,
+            width: 800
+        }, currentProductAudit && React.createElement('div', {}, [
+            React.createElement(Descriptions, {
+                key: 'product-basic-info',
+                title: '产品信息',
+                column: 2,
+                bordered: true,
+                style: { marginBottom: '16px' }
+            }, [
+                React.createElement(Descriptions.Item, {
+                    key: 'product-name',
+                    label: '产品名称'
+                }, currentProductAudit.product.name),
+                React.createElement(Descriptions.Item, {
+                    key: 'product-category',
+                    label: '产品分类'
+                }, currentProductAudit.product.category),
+                React.createElement(Descriptions.Item, {
+                    key: 'product-description',
+                    label: '产品描述'
+                }, currentProductAudit.product.description),
+                React.createElement(Descriptions.Item, {
+                    key: 'product-status',
+                    label: '当前状态'
+                }, React.createElement(Tag, {
+                    color: 'orange'
+                }, '待审核'))
+            ]),
+
+            React.createElement(Divider, { key: 'divider' }),
+
+            React.createElement(Form, {
+                key: 'product-audit-form',
+                form: productAuditForm,
+                layout: 'vertical',
+                onFinish: handleProductAuditSubmit
+            }, [
+                React.createElement(Form.Item, {
+                    key: 'action',
+                    label: '审核决定',
+                    name: 'action',
+                    rules: [{ required: true, message: '请选择审核结果' }]
+                }, React.createElement(Radio.Group, null, [
+                    React.createElement(Radio, {
+                        key: 'approve',
+                        value: 'approve',
+                        style: { color: '#52c41a' }
+                    }, '通过'),
+                    React.createElement(Radio, {
+                        key: 'reject',
+                        value: 'reject',
+                        style: { color: '#ff4d4f' }
+                    }, '拒绝')
+                ])),
+                React.createElement(Form.Item, {
+                    key: 'comment',
+                    label: '审核备注',
+                    name: 'comment',
+                    rules: [{ required: true, message: '请输入审核备注' }]
+                }, React.createElement(TextArea, {
+                    rows: 3,
+                    placeholder: '请输入审核备注，说明通过或拒绝的原因'
+                })),
+                React.createElement(Form.Item, {
+                    key: 'submit',
+                    style: { textAlign: 'right', marginTop: '24px' }
+                }, React.createElement(Space, null, [
+                    React.createElement(Button, {
+                        key: 'cancel',
+                        onClick: () => {
+                            setProductAuditModalVisible(false);
+                            setCurrentProductAudit(null);
+                            productAuditForm.resetFields();
+                        }
+                    }, '取消'),
+                    React.createElement(Button, {
+                        key: 'submit',
+                        type: 'primary',
+                        htmlType: 'submit',
+                        loading: loading
+                    }, '提交审核')
+                ]))
+            ])
+        ])),
 
         // 公司信息编辑模态框
         React.createElement(Modal, {

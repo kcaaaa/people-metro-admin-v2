@@ -3,14 +3,13 @@ const App = () => {
     const { Layout, message } = antd;
     const { Sider, Header, Content } = Layout;
     
+    // 登录状态管理
+    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(true);
+    
     const [currentPage, setCurrentPage] = React.useState('dashboard');
     const [collapsed, setCollapsed] = React.useState(false);
-    const [user, setUser] = React.useState({ 
-        name: '系统管理员', 
-        role: 'admin',
-        username: 'admin',
-        userId: 'admin_001'
-    });
+    const [user, setUser] = React.useState(null);
     
     // 使用状态管理器的通知
     const [notifications, setNotifications] = React.useState([]);
@@ -24,8 +23,62 @@ const App = () => {
         lastUpdate: null
     });
 
+    // 检查登录状态
+    const checkLoginStatus = () => {
+        try {
+            const userData = localStorage.getItem('userData');
+            const userToken = localStorage.getItem('userToken');
+            
+            if (userData && userToken) {
+                const parsedUser = JSON.parse(userData);
+                setUser(parsedUser);
+                setIsLoggedIn(true);
+                
+                // 更新AuthUtils
+                if (window.AuthUtils) {
+                    window.AuthUtils.saveCurrentUser(parsedUser);
+                }
+                
+                console.log('用户已登录:', parsedUser.name);
+            } else {
+                setIsLoggedIn(false);
+                console.log('用户未登录');
+            }
+        } catch (error) {
+            console.error('检查登录状态失败:', error);
+            setIsLoggedIn(false);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // 登录成功处理
+    const handleLogin = (userData) => {
+        setUser(userData);
+        setIsLoggedIn(true);
+        
+        // 更新AuthUtils
+        if (window.AuthUtils) {
+            window.AuthUtils.saveCurrentUser(userData);
+        }
+        
+        // 初始化权限
+        if (window.PermissionManager) {
+            window.PermissionManager.setUserPermissions(
+                userData.userId,
+                userData.permissions || ['*'],
+                'system'
+            );
+        }
+        
+        // 初始化状态管理器
+        initializeStateManager();
+        
+        console.log('登录成功，用户信息:', userData);
+    };
+
     // 初始化状态管理器和权限管理器
-    React.useEffect(() => {
+    const initializeStateManager = () => {
         // 确保StateManager和PermissionManager已初始化
         if (window.StateManager && window.PermissionManager) {
             console.log('State and Permission managers are ready');
@@ -33,17 +86,12 @@ const App = () => {
             // 设置用户权限（如果还没有设置）
             const currentPermissions = window.PermissionManager.getCurrentUserPermissions();
             if (!currentPermissions || currentPermissions.length === 0) {
-                // 设置超级管理员权限
+                // 设置用户权限
                 window.PermissionManager.setUserPermissions(
                     user.userId, 
-                    ['*'], // 超级管理员拥有所有权限
+                    user.permissions || ['*'],
                     'system'
                 );
-                
-                // 设置默认角色为超级管理员
-                if (window.PermissionManager.setDefaultPermissionsByRole) {
-                    window.PermissionManager.setDefaultPermissionsByRole('SUPER_ADMIN');
-                }
             }
             
             // 加载初始通知
@@ -52,7 +100,19 @@ const App = () => {
             // 监听状态变化
             setupStateListeners();
         }
+    };
+
+    // 初始化应用
+    React.useEffect(() => {
+        checkLoginStatus();
     }, []);
+
+    // 用户登录后初始化
+    React.useEffect(() => {
+        if (isLoggedIn && user) {
+            initializeStateManager();
+        }
+    }, [isLoggedIn, user]);
 
     // 加载初始通知
     const loadInitialNotifications = () => {
@@ -108,26 +168,22 @@ const App = () => {
             // 监听内容状态变更
             window.StateManager.on('content:statusChanged', (data) => {
                 console.log('Content status changed:', data);
-                // 可以在这里触发相关UI更新
             });
 
             // 监听用户状态变更
             window.StateManager.on('user:statusChanged', (data) => {
                 console.log('User status changed:', data);
-                // 可以在这里触发相关UI更新
             });
 
             // 监听投诉状态变更
             window.StateManager.on('complaint:statusChanged', (data) => {
                 console.log('Complaint status changed:', data);
-                // 可以在这里触发相关UI更新
             });
 
             // 监听权限变更
             window.StateManager.on('permissions:changed', (data) => {
                 console.log('Permissions changed:', data);
                 if (data.userId === user.userId) {
-                    // 当前用户权限变更，可能需要重新加载页面或更新UI
                     console.log('Current user permissions updated');
                 }
             });
@@ -175,9 +231,6 @@ const App = () => {
         if (window.StateManager && notificationId) {
             window.StateManager.markNotificationRead(notificationId);
         }
-        
-        // 可以根据通知类型跳转到相应页面
-        // 这里可以添加更多的通知处理逻辑
     };
 
     const handleLogout = () => {
@@ -192,10 +245,8 @@ const App = () => {
         }
         
         // 清理本地数据
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        localStorage.removeItem('userToken');
         localStorage.removeItem('userData');
+        localStorage.removeItem('userToken');
         localStorage.removeItem('userPreferences');
         localStorage.removeItem('recentActions');
         
@@ -204,15 +255,20 @@ const App = () => {
             window.StateManager.clearAllState();
         }
         
+        // 清理AuthUtils
+        if (window.AuthUtils) {
+            window.AuthUtils.logout();
+        }
+        
         // 更新状态
         setUser(null);
+        setIsLoggedIn(false);
         setCurrentPage('dashboard');
+        setNotifications([]);
+        setUnreadCount(0);
         
         // 显示退出成功提示
         message.success('已安全退出系统');
-        
-        // 重定向到登录页面
-        window.location.reload();
     };
 
     // 实时更新通知数据
@@ -340,6 +396,53 @@ const App = () => {
         }, `页面 "${currentPage}" 不存在`);
     };
 
+    // 系统加载中
+    if (isLoading) {
+        return React.createElement('div', {
+            style: {
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                background: '#f5f5f5'
+            }
+        }, React.createElement('div', {
+            style: { textAlign: 'center' }
+        }, [
+            React.createElement('div', {
+                key: 'logo',
+                style: {
+                    fontSize: '48px',
+                    marginBottom: '16px'
+                }
+            }, '🚇'),
+            React.createElement('div', {
+                key: 'title',
+                style: {
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    marginBottom: '8px',
+                    color: '#333'
+                }
+            }, '人民城轨2.0'),
+            React.createElement('div', {
+                key: 'loading',
+                style: {
+                    fontSize: '16px',
+                    color: '#666'
+                }
+            }, '系统正在启动...')
+        ]));
+    }
+
+    // 未登录显示登录页面
+    if (!isLoggedIn) {
+        return React.createElement(window.Login, {
+            onLogin: handleLogin
+        });
+    }
+
+    // 已登录显示主界面
     return React.createElement(Layout, {
         style: { minHeight: '100vh', background: '#f5f5f5' }
     }, [

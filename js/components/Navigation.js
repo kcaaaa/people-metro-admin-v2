@@ -131,8 +131,8 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                 {
                     key: 'exhibitor-maintenance',
                     icon: '🔧',
-                    label: '展商维护',
-                    title: '展商用户维护本公司基础信息',
+                    label: '展商中心',
+                    title: '展商自主维护公司信息和产品信息',
                     page: 'exhibitor-maintenance'
                 },
                 {
