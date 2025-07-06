@@ -1,0 +1,4 @@
+.git\
+docs\
+exclude_files.txt
+deploy-to-github.bat 
