@@ -1279,4 +1279,5 @@ const ContentTagManagement = () => {
     ]);
 };
 
-window.ContentTagManagement = ContentTagManagement; 
+window.App.pages.ContentTagManagement = ContentTagManagement;
+console.log('[ContentTagManagement] 组件挂载成功'); 

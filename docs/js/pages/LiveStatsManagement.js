@@ -981,5 +981,5 @@ const LiveStatsManagement = () => {
 };
 
 console.log('LiveStatsManagement component defined');
-window.LiveStatsManagement = LiveStatsManagement;
-console.log('[LiveStatsManagement] window.LiveStatsManagement 挂载成功'); 
+window.App.pages.LiveStatsManagement = LiveStatsManagement;
+console.log('[LiveStatsManagement] 组件挂载成功'); 

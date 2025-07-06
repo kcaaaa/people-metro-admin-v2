@@ -1015,4 +1015,5 @@ const LogManagement = () => {
     ]);
 };
 
-window.LogManagement = LogManagement; 
+window.App.pages.LogManagement = LogManagement;
+console.log('[LogManagement] 组件挂载成功'); 

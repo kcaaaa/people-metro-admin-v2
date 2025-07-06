@@ -707,4 +707,5 @@ const UserProfile = () => {
     ]);
 };
 
-window.UserProfile = UserProfile; 
+window.App.pages.UserProfile = UserProfile;
+console.log('[UserProfile] 组件挂载成功'); 

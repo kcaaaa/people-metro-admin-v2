@@ -6,6 +6,26 @@
     <title>人民城轨2.0 - 管理后台</title>
     <link rel="stylesheet" href="vendor/css/antd.min.css">
     <link rel="stylesheet" href="js/pages/LiveManagement.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚇</text></svg>" type="image/svg+xml">
+    
+    <!-- 全局命名空间初始化 -->
+    <script>
+        // 初始化全局命名空间
+        window.App = {
+            pages: {},
+            components: {},
+            utils: {}
+        };
+        
+        // 全局错误处理
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('Global error:', { message, source, lineno, colno, error });
+        };
+        
+        // 确保antd全局可用
+        window.antd = window.antd || {};
+    </script>
+    
     <style>
         body {
             margin: 0;
@@ -157,17 +177,30 @@
     <script src="vendor/js/echarts.min.js"></script>
     
     <!-- 工具类 -->
+    <script>
+        // 确保全局对象存在
+        window.App = window.App || {};
+        window.App.utils = window.App.utils || {};
+    </script>
     <script src="js/utils/auth.js"></script>
     <script src="js/utils/stateManager.js"></script>
     <script src="js/utils/permissionManager.js"></script>
     <script src="js/utils/exhibitorManager.js"></script>
     
     <!-- 组件 -->
+    <script>
+        // 确保组件命名空间存在
+        window.App.components = window.App.components || {};
+    </script>
     <script src="js/components/Navigation.js"></script>
     <script src="js/components/TopBar.js"></script>
     <script src="js/components/Login.js"></script>
     
     <!-- 页面组件 -->
+    <script>
+        // 确保页面组件命名空间存在
+        window.App.pages = window.App.pages || {};
+    </script>
     <script src="js/pages/OperationalStats.js"></script>
     <script src="js/pages/Dashboard.js"></script>
     <script src="js/pages/ContentManagement.js"></script>

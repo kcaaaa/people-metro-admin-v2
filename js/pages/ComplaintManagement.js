@@ -1933,4 +1933,5 @@ const ComplaintManagement = () => {
     ]);
 };
 
-window.ComplaintManagement = ComplaintManagement; 
+window.App.pages.ComplaintManagement = ComplaintManagement;
+console.log('[ComplaintManagement] 组件挂载成功'); 

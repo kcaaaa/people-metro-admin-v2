@@ -394,4 +394,5 @@ const AdminManagement = () => {
     ]);
 };
 
-window.AdminManagement = AdminManagement; 
+window.App.pages.AdminManagement = AdminManagement;
+console.log('[AdminManagement] 组件挂载成功'); 

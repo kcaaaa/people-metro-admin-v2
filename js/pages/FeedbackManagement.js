@@ -577,4 +577,5 @@ const FeedbackManagement = () => {
     ]);
 };
 
-window.FeedbackManagement = FeedbackManagement; 
+window.App.pages.FeedbackManagement = FeedbackManagement;
+console.log('[FeedbackManagement] 组件挂载成功'); 

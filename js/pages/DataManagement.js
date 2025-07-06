@@ -577,4 +577,5 @@ const DataManagement = () => {
     ]);
 };
 
-window.DataManagement = DataManagement; 
+window.App.pages.DataManagement = DataManagement;
+console.log('[DataManagement] 组件挂载成功'); 

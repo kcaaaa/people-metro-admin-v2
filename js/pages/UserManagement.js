@@ -1801,4 +1801,5 @@ const UserManagement = () => {
     ]);
 };
 
-window.UserManagement = UserManagement; 
+window.App.pages.UserManagement = UserManagement;
+console.log('[UserManagement] 组件挂载成功'); 

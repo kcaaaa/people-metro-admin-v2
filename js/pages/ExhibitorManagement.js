@@ -1,6 +1,7 @@
 // 参展公司管理页面 - 展会参展公司信息管理
 const ExhibitorManagement = () => {
-    const { Row, Col, Card, Button, Space, Alert, Tag, Table, Modal, Form, Input, Select, message, Upload, Image, Divider, Statistic, Progress, InputNumber, Radio, Switch, DatePicker, Tooltip, Steps, Descriptions, Tabs } = antd;
+    // 从全局antd对象中获取组件
+    const { Row, Col, Card, Button, Space, Alert, Tag, Table, Modal, Form, Input, Select, message, Upload, Image, Divider, Statistic, Progress, InputNumber, Radio, Switch, DatePicker, Tooltip, Steps, Descriptions, Tabs } = window.antd;
     const { TextArea } = Input;
     const { Option } = Select;
     
@@ -185,5 +186,6 @@ const ExhibitorManagement = () => {
     );
 };
 
-// 将组件挂载到window对象
-window.ExhibitorManagement = ExhibitorManagement; 
+// 将组件挂载到正确的命名空间
+window.App.pages.ExhibitorManagement = ExhibitorManagement;
+console.log('[ExhibitorManagement] 组件挂载成功'); 

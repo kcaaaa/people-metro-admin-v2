@@ -972,5 +972,5 @@ const ExhibitorMaintenance = () => {
 };
 
 console.log('ExhibitorCenter component defined');
-window.ExhibitorMaintenance = ExhibitorMaintenance; 
-console.log('[ExhibitorCenter] window.ExhibitorMaintenance 挂载成功'); 
+window.App.pages.ExhibitorMaintenance = ExhibitorMaintenance;
+console.log('[ExhibitorMaintenance] 组件挂载成功'); 

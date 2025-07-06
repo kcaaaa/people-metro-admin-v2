@@ -958,5 +958,5 @@ const BoothManagement = () => {
 }
 
 console.log('BoothManagement component defined');
-window.BoothManagement = BoothManagement;
-console.log('[BoothManagement] window.BoothManagement 挂载成功'); 
+window.App.pages.BoothManagement = BoothManagement;
+console.log('[BoothManagement] 组件挂载成功'); 

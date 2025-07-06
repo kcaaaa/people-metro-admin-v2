@@ -2140,4 +2140,5 @@ const LiveManagement = () => {
     ]);
 };
 
-window.LiveManagement = LiveManagement; 
+window.App.pages.LiveManagement = LiveManagement;
+console.log('[LiveManagement] 组件挂载成功'); 

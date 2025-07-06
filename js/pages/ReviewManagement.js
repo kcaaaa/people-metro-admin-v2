@@ -1603,4 +1603,5 @@ const ReviewManagement = () => {
     ]);
 };
 
-window.ReviewManagement = ReviewManagement; 
+window.App.pages.ReviewManagement = ReviewManagement;
+console.log('[ReviewManagement] 组件挂载成功'); 

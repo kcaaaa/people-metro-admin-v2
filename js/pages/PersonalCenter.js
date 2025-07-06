@@ -1172,4 +1172,5 @@ const PersonalCenter = () => {
     ]);
 };
 
-window.PersonalCenter = PersonalCenter; 
+window.App.pages.PersonalCenter = PersonalCenter;
+console.log('[PersonalCenter] 组件挂载成功'); 

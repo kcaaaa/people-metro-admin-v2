@@ -285,69 +285,69 @@ const App = () => {
     // 页面组件映射
     const getPageComponent = () => {
         console.log('Current page:', currentPage);
-        console.log('Available components:', Object.keys(window).filter(key => key.endsWith('Management') || key === 'Dashboard' || key === 'OperationalStats'));
+        console.log('Available components:', Object.keys(window.App.pages));
         
         const pageComponents = {
-            'dashboard': window.Dashboard,
-            'Dashboard': window.Dashboard,
-            'content': window.ContentManagement,
-            'ContentManagement': window.ContentManagement,
-            'complaint': window.ComplaintManagement,
-            'ComplaintManagement': window.ComplaintManagement,
-            'content-tags': window.ContentTagManagement,
-            'ContentTagManagement': window.ContentTagManagement,
-            'review': window.ReviewManagement,
-            'review-image': window.ReviewManagement,
-            'review-video': window.ReviewManagement,
-            'review-interaction': window.ReviewManagement,
-            'review-mechanism': window.ReviewManagement,
-            'ReviewManagement': window.ReviewManagement,
-            'exhibition-audit': window.ExhibitionAuditManagement,
-            'ExhibitionAuditManagement': window.ExhibitionAuditManagement,
-            'audit-flow': window.AuditFlowManagement,
-            'AuditFlowManagement': window.AuditFlowManagement,
-            'booth': window.BoothManagement,
-            'BoothManagement': window.BoothManagement,
-            'exhibitor': window.ExhibitorManagement,
-            'ExhibitorManagement': window.ExhibitorManagement,
-            'exhibitor-maintenance': window.ExhibitorMaintenance,
-            'ExhibitorMaintenance': window.ExhibitorMaintenance,
-            'live': window.LiveManagement,
-            'LiveManagement': window.LiveManagement,
-            'live-stats': window.LiveStatsManagement,
-            'stats': window.BehaviorStats,
-            'BehaviorStats': window.BehaviorStats,
-            'operational': window.OperationalStats,
-            'OperationalStats': window.OperationalStats,
-            'data': window.DataManagement,
-            'DataManagement': window.DataManagement,
-            'feedback': window.FeedbackManagement,
-            'FeedbackManagement': window.FeedbackManagement,
-            'message': window.MessageManagement,
-            'MessageManagement': window.MessageManagement,
-            'user': window.UserManagement,
-            'UserManagement': window.UserManagement,
-            'admin': window.AdminManagement,
-            'AdminManagement': window.AdminManagement,
-            'logs': window.LogManagement,
-            'LogManagement': window.LogManagement,
-            'settings': window.SystemSettings,
-            'SystemSettings': window.SystemSettings,
-            'version': window.VersionManagement,
-            'VersionManagement': window.VersionManagement,
-            'traffic': window.TrafficAllocation,
-            'TrafficAllocation': window.TrafficAllocation,
-            'menu': window.MenuManagement,
-            'MenuManagement': window.MenuManagement,
-            'personal': window.PersonalCenter,
-            'personal-center': window.PersonalCenter,
-            'PersonalCenter': window.PersonalCenter
+            'dashboard': window.App.pages.Dashboard,
+            'Dashboard': window.App.pages.Dashboard,
+            'content': window.App.pages.ContentManagement,
+            'ContentManagement': window.App.pages.ContentManagement,
+            'complaint': window.App.pages.ComplaintManagement,
+            'ComplaintManagement': window.App.pages.ComplaintManagement,
+            'content-tags': window.App.pages.ContentTagManagement,
+            'ContentTagManagement': window.App.pages.ContentTagManagement,
+            'review': window.App.pages.ReviewManagement,
+            'review-image': window.App.pages.ReviewManagement,
+            'review-video': window.App.pages.ReviewManagement,
+            'review-interaction': window.App.pages.ReviewManagement,
+            'review-mechanism': window.App.pages.ReviewManagement,
+            'ReviewManagement': window.App.pages.ReviewManagement,
+            'exhibition-audit': window.App.pages.ExhibitionAuditManagement,
+            'ExhibitionAuditManagement': window.App.pages.ExhibitionAuditManagement,
+            'audit-flow': window.App.pages.AuditFlowManagement,
+            'AuditFlowManagement': window.App.pages.AuditFlowManagement,
+            'booth': window.App.pages.BoothManagement,
+            'BoothManagement': window.App.pages.BoothManagement,
+            'exhibitor': window.App.pages.ExhibitorManagement,
+            'ExhibitorManagement': window.App.pages.ExhibitorManagement,
+            'exhibitor-maintenance': window.App.pages.ExhibitorMaintenance,
+            'ExhibitorMaintenance': window.App.pages.ExhibitorMaintenance,
+            'live': window.App.pages.LiveManagement,
+            'LiveManagement': window.App.pages.LiveManagement,
+            'live-stats': window.App.pages.LiveStatsManagement,
+            'stats': window.App.pages.BehaviorStats,
+            'BehaviorStats': window.App.pages.BehaviorStats,
+            'operational': window.App.pages.OperationalStats,
+            'OperationalStats': window.App.pages.OperationalStats,
+            'data': window.App.pages.DataManagement,
+            'DataManagement': window.App.pages.DataManagement,
+            'feedback': window.App.pages.FeedbackManagement,
+            'FeedbackManagement': window.App.pages.FeedbackManagement,
+            'message': window.App.pages.MessageManagement,
+            'MessageManagement': window.App.pages.MessageManagement,
+            'user': window.App.pages.UserManagement,
+            'UserManagement': window.App.pages.UserManagement,
+            'admin': window.App.pages.AdminManagement,
+            'AdminManagement': window.App.pages.AdminManagement,
+            'logs': window.App.pages.LogManagement,
+            'LogManagement': window.App.pages.LogManagement,
+            'settings': window.App.pages.SystemSettings,
+            'SystemSettings': window.App.pages.SystemSettings,
+            'version': window.App.pages.VersionManagement,
+            'VersionManagement': window.App.pages.VersionManagement,
+            'traffic': window.App.pages.TrafficAllocation,
+            'TrafficAllocation': window.App.pages.TrafficAllocation,
+            'menu': window.App.pages.MenuManagement,
+            'MenuManagement': window.App.pages.MenuManagement,
+            'personal': window.App.pages.PersonalCenter,
+            'personal-center': window.App.pages.PersonalCenter,
+            'PersonalCenter': window.App.pages.PersonalCenter
         };
 
         console.log('Looking for component:', currentPage);
         console.log('Component mapping:', {
-            operational: window.OperationalStats,
-            OperationalStats: window.OperationalStats
+            operational: window.App.pages.OperationalStats,
+            OperationalStats: window.App.pages.OperationalStats
         });
         
         const Component = pageComponents[currentPage];
@@ -512,4 +512,39 @@ const App = () => {
     ]);
 };
 
-window.App = App; 
+// 将组件挂载到正确的命名空间
+window.App = Object.assign(window.App || {}, {
+    App: App,
+    init: function() {
+        const container = document.getElementById('app');
+        if (!container) {
+            console.error('找不到应用容器元素 #app');
+            return;
+        }
+        
+        try {
+            ReactDOM.render(React.createElement(App), container);
+            console.log('应用渲染成功');
+        } catch (error) {
+            console.error('应用渲染失败:', error);
+            container.innerHTML = `
+                <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+                    <div style="text-align: center; color: #ff4d4f;">
+                        <h2>应用启动失败</h2>
+                        <p>请检查浏览器控制台获取详细错误信息</p>
+                        <button onclick="location.reload()" style="margin-top: 16px; padding: 8px 16px;">重新加载</button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+});
+
+// 在文档加载完成后初始化应用
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.App && window.App.init) {
+        window.App.init();
+    } else {
+        console.error('应用初始化失败：找不到 window.App.init');
+    }
+}); 

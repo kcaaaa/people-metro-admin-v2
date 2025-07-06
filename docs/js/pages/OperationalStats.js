@@ -907,3 +907,5 @@ window.OperationalStats = () => {
 
 // 添加调试日志
 console.log('OperationalStats component loaded'); 
+window.App.pages.OperationalStats = OperationalStats;
+console.log('[OperationalStats] 组件挂载成功'); 

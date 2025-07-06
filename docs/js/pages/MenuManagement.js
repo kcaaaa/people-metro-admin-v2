@@ -432,4 +432,5 @@ const MenuManagement = () => {
     ]);
 };
 
-window.MenuManagement = MenuManagement; 
+window.App.pages.MenuManagement = MenuManagement;
+console.log('[MenuManagement] 组件挂载成功'); 

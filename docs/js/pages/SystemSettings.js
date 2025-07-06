@@ -945,4 +945,5 @@ const SystemSettings = () => {
     ]);
 };
 
-window.SystemSettings = SystemSettings; 
+window.App.pages.SystemSettings = SystemSettings;
+console.log('[SystemSettings] 组件挂载成功'); 

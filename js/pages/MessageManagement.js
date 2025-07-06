@@ -1517,5 +1517,5 @@ const MessageManagement = () => {
 };
 
 console.log('MessageManagement component defined');
-window.MessageManagement = MessageManagement;
-console.log('MessageManagement attached to window object'); 
+window.App.pages.MessageManagement = MessageManagement;
+console.log('[MessageManagement] 组件挂载成功'); 

@@ -1,3 +1,15 @@
+// MockData 兼容处理
+window.MockData = window.MockData || {
+    getDashboardStats: () => ({
+        pendingReview: { value: 123, change: '+5%', trend: 'up' },
+        activeUsers: { value: 4567, change: '-2%', trend: 'down' },
+        violationRate: { value: 1.2, change: '0%', trend: 'stable' },
+        contentPublished: { value: 789, change: '+10%', trend: 'up' },
+        liveCount: { value: 3, change: '0', trend: 'stable' },
+        exhibitionData: { value: 12, change: '+1', trend: 'up' }
+    })
+};
+const MockData = window.MockData;
 // 增强版首页页面 - 完全可交互
 const Dashboard = ({ onPageChange, currentPage }) => {
     const { Row, Col, Card, Statistic, Button, Space, Alert, Progress, Tooltip, Modal, Form, Select, DatePicker, message, Tabs, Table } = antd;
@@ -813,4 +825,5 @@ const Dashboard = ({ onPageChange, currentPage }) => {
     ]);
 };
 
-window.Dashboard = Dashboard; 
+window.App.pages.Dashboard = Dashboard;
+console.log('[Dashboard] 组件挂载成功'); 

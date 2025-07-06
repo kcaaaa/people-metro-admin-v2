@@ -614,4 +614,5 @@ const VersionManagement = () => {
     ]);
 };
 
-window.VersionManagement = VersionManagement; 
+window.App.pages.VersionManagement = VersionManagement;
+console.log('[VersionManagement] 组件挂载成功'); 

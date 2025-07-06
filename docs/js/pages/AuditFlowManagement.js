@@ -480,4 +480,5 @@ const AuditFlowManagement = () => {
     ]);
 };
 
-window.AuditFlowManagement = AuditFlowManagement; 
+window.App.pages.AuditFlowManagement = AuditFlowManagement;
+console.log('[AuditFlowManagement] 组件挂载成功'); 

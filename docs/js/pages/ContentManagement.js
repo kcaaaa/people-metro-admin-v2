@@ -1,12 +1,17 @@
 // 内容管理页面 - 支持内容发布和管理
 const ContentManagement = () => {
-    const { Card, Table, Button, Input, Select, Space, Tag, Modal, Form, Switch, message, Row, Col, Statistic, DatePicker, Tabs, Upload, Radio, Divider } = antd;
+    const { Card, Table, Button, Input, Select, Space, Tag, Modal, Form, Switch, message, Row, Col, Statistic, DatePicker, Tabs, Upload, Radio, Divider, Dropdown, Menu } = antd;
     const { Search } = Input;
     const { Option } = Select;
     const { RangePicker } = DatePicker;
     const { TabPane } = Tabs;
     const { TextArea } = Input;
     const { Dragger } = Upload;
+
+    // 获取当前用户信息
+    const [currentUser, setCurrentUser] = React.useState(AuthUtils.getCurrentUser());
+    const userRole = currentUser?.role?.toUpperCase() || 'REGULAR_USER';
+    const userId = currentUser?.userId || null;
 
     // 状态管理
     const [activeTab, setActiveTab] = React.useState('management');
@@ -24,6 +29,14 @@ const ContentManagement = () => {
         keyword: '',
         dateRange: null
     });
+
+    // 统计数据状态
+    const [statsData, setStatsData] = React.useState({
+        totalContent: 0,
+        todayContent: 0,
+        pendingReview: 0,
+        publishedToday: 0
+    });
     
     // 发布相关状态
     const [publishForm] = Form.useForm();
@@ -39,6 +52,71 @@ const ContentManagement = () => {
     // 详情模态框状态
     const [selectedContent, setSelectedContent] = React.useState(null);
     const [detailModalVisible, setDetailModalVisible] = React.useState(false);
+
+    // 角色切换功能
+    const handleRoleSwitch = (roleConfig) => {
+        const newUser = {
+            ...currentUser,
+            ...roleConfig
+        };
+        AuthUtils.saveCurrentUser(newUser);
+        setCurrentUser(newUser);
+        message.success(`已切换到${roleConfig.roleName}角色`);
+        
+        // 清空当前筛选条件
+        setFilters({
+            contentType: 'all',
+            status: 'all',
+            board: 'all',
+            keyword: '',
+            dateRange: null
+        });
+
+        // 重置分页
+        setPagination(prev => ({
+            ...prev,
+            current: 1
+        }));
+
+        // 延迟一下重新加载数据，确保状态更新完成
+        setTimeout(() => {
+            loadContentList();
+        }, 100);
+    };
+
+    // 角色切换菜单
+    const roleMenu = React.createElement(Menu, {
+        onClick: ({ key }) => {
+            const roleConfigs = {
+                'SUPER_ADMIN': {
+                    role: 'SUPER_ADMIN',
+                    roleName: '超级管理员',
+                    userId: 'admin_001',
+                    name: '系统管理员',
+                    username: 'admin'
+                },
+                'ASSOCIATION_ADMIN': {
+                    role: 'ASSOCIATION_ADMIN',
+                    roleName: '协会管理员',
+                    userId: 'assoc_001',
+                    name: '协会管理员',
+                    username: 'association'
+                },
+                'REGULAR_USER': {
+                    role: 'REGULAR_USER',
+                    roleName: '普通用户',
+                    userId: 'user_001',
+                    name: '张三',
+                    username: 'zhangsan'
+                }
+            };
+            handleRoleSwitch(roleConfigs[key]);
+        }
+    }, [
+        React.createElement(Menu.Item, { key: 'SUPER_ADMIN' }, '🔐 超级管理员'),
+        React.createElement(Menu.Item, { key: 'ASSOCIATION_ADMIN' }, '🏛️ 协会管理员'),
+        React.createElement(Menu.Item, { key: 'REGULAR_USER' }, '👤 普通用户')
+    ]);
 
     // 富文本编辑器工具栏配置
     const editorTools = [
@@ -135,7 +213,8 @@ const ContentManagement = () => {
             type: 'video',
             board: 'exhibition',
             publisher: '张三',
-            publisherId: 1001,
+            publisherId: 'user_001',
+            publisherType: 'regular', // 普通用户
             publishTime: '2024-01-15 14:30:00',
             status: 'published',
             auditStatus: 'passed',
@@ -154,7 +233,9 @@ const ContentManagement = () => {
             type: 'article',
             board: 'association',
             publisher: '李四',
-            publisherId: 1002,
+            publisherId: 'assoc_001',
+            publisherType: 'association', // 协会账号
+            publisherAssociation: '城市轨道交通协会',
             publishTime: '2024-01-14 16:20:00',
             status: 'published',
             auditStatus: 'passed',
@@ -172,7 +253,8 @@ const ContentManagement = () => {
             type: 'video',
             board: 'recommended',
             publisher: '王五',
-            publisherId: 1003,
+            publisherId: 'admin_001',
+            publisherType: 'admin', // 管理员
             publishTime: '2024-01-13 10:15:00',
             status: 'pending',
             auditStatus: 'manual_pending',
@@ -183,15 +265,81 @@ const ContentManagement = () => {
             duration: '2:30',
             tags: ['展会', '精彩瞬间'],
             description: '记录展会现场的精彩瞬间，展示参展商的最新产品和技术...'
+        },
+        {
+            id: 4,
+            title: '协会年度工作报告',
+            type: 'article',
+            board: 'association',
+            publisher: '协会秘书处',
+            publisherId: 'assoc_002',
+            publisherType: 'association', // 协会账号
+            publisherAssociation: '城市轨道交通协会',
+            publishTime: '2024-01-12 09:00:00',
+            status: 'published',
+            auditStatus: 'passed',
+            viewCount: 5430,
+            likeCount: 89,
+            commentCount: 23,
+            shareCount: 56,
+            imageCount: 3,
+            tags: ['年度报告', '协会动态'],
+            description: '2023年度协会工作总结及2024年工作展望...'
+        },
+        {
+            id: 5,
+            title: '新型列车试运行视频',
+            type: 'video',
+            board: 'recommended',
+            publisher: '技术部',
+            publisherId: 'user_002',
+            publisherType: 'regular', // 普通用户
+            publishTime: '2024-01-11 15:45:00',
+            status: 'published',
+            auditStatus: 'passed',
+            viewCount: 8900,
+            likeCount: 178,
+            commentCount: 45,
+            shareCount: 67,
+            duration: '5:20',
+            thumbnail: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300',
+            tags: ['新技术', '试运行'],
+            description: '最新型号列车在测试线路上的试运行画面...'
+        },
+        {
+            id: 6,
+            title: '行业标准解读',
+            type: 'news',
+            board: 'association',
+            publisher: '标准委员会',
+            publisherId: 'assoc_003',
+            publisherType: 'association', // 协会账号
+            publisherAssociation: '行业标准委员会',
+            publishTime: '2024-01-10 11:30:00',
+            status: 'published',
+            auditStatus: 'passed',
+            viewCount: 3200,
+            likeCount: 45,
+            commentCount: 12,
+            shareCount: 34,
+            tags: ['行业标准', '政策解读'],
+            description: '最新发布的城市轨道交通行业标准详细解读...'
         }
     ];
 
-    // 统计数据
-    const statsData = {
-        totalContent: 1250,
-        todayContent: 45,
-        pendingReview: 23,
-        publishedToday: 38
+    // 计算统计数据
+    const calculateStats = (data) => {
+        const today = new Date().toISOString().split('T')[0];
+        
+        return {
+            totalContent: data.length,
+            todayContent: data.filter(item => item.publishTime.startsWith(today)).length,
+            pendingReview: data.filter(item => item.status === 'pending').length,
+            publishedToday: data.filter(item => 
+                item.status === 'published' && 
+                item.publishTime.startsWith(today)
+            ).length
+        };
     };
 
     React.useEffect(() => {
@@ -207,6 +355,24 @@ const ContentManagement = () => {
             
             let filteredData = [...mockContentData];
             
+            // 根据用户角色过滤内容
+            if (userRole === 'SUPER_ADMIN' || userRole === 'SYSTEM_ADMIN' || userRole === 'ADMIN') {
+                // 超级管理员和系统管理员可以看到所有内容
+                // 不需要额外过滤
+            } else if (userRole === 'ASSOCIATION_ADMIN') {
+                // 协会账号只能看到协会发布的内容
+                filteredData = filteredData.filter(item => 
+                    item.publisherType === 'association' || 
+                    item.publisherId === userId
+                );
+            } else {
+                // 其他用户只能看到自己发布的内容
+                filteredData = filteredData.filter(item => 
+                    item.publisherId === userId
+                );
+            }
+            
+            // 应用其他过滤条件
             if (filters.contentType !== 'all') {
                 filteredData = filteredData.filter(item => item.type === filters.contentType);
             }
@@ -222,6 +388,9 @@ const ContentManagement = () => {
                     item.description.includes(filters.keyword)
                 );
             }
+            
+            // 更新统计数据
+            setStatsData(calculateStats(filteredData));
             
             setContentList(filteredData);
             setPagination(prev => ({
@@ -323,7 +492,16 @@ const ContentManagement = () => {
         try {
             setLoading(true);
             
+            // 根据用户角色设置发布者类型
+            let publisherType = 'regular';
+            if (userRole === 'SUPER_ADMIN' || userRole === 'SYSTEM_ADMIN' || userRole === 'ADMIN') {
+                publisherType = 'admin';
+            } else if (userRole === 'ASSOCIATION_ADMIN') {
+                publisherType = 'association';
+            }
+            
             const publishData = {
+                id: Date.now(), // 生成唯一ID
                 ...values,
                 contentType,
                 publishBoard,
@@ -333,13 +511,29 @@ const ContentManagement = () => {
                 bgm: bgmFile,
                 publishTime: new Date().toISOString(),
                 status: 'pending',
-                auditStatus: 'ai_pending'
+                auditStatus: 'ai_pending',
+                // 添加发布者信息
+                publisher: currentUser?.name || currentUser?.username || '未知用户',
+                publisherId: userId,
+                publisherType: publisherType,
+                publisherAssociation: publisherType === 'association' ? '城市轨道交通协会' : undefined,
+                // 初始化统计数据
+                viewCount: 0,
+                likeCount: 0,
+                commentCount: 0,
+                shareCount: 0
             };
             
             console.log('发布内容:', publishData);
             
             // 模拟API调用
             await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // 更新本地数据
+            mockContentData.unshift(publishData);
+            
+            // 重新加载内容列表和统计数据
+            loadContentList();
             
             message.success('内容发布成功，已提交审核！');
             
@@ -647,6 +841,29 @@ const ContentManagement = () => {
 
     // 渲染管理页面
     const renderManagementPage = () => {
+        // 获取角色显示名称
+        const getRoleDisplayName = () => {
+            const roleMap = {
+                'SUPER_ADMIN': '超级管理员',
+                'SYSTEM_ADMIN': '系统管理员',
+                'ADMIN': '管理员',
+                'ASSOCIATION_ADMIN': '协会管理员',
+                'REGULAR_USER': '普通用户'
+            };
+            return roleMap[userRole] || '普通用户';
+        };
+
+        // 获取权限范围描述
+        const getPermissionDescription = () => {
+            if (userRole === 'SUPER_ADMIN' || userRole === 'SYSTEM_ADMIN' || userRole === 'ADMIN') {
+                return '您可以查看和管理所有用户发布的内容';
+            } else if (userRole === 'ASSOCIATION_ADMIN') {
+                return '您可以查看和管理所有协会发布的内容';
+            } else {
+                return '您只能查看和管理自己发布的内容';
+            }
+        };
+
         const columns = [
             {
                 title: '内容信息',
@@ -753,6 +970,54 @@ const ContentManagement = () => {
         ];
 
         return React.createElement('div', {}, [
+            // 角色权限提示
+            React.createElement(Card, {
+                key: 'role-info',
+                size: 'small',
+                style: { 
+                    marginBottom: 16,
+                    background: '#e6f7ff',
+                    borderColor: '#91d5ff'
+                }
+            }, React.createElement('div', {
+                style: { 
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 16
+                }
+            }, [
+                React.createElement('div', {
+                    key: 'icon',
+                    style: {
+                        fontSize: 24,
+                        marginRight: 8
+                    }
+                }, '👤'),
+                React.createElement('div', { key: 'info' }, [
+                    React.createElement('div', {
+                        key: 'role',
+                        style: { 
+                            fontWeight: 'bold',
+                            fontSize: 16,
+                            marginBottom: 4
+                        }
+                    }, `当前角色：${getRoleDisplayName()}`),
+                    React.createElement('div', {
+                        key: 'permission',
+                        style: { 
+                            color: '#666',
+                            fontSize: 14
+                        }
+                    }, getPermissionDescription())
+                ]),
+                React.createElement(Dropdown, { overlay: roleMenu },
+                    React.createElement(Button, {
+                        type: 'link',
+                        style: { padding: '0 8px' }
+                    }, '切换角色')
+                )
+            ])),
+
             // 统计卡片
             React.createElement(Row, { 
                 key: 'stats', 
@@ -1084,4 +1349,5 @@ const ContentManagement = () => {
     ]);
 };
 
-window.ContentManagement = ContentManagement; 
+window.App.pages.ContentManagement = ContentManagement;
+console.log('[ContentManagement] 组件挂载成功'); 

@@ -566,4 +566,5 @@ const BehaviorStats = () => {
     ]);
 };
 
-window.BehaviorStats = BehaviorStats; 
+window.App.pages.BehaviorStats = BehaviorStats;
+console.log('[BehaviorStats] 组件挂载成功'); 

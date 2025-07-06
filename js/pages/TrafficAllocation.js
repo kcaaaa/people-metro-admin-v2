@@ -449,4 +449,5 @@ const TrafficAllocation = () => {
     ]);
 };
 
-window.TrafficAllocation = TrafficAllocation; 
+window.App.pages.TrafficAllocation = TrafficAllocation;
+console.log('[TrafficAllocation] 组件挂载成功'); 
