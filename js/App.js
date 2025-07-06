@@ -308,7 +308,6 @@ const App = () => {
             'AuditFlowManagement': window.App.pages.AuditFlowManagement,
             'booth': window.App.pages.BoothManagement,
             'BoothManagement': window.App.pages.BoothManagement,
-            'exhibitor': window.App.pages.ExhibitorManagement,
             'ExhibitorManagement': window.App.pages.ExhibitorManagement,
             'exhibitor-maintenance': window.App.pages.ExhibitorMaintenance,
             'ExhibitorMaintenance': window.App.pages.ExhibitorMaintenance,

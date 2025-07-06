@@ -41,41 +41,50 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
         return menuConfig[key]?.enabled !== false;
     };
     
-    // 菜单项配置
+    // 获取当前登录用户
+    const currentUser = (window.AuthUtils && window.AuthUtils.getCurrentUser && window.AuthUtils.getCurrentUser()) || { role: 'visitor' };
+    const userRole = currentUser.role || 'visitor';
+
+    // 菜单项配置（为每个菜单项增加 roles 字段）
     const menuItems = [
         {
             key: 'dashboard',
             icon: '📊',
             label: '首页',
             title: '系统首页 - 实时查看核心运营指标和待办事项',
-            page: 'Dashboard'
+            page: 'Dashboard',
+            roles: ['super_admin', 'union_admin', 'expo_admin', 'ops_admin', 'union_user', 'exhibitor', 'visitor']
         },
         {
             key: 'content-management',
             icon: '📄',
             label: '内容管理',
             title: '内容管理模块',
+            roles: ['super_admin', 'union_admin', 'ops_admin', 'union_user'],
             children: [
                 {
                     key: 'content',
                     icon: '📄',
                     label: '内容管理',
                     title: '平台内容查看与管理',
-                    page: 'ContentManagement'
+                    page: 'ContentManagement',
+                    roles: ['super_admin', 'union_admin', 'ops_admin', 'union_user']
                 },
                 {
                     key: 'complaint',
                     icon: '⚠️',
                     label: '投诉管理',
                     title: '用户投诉视频管理与处理',
-                    page: 'ComplaintManagement'
+                    page: 'ComplaintManagement',
+                    roles: ['super_admin', 'union_admin', 'ops_admin']
                 },
                 {
                     key: 'content-tags',
                     icon: '🏷️',
                     label: '内容标签',
                     title: '视频标签维护与热门标签管理',
-                    page: 'ContentTagManagement'
+                    page: 'ContentTagManagement',
+                    roles: ['super_admin', 'union_admin', 'ops_admin']
                 }
             ]
         },
@@ -84,27 +93,31 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             icon: '🔍',
             label: '审核管理',
             title: '审核管理模块',
+            roles: ['super_admin', 'union_admin', 'expo_admin'],
             children: [
                 {
                     key: 'review',
                     icon: '🔍',
                     label: 'AI审核',
                     title: 'AI内容审核与管理',
-                    page: 'ReviewManagement'
+                    page: 'ReviewManagement',
+                    roles: ['super_admin', 'union_admin', 'expo_admin']
                 },
                 {
                     key: 'exhibition-audit',
                     icon: '🏢',
                     label: '展会内容审核',
                     title: '展会相关内容审核与管理',
-                    page: 'ExhibitionAuditManagement'
+                    page: 'ExhibitionAuditManagement',
+                    roles: ['super_admin', 'expo_admin']
                 },
                 {
                     key: 'audit-flow',
                     icon: '⚙️',
                     label: '审核流程管理',
                     title: '配置和管理审核流程模板',
-                    page: 'AuditFlowManagement'
+                    page: 'AuditFlowManagement',
+                    roles: ['super_admin', 'union_admin']
                 }
             ]
         },
@@ -113,34 +126,39 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             icon: '🏢',
             label: '展会管理',
             title: '展会管理模块',
+            roles: ['super_admin', 'expo_admin', 'exhibitor'],
             children: [
                 {
                     key: 'booth',
                     icon: '🏢',
                     label: '展位管理',
                     title: '展会展位信息管理',
-                    page: 'booth' // 修正为小写，与App.js映射一致
+                    page: 'booth',
+                    roles: ['super_admin', 'expo_admin']
                 },
                 {
                     key: 'exhibitor',
                     icon: '🏭',
                     label: '展商管理',
                     title: '展商信息管理与审核',
-                    page: 'exhibitor'
+                    page: 'ExhibitorManagement',
+                    roles: ['super_admin', 'expo_admin']
                 },
                 {
                     key: 'exhibitor-maintenance',
                     icon: '🔧',
                     label: '展商中心',
                     title: '展商自主维护公司信息和产品信息',
-                    page: 'exhibitor-maintenance'
+                    page: 'exhibitor-maintenance',
+                    roles: ['super_admin', 'exhibitor']
                 },
                 {
                     key: 'live',
                     icon: '📺',
                     label: '论坛直播',
                     title: '论坛直播内容管理',
-                    page: 'live'
+                    page: 'live',
+                    roles: ['super_admin', 'expo_admin']
                 }
             ]
         },
@@ -149,48 +167,55 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             icon: '📈',
             label: '运营管理',
             title: '运营数据统计与分析',
+            roles: ['super_admin', 'ops_admin'],
             children: [
                 {
                     key: 'operational',
                     icon: '📊',
                     label: '运营数据统计',
                     title: '全面的运营数据分析与统计',
-                    page: 'operational'  // 确保这里使用正确的页面标识符
+                    page: 'operational',
+                    roles: ['super_admin', 'ops_admin']
                 },
                 {
                     key: 'stats',
                     icon: '📉',
                     label: '行为统计',
                     title: '用户行为数据分析',
-                    page: 'BehaviorStats'
+                    page: 'BehaviorStats',
+                    roles: ['super_admin', 'ops_admin']
                 },
                 {
                     key: 'live-stats',
                     icon: '📺',
                     label: '直播数据管理',
                     title: '直播数据统计与分析',
-                    page: 'LiveStatsManagement'
+                    page: 'LiveStatsManagement',
+                    roles: ['super_admin', 'ops_admin']
                 },
                 {
                     key: 'data',
                     icon: '💾',
                     label: '运营数据管理',
                     title: '运营数据资源监控与管理',
-                    page: 'DataManagement'
+                    page: 'DataManagement',
+                    roles: ['super_admin', 'ops_admin']
                 },
                 {
                     key: 'feedback',
                     icon: '💭',
                     label: '用户反馈管理',
                     title: '处理用户反馈和建议',
-                    page: 'FeedbackManagement'
+                    page: 'FeedbackManagement',
+                    roles: ['super_admin', 'ops_admin']
                 },
                 {
                     key: 'message',
                     icon: '💬',
                     label: '消息管理',
                     title: 'APP系统消息推送管理',
-                    page: 'MessageManagement'
+                    page: 'MessageManagement',
+                    roles: ['super_admin', 'ops_admin']
                 }
             ]
         },
@@ -199,93 +224,103 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             icon: '⚙️',
             label: '系统管理',
             title: '系统管理模块',
+            roles: ['super_admin'],
             children: [
                 {
                     key: 'user',
                     icon: '👥',
                     label: '用户管理',
                     title: '用户信息查询与管理',
-                    page: 'UserManagement'
+                    page: 'UserManagement',
+                    roles: ['super_admin']
                 },
                 {
                     key: 'admin',
                     icon: '👥',
                     label: '权限管理',
                     title: '系统权限与角色管理',
-                    page: 'AdminManagement'
+                    page: 'AdminManagement',
+                    roles: ['super_admin']
                 },
                 {
                     key: 'logs',
                     icon: '📋',
                     label: '日志管理',
                     title: '等保三级合规日志管理',
-                    page: 'LogManagement'
+                    page: 'LogManagement',
+                    roles: ['super_admin']
                 },
                 {
                     key: 'settings',
                     icon: '⚙️',
                     label: '系统设置',
                     title: '系统配置与管理',
-                    page: 'SystemSettings'
+                    page: 'SystemSettings',
+                    roles: ['super_admin']
                 },
                 {
                     key: 'version',
                     icon: '📱',
                     label: 'APP版本管理',
                     title: 'APP版本发布和更新管理',
-                    page: 'VersionManagement'
+                    page: 'VersionManagement',
+                    roles: ['super_admin']
                 },
                 {
                     key: 'traffic',
                     icon: '🎯',
                     label: '流量分配',
                     title: '推荐算法与流量分配配置',
-                    page: 'TrafficAllocation'
+                    page: 'TrafficAllocation',
+                    roles: ['super_admin']
                 },
                 {
                     key: 'menu',
                     icon: '📋',
                     label: '菜单管理',
                     title: '动态控制系统导航菜单显隐',
-                    page: 'MenuManagement'
+                    page: 'MenuManagement',
+                    roles: ['super_admin']
                 },
                 {
                     key: 'personal-center',
                     icon: '👤',
                     label: '个人中心',
                     title: '个人信息设置与管理',
-                    page: 'PersonalCenter'
+                    page: 'PersonalCenter',
+                    roles: ['super_admin', 'union_admin', 'expo_admin', 'ops_admin', 'union_user', 'exhibitor', 'visitor']
                 },
                 {
                     key: 'profile',
                     icon: '📊',
                     label: '用户画像',
                     title: '用户行为分析与画像管理',
-                    page: 'UserProfile'
+                    page: 'UserProfile',
+                    roles: ['super_admin', 'union_admin', 'expo_admin', 'ops_admin', 'union_user', 'exhibitor', 'visitor']
                 }
             ]
         }
     ];
 
-    // 过滤菜单项 - 根据配置显示/隐藏
+    // 过滤菜单项 - 根据配置和角色显示/隐藏
     const filterMenuItems = (items) => {
         return items.filter(item => {
             // 检查当前菜单项是否启用
             if (!isMenuEnabled(item.key)) {
                 return false;
             }
-
+            // 检查角色权限
+            if (item.roles && userRole !== 'super_admin' && !item.roles.includes(userRole)) {
+                return false;
+            }
             // 如果有子菜单，递归过滤子菜单
             if (item.children && item.children.length > 0) {
                 const filteredChildren = filterMenuItems(item.children);
-                // 如果所有子菜单都被禁用，则隐藏父菜单（可选行为）
                 if (filteredChildren.length === 0) {
-                    return false; // 或者返回 true 保留空的父菜单
+                    return false;
                 }
-                // 更新子菜单为过滤后的结果
                 item.children = filteredChildren;
             }
-            
             return true;
         });
     };
@@ -553,7 +588,7 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     console.log('Navigation clicked:', key);
                     const clickedItem = flatMenuItems.find(item => item.key === key);
                     if (clickedItem) {
-                        onPageChange(key);
+                        onPageChange(clickedItem.page || key);
                     }
                 }
             }, filteredMenuItems.map(renderMenuItem)),

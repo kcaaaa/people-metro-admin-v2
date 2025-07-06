@@ -11,48 +11,15 @@ const Login = ({ onLogin }) => {
     const [sendingCode, setSendingCode] = React.useState(false);
     const [countdown, setCountdown] = React.useState(0);
     
-    // 演示用的账号数据
+    // 替换演示账号数组
     const demoAccounts = [
-        {
-            phone: '13800138000',
-            password: '123456',
-            name: '系统管理员',
-            role: 'admin',
-            permissions: ['*'],
-            userId: 'admin_001'
-        },
-        {
-            phone: '13800138001',
-            password: '123456',
-            name: '运营总监',
-            role: 'operation_director',
-            permissions: ['content:*', 'audit:*', 'exhibition:*', 'stats:*', 'user:view'],
-            userId: 'operation_001'
-        },
-        {
-            phone: '13800138002',
-            password: '123456',
-            name: '内容审核员',
-            role: 'content_auditor',
-            permissions: ['content:view', 'content:edit', 'audit:review', 'audit:approve'],
-            userId: 'auditor_001'
-        },
-        {
-            phone: '13800138003',
-            password: '123456',
-            name: '展会管理员',
-            role: 'exhibition_manager',
-            permissions: ['exhibition:*', 'booth:*', 'exhibitor:*'],
-            userId: 'exhibition_001'
-        },
-        {
-            phone: '13800138004',
-            password: '123456',
-            name: '数据分析师',
-            role: 'data_analyst',
-            permissions: ['stats:*', 'data:view', 'user:view'],
-            userId: 'analyst_001'
-        }
+        { phone: '18800000000', password: '123456', name: '超级管理员', role: 'super_admin', permissions: ['*'], userId: 'super_admin_demo' },
+        { phone: '18800000001', password: '123456', name: '协会管理员', role: 'union_admin', permissions: ['association:*', 'content:*', 'exhibition:*', 'operation:*'], userId: 'union_admin_demo' },
+        { phone: '18800000002', password: '123456', name: '会展管理员', role: 'expo_admin', permissions: ['exhibition:*', 'content:*', 'operation:stats:view'], userId: 'expo_admin_demo' },
+        { phone: '18800000003', password: '123456', name: '运营管理员', role: 'ops_admin', permissions: ['content:*', 'operation:*'], userId: 'ops_admin_demo' },
+        { phone: '18800000004', password: '123456', name: '协会普通用户', role: 'union_user', permissions: ['content:publish'], userId: 'union_user_demo' },
+        { phone: '18800000005', password: '123456', name: '参展公司', role: 'exhibitor', permissions: ['content:publish'], userId: 'exhibitor_demo' },
+        { phone: '18800000006', password: '123456', name: '游客', role: 'visitor', permissions: ['content:view'], userId: 'visitor_demo' }
     ];
     
     // 倒计时效果
