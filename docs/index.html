@@ -3,34 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>人民城轨2.0运营管理后台</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚇</text></svg>">
-    
-    <!-- Core CSS -->
+    <title>人民城轨2.0 - 管理后台</title>
     <link rel="stylesheet" href="vendor/css/antd.min.css">
     <link rel="stylesheet" href="js/pages/LiveManagement.css">
-    
-    <!-- Core Libraries -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .ant-layout {
+            background: #f5f5f5;
+        }
+        
+        .nav-icon {
+            display: inline-block;
+            text-align: center;
+            margin-right: 8px;
+        }
+        
+        .main-nav {
+            height: 100vh;
+            transition: all 0.3s ease;
+        }
+        
+        .main-nav.collapsed {
+            width: 64px;
+        }
+        
+        .nav-header {
+            position: relative;
+        }
+        
+        .nav-toggle {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-toggle:hover {
+            background: #e6f7ff;
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+        
+        .logo-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .logo-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .ant-menu-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .ant-menu-submenu-title {
+            display: flex;
+            align-items: center;
+        }
+        
+        .ant-card {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .ant-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .ant-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .ant-statistic-title {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .ant-statistic-content {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .ant-progress-text {
+            font-size: 12px;
+        }
+        
+        .ant-table-thead > tr > th {
+            background: #fafafa;
+            font-weight: 600;
+        }
+        
+        .ant-table-tbody > tr:hover > td {
+            background: #f5f5f5;
+        }
+        
+        .ant-modal-header {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .ant-modal-footer {
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .ant-form-item-label > label {
+            font-weight: 500;
+        }
+        
+        .ant-notification {
+            z-index: 1050;
+        }
+        
+        .ant-message {
+            z-index: 1050;
+        }
+        
+        .ant-modal-mask {
+            z-index: 1000;
+        }
+        
+        .ant-modal-wrap {
+            z-index: 1000;
+        }
+        
+        .ant-drawer-mask {
+            z-index: 1000;
+        }
+        
+        .ant-drawer-wrap {
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+            <div style="text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 16px;">🚇</div>
+                <div style="font-size: 24px; font-weight: bold; margin-bottom: 8px;">人民城轨2.0</div>
+                <div style="font-size: 16px; color: #666;">系统正在启动...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第三方依赖 -->
     <script src="vendor/js/react.development.js"></script>
     <script src="vendor/js/react-dom.development.js"></script>
     <script src="vendor/js/moment.min.js"></script>
     <script src="vendor/js/antd.min.js"></script>
     <script src="vendor/js/echarts.min.js"></script>
-</head>
-<body>
-    <div id="root"></div>
-
-    <!-- Local Scripts: Utilities -->
+    
+    <!-- 工具类 -->
     <script src="js/utils/auth.js"></script>
     <script src="js/utils/stateManager.js"></script>
     <script src="js/utils/permissionManager.js"></script>
     <script src="js/utils/exhibitorManager.js"></script>
-
-    <!-- Local Scripts: UI Components -->
+    
+    <!-- 组件 -->
     <script src="js/components/Navigation.js"></script>
     <script src="js/components/TopBar.js"></script>
-
-    <!-- Local Scripts: Page Components -->
+    <script src="js/components/Login.js"></script>
+    
+    <!-- 页面组件 -->
     <script src="js/pages/OperationalStats.js"></script>
     <script src="js/pages/Dashboard.js"></script>
     <script src="js/pages/ContentManagement.js"></script>
@@ -57,61 +194,44 @@
     <script src="js/pages/PersonalCenter.js"></script>
     <script src="js/pages/UserProfile.js"></script>
     
-    <!-- Main App -->
+    <!-- 主应用 -->
     <script src="js/App.js"></script>
+    
     <script>
-        // 等待所有脚本加载完成
-        window.addEventListener('load', function() {
-            console.log('🚀 正在启动应用...');
+        // 确保所有组件都已加载后再渲染应用
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('开始渲染应用...');
             
-            // 检查组件加载情况
-            const requiredComponents = [
-                'Dashboard',
-                'OperationalStats',
-                'Navigation',
-                'TopBar'
-            ];
-            
-            const missingComponents = requiredComponents.filter(comp => !window[comp]);
-            if (missingComponents.length > 0) {
-                console.error('❌ 以下组件未正确加载:', missingComponents);
-                document.getElementById('root').innerHTML = `
-                    <div style="padding: 20px; text-align: center;">
-                        <h2>组件加载失败</h2>
-                        <p>以下组件未能正确加载：${missingComponents.join(', ')}</p>
-                        <button onclick="location.reload()" style="margin-top: 20px; padding: 8px 16px;">重新加载</button>
-                    </div>
-                `;
+            // 检查必要的依赖
+            if (!window.React) {
+                console.error('React未加载');
+                return;
+            }
+            if (!window.ReactDOM) {
+                console.error('ReactDOM未加载');
+                return;
+            }
+            if (!window.App) {
+                console.error('App组件未加载');
                 return;
             }
             
-            console.log('✅ 所有必需组件已加载');
-            console.log('Available components:', Object.keys(window).filter(key => 
-                key.endsWith('Management') || 
-                key === 'Dashboard' || 
-                key === 'OperationalStats'
-            ));
-            
             try {
-                // 确保 React 和 ReactDOM 已加载
-                if (!window.React || !window.ReactDOM) {
-                    throw new Error('React 或 ReactDOM 未加载，请检查依赖文件');
-                }
-                
-                // 渲染应用
+                // 使用旧版本的ReactDOM.render
                 ReactDOM.render(
-                    React.createElement(window.App),
-                    document.getElementById('root')
+                    React.createElement(App),
+                    document.getElementById('app')
                 );
-                
-                console.log('✅ 应用启动成功！');
+                console.log('应用渲染成功');
             } catch (error) {
-                console.error('❌ 应用启动失败:', error);
-                document.getElementById('root').innerHTML = `
-                    <div style="padding: 20px; text-align: center;">
-                        <h2>应用启动失败</h2>
-                        <pre style="text-align: left; margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px;">${error.stack}</pre>
-                        <button onclick="location.reload()" style="margin-top: 20px; padding: 8px 16px;">重新加载</button>
+                console.error('应用渲染失败:', error);
+                document.getElementById('app').innerHTML = `
+                    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+                        <div style="text-align: center; color: #ff4d4f;">
+                            <h2>应用启动失败</h2>
+                            <p>请检查浏览器控制台获取详细错误信息</p>
+                            <button onclick="location.reload()" style="margin-top: 16px; padding: 8px 16px;">重新加载</button>
+                        </div>
                     </div>
                 `;
             }
