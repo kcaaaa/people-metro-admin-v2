@@ -1,77 +1,72 @@
 // 认证工具 - 用于处理用户登录、权限等
-const AuthUtils = {
+window.AuthUtils = {
     // 获取当前登录用户
     getCurrentUser() {
         try {
-            // 尝试从 localStorage 获取用户信息
             const userData = localStorage.getItem('userData');
-            if (userData) {
-                return JSON.parse(userData);
-            }
-
-            // 如果没有，返回一个默认的系统管理员用户（仅用于开发）
-            return {
-                userId: 'admin_001',
-                username: 'admin',
-                name: '系统管理员',
-                role: 'admin',
-                permissions: ['*'] 
-            };
-        } catch (error) {
-            console.error('获取用户信息失败:', error);
+            return userData ? JSON.parse(userData) : null;
+        } catch (err) {
+            console.error('[AuthUtils] 获取用户信息失败:', err);
             return null;
         }
     },
 
-    // 保存用户信息
+    // 保存当前用户
     saveCurrentUser(user) {
-        if (!user) {
-            localStorage.removeItem('userData');
-            return;
+        try {
+            if (!user) {
+                localStorage.removeItem('userData');
+            } else {
+                localStorage.setItem('userData', JSON.stringify(user));
+            }
+        } catch (err) {
+            console.error('[AuthUtils] 保存用户信息失败:', err);
         }
-        localStorage.setItem('userData', JSON.stringify(user));
     },
 
-    // 检查用户是否登录
+    // 是否已登录
     isLoggedIn() {
         return !!this.getCurrentUser();
     },
 
     // 退出登录
     logout() {
-        localStorage.removeItem('userData');
-        // 可以在这里触发一个全局的退出事件
-        window.StateManager.emit('user:logout', {});
+        try {
+            localStorage.removeItem('userData');
+            if (window.StateManager) {
+                window.StateManager.emit('user:logout', {});
+            }
+        } catch (err) {
+            console.error('[AuthUtils] 退出登录失败:', err);
+        }
     },
 
-    // 检查是否有指定权限
-    hasPermission(permission) {
-        const user = this.getCurrentUser();
-        if (!user || !user.permissions) {
+    // 检查权限
+    hasPermission(perm) {
+        try {
+            const user = this.getCurrentUser();
+            if (!user || !user.permissions) return false;
+            if (user.permissions.includes('*')) return true;
+            return user.permissions.includes(perm);
+        } catch (err) {
+            console.error('[AuthUtils] 检查权限失败:', err);
             return false;
         }
-        // 支持通配符权限
-        if (user.permissions.includes('*')) {
-            return true;
-        }
-        return user.permissions.includes(permission);
     },
-    
-    // 检查是否有任何一个权限
-    hasAnyPermission(permissions = []) {
-        if (permissions.length === 0) {
-            return true; // 如果不需要任何权限，则认为有权限
-        }
-        const user = this.getCurrentUser();
-        if (!user || !user.permissions) {
+
+    // 检查一组权限
+    hasAnyPermission(perms = []) {
+        try {
+            if (perms.length === 0) return true;
+            const user = this.getCurrentUser();
+            if (!user || !user.permissions) return false;
+            if (user.permissions.includes('*')) return true;
+            return perms.some(p => user.permissions.includes(p));
+        } catch (err) {
+            console.error('[AuthUtils] 检查权限失败:', err);
             return false;
         }
-        if (user.permissions.includes('*')) {
-            return true;
-        }
-        return permissions.some(p => user.permissions.includes(p));
     }
 };
 
-window.AuthUtils = AuthUtils;
-console.log('[AuthUtils] window.AuthUtils 挂载成功'); 
+console.log('[AuthUtils] 初始化完成'); 

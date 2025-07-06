@@ -231,44 +231,33 @@
     <script src="js/App.js"></script>
     
     <script>
-        // 确保所有组件都已加载后再渲染应用
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('开始渲染应用...');
-            
-            // 检查必要的依赖
+        function initApp() {
+            console.log('[INIT] 尝试渲染应用');
             if (!window.React) {
-                console.error('React未加载');
+                console.error('[INIT] React 未加载');
                 return;
             }
             if (!window.ReactDOM) {
-                console.error('ReactDOM未加载');
+                console.error('[INIT] ReactDOM 未加载');
                 return;
             }
-            if (!window.App) {
-                console.error('App组件未加载');
+            if (typeof App === 'undefined') {
+                console.error('[INIT] App 未定义');
                 return;
             }
-            
             try {
-                // 使用旧版本的ReactDOM.render
-                ReactDOM.render(
-                    React.createElement(App),
-                    document.getElementById('app')
-                );
-                console.log('应用渲染成功');
-            } catch (error) {
-                console.error('应用渲染失败:', error);
-                document.getElementById('app').innerHTML = `
-                    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-                        <div style="text-align: center; color: #ff4d4f;">
-                            <h2>应用启动失败</h2>
-                            <p>请检查浏览器控制台获取详细错误信息</p>
-                            <button onclick="location.reload()" style="margin-top: 16px; padding: 8px 16px;">重新加载</button>
-                        </div>
-                    </div>
-                `;
+                ReactDOM.render(React.createElement(App), document.getElementById('app'));
+                console.log('[INIT] 应用渲染成功');
+            } catch (e) {
+                console.error('[INIT] 应用渲染失败:', e);
             }
-        });
+        }
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            initApp();
+        } else {
+            window.addEventListener('load', initApp);
+        }
     </script>
 </body>
 </html> 
