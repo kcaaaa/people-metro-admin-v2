@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人民城轨2.0 - 管理后台</title>
+    <link rel="stylesheet" href="vendor/css/antd.min.css">
+    <link rel="stylesheet" href="js/pages/LiveManagement.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚇</text></svg>" type="image/svg+xml">
+    
+    <!-- 全局命名空间初始化 -->
+    <script>
+        // 初始化全局命名空间
+        window.App = {
+            pages: {},
+            components: {},
+            utils: {}
+        };
+        
+        // 全局错误处理
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('Global error:', { message, source, lineno, colno, error });
+        };
+        
+        // 确保antd全局可用
+        window.antd = window.antd || {};
+    </script>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .ant-layout {
+            background: #f5f5f5;
+        }
+        
+        .nav-icon {
+            display: inline-block;
+            text-align: center;
+            margin-right: 8px;
+        }
+        
+        .main-nav {
+            height: 100vh;
+            transition: all 0.3s ease;
+        }
+        
+        .main-nav.collapsed {
+            width: 64px;
+        }
+        
+        .nav-header {
+            position: relative;
+        }
+        
+        .nav-toggle {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-toggle:hover {
+            background: #e6f7ff;
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+        
+        .logo-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .logo-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .ant-menu-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .ant-menu-submenu-title {
+            display: flex;
+            align-items: center;
+        }
+        
+        .ant-card {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .ant-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .ant-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .ant-statistic-title {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .ant-statistic-content {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .ant-progress-text {
+            font-size: 12px;
+        }
+        
+        .ant-table-thead > tr > th {
+            background: #fafafa;
+            font-weight: 600;
+        }
+        
+        .ant-table-tbody > tr:hover > td {
+            background: #f5f5f5;
+        }
+        
+        .ant-modal-header {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .ant-modal-footer {
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .ant-form-item-label > label {
+            font-weight: 500;
+        }
+        
+        .ant-notification {
+            z-index: 1050;
+        }
+        
+        .ant-message {
+            z-index: 1050;
+        }
+        
+        .ant-modal-mask {
+            z-index: 1000;
+        }
+        
+        .ant-modal-wrap {
+            z-index: 1000;
+        }
+        
+        .ant-drawer-mask {
+            z-index: 1000;
+        }
+        
+        .ant-drawer-wrap {
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+            <div style="text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 16px;">🚇</div>
+                <div style="font-size: 24px; font-weight: bold; margin-bottom: 8px;">人民城轨2.0</div>
+                <div style="font-size: 16px; color: #666;">系统正在启动...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第三方依赖 -->
+    <script src="vendor/js/react.development.js"></script>
+    <script src="vendor/js/react-dom.development.js"></script>
+    <script src="vendor/js/moment.min.js"></script>
+    <script src="vendor/js/antd.min.js"></script>
+    <script src="vendor/js/echarts.min.js"></script>
+    
+    <!-- 工具类 -->
+    <script>
+        // 确保全局对象存在
+        window.App = window.App || {};
+        window.App.utils = window.App.utils || {};
+    </script>
+    <script src="js/utils/auth.js"></script>
+    <script src="js/utils/stateManager.js"></script>
+    <script src="js/utils/permissionManager.js"></script>
+    <script src="js/utils/exhibitorManager.js"></script>
+    
+    <!-- 组件 -->
+    <script>
+        // 确保组件命名空间存在
+        window.App.components = window.App.components || {};
+    </script>
+    <script src="js/components/Navigation.js"></script>
+    <script src="js/components/TopBar.js"></script>
+    <script src="js/components/Login.js"></script>
+    
+    <!-- 页面组件 -->
+    <script>
+        // 确保页面组件命名空间存在
+        window.App.pages = window.App.pages || {};
+    </script>
+    <script src="js/pages/OperationalStats.js"></script>
+    <script src="js/pages/Dashboard.js"></script>
+    <script src="js/pages/ContentManagement.js"></script>
+    <script src="js/pages/ComplaintManagement.js"></script>
+    <script src="js/pages/ContentTagManagement.js"></script>
+    <script src="js/pages/ReviewManagement.js"></script>
+    <script src="js/pages/AuditFlowManagement.js"></script>
+    <script src="js/pages/BoothManagement.js"></script>
+    <script src="js/pages/ExhibitorManagement.js"></script>
+    <script src="js/pages/ExhibitorMaintenance.js"></script>
+    <script src="js/pages/LiveManagement.js"></script>
+    <script src="js/pages/LiveStatsManagement.js"></script>
+    <script src="js/pages/BehaviorStats.js"></script>
+    <script src="js/pages/DataManagement.js"></script>
+    <script src="js/pages/FeedbackManagement.js"></script>
+    <script src="js/pages/MessageManagement.js"></script>
+    <script src="js/pages/UserManagement.js"></script>
+    <script src="js/pages/AdminManagement.js"></script>
+    <script src="js/pages/LogManagement.js"></script>
+    <script src="js/pages/SystemSettings.js"></script>
+    <script src="js/pages/VersionManagement.js"></script>
+    <script src="js/pages/TrafficAllocation.js"></script>
+    <script src="js/pages/MenuManagement.js"></script>
+    <script src="js/pages/PersonalCenter.js"></script>
+    <script src="js/pages/UserProfile.js"></script>
+    
+    <!-- 主应用 -->
+    <script src="js/App.js"></script>
+    
+    <script>
+        // 确保所有组件都已加载后再渲染应用
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('开始渲染应用...');
+            
+            // 检查必要的依赖
+            if (!window.React) {
+                console.error('React未加载');
+                return;
+            }
+            if (!window.ReactDOM) {
+                console.error('ReactDOM未加载');
+                return;
+            }
+            if (!window.App) {
+                console.error('App组件未加载');
+                return;
+            }
+            
+            try {
+                // 使用旧版本的ReactDOM.render
+                ReactDOM.render(
+                    React.createElement(App),
+                    document.getElementById('app')
+                );
+                console.log('应用渲染成功');
+            } catch (error) {
+                console.error('应用渲染失败:', error);
+                document.getElementById('app').innerHTML = `
+                    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+                        <div style="text-align: center; color: #ff4d4f;">
+                            <h2>应用启动失败</h2>
+                            <p>请检查浏览器控制台获取详细错误信息</p>
+                            <button onclick="location.reload()" style="margin-top: 16px; padding: 8px 16px;">重新加载</button>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html> 
