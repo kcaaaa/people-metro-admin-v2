@@ -51,6 +51,15 @@ jobs:
             echo "❌ js directory not found"
           fi
           
+          echo "📁 Copying vendor files..."
+          if [ -d "vendor" ]; then
+            cp -r vendor docs/
+            echo "✅ Vendor files copied successfully"
+            ls -la docs/vendor/
+          else
+            echo "❌ vendor directory not found"
+          fi
+          
           echo "🚫 Creating .nojekyll file..."
           touch docs/.nojekyll
           
@@ -68,6 +77,11 @@ jobs:
           
           if [ ! -d "docs/js" ]; then
             echo "❌ Missing js directory"
+            exit 1
+          fi
+          
+          if [ ! -d "docs/vendor" ]; then
+            echo "❌ Missing vendor directory"
             exit 1
           fi
           
