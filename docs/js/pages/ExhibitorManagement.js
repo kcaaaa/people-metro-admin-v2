@@ -185,5 +185,5 @@ const ExhibitorManagement = () => {
     );
 };
 
-// 导出组件
-export default ExhibitorManagement; 
+// 将组件挂载到window对象
+window.ExhibitorManagement = ExhibitorManagement; 
