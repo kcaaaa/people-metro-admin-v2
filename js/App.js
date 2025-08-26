@@ -341,7 +341,9 @@ const App = () => {
             'MenuManagement': window.App.pages.MenuManagement,
             'personal': window.App.pages.PersonalCenter,
             'personal-center': window.App.pages.PersonalCenter,
-            'PersonalCenter': window.App.pages.PersonalCenter
+            'PersonalCenter': window.App.pages.PersonalCenter,
+            'profile': window.App.pages.UserProfile,
+            'UserProfile': window.App.pages.UserProfile
         };
 
         console.log('Looking for component:', currentPage);

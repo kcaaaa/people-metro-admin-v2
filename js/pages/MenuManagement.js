@@ -7,44 +7,69 @@ const MenuManagement = () => {
     
     // 默认菜单配置
     const defaultMenuConfig = {
+        // 一级菜单
         'dashboard': { enabled: true, label: '首页', level: 1 },
         'content-management': { enabled: true, label: '内容管理', level: 1 },
+        'audit-management': { enabled: true, label: '审核管理', level: 1 },
+        'exhibition-management': { enabled: true, label: '展会管理', level: 1 },
+        'operation-statistics': { enabled: true, label: '运营管理', level: 1 },
+        'system-management': { enabled: true, label: '系统管理', level: 1 },
+        
+        // 内容管理子菜单
         'content': { enabled: true, label: '内容管理', level: 2, parent: 'content-management' },
         'complaint': { enabled: true, label: '投诉管理', level: 2, parent: 'content-management' },
         'content-tags': { enabled: true, label: '内容标签', level: 2, parent: 'content-management' },
-        'audit-management': { enabled: true, label: '审核管理', level: 1 },
+        
+        // 审核管理子菜单
         'review': { enabled: true, label: 'AI审核', level: 2, parent: 'audit-management' },
+        'exhibition-audit': { enabled: true, label: '展会内容审核', level: 2, parent: 'audit-management' },
         'audit-flow': { enabled: true, label: '审核流程管理', level: 2, parent: 'audit-management' },
-        'exhibition-management': { enabled: true, label: '展会管理', level: 1 },
+        
+        // 展会管理子菜单
         'booth': { enabled: true, label: '展位管理', level: 2, parent: 'exhibition-management' },
         'exhibitor': { enabled: true, label: '展商管理', level: 2, parent: 'exhibition-management' },
-        'exhibitor-maintenance': { enabled: true, label: '展商维护', level: 2, parent: 'exhibition-management' },
+        'exhibitor-maintenance': { enabled: true, label: '展商中心', level: 2, parent: 'exhibition-management' },
         'live': { enabled: true, label: '论坛直播', level: 2, parent: 'exhibition-management' },
-        'operation-statistics': { enabled: true, label: '运营管理', level: 1 },
-        'stats': { enabled: true, label: '行为统计', level: 2, parent: 'operation-statistics' },
+        
+        // 运营管理子菜单
         'operational': { enabled: true, label: '运营数据统计', level: 2, parent: 'operation-statistics' },
+        'stats': { enabled: true, label: '行为统计', level: 2, parent: 'operation-statistics' },
         'live-stats': { enabled: true, label: '直播数据管理', level: 2, parent: 'operation-statistics' },
         'data': { enabled: true, label: '运营数据管理', level: 2, parent: 'operation-statistics' },
         'feedback': { enabled: true, label: '用户反馈管理', level: 2, parent: 'operation-statistics' },
         'message': { enabled: true, label: '消息管理', level: 2, parent: 'operation-statistics' },
-        'system-management': { enabled: true, label: '系统管理', level: 1 },
+        
+        // 系统管理子菜单
         'user': { enabled: true, label: '用户管理', level: 2, parent: 'system-management' },
         'admin': { enabled: true, label: '权限管理', level: 2, parent: 'system-management' },
         'logs': { enabled: true, label: '日志管理', level: 2, parent: 'system-management' },
         'settings': { enabled: true, label: '系统设置', level: 2, parent: 'system-management' },
         'version': { enabled: true, label: 'APP版本管理', level: 2, parent: 'system-management' },
         'traffic': { enabled: true, label: '流量分配', level: 2, parent: 'system-management' },
-        'menu': { enabled: true, label: '菜单管理', level: 2, parent: 'system-management' }
+        'menu': { enabled: true, label: '菜单管理', level: 2, parent: 'system-management' },
+        'personal-center': { enabled: true, label: '个人中心', level: 2, parent: 'system-management' },
+        'profile': { enabled: true, label: '用户画像', level: 2, parent: 'system-management' }
     };
 
     // 状态管理
     const [menuConfig, setMenuConfig] = React.useState(() => {
-        const saved = localStorage.getItem('menuConfig');
-        return saved ? JSON.parse(saved) : defaultMenuConfig;
+        // 强制使用最新的默认配置，忽略localStorage中的旧配置
+        console.log('初始化菜单配置，使用最新默认配置');
+        localStorage.setItem('menuConfig', JSON.stringify(defaultMenuConfig));
+        return defaultMenuConfig;
     });
     const [loading, setLoading] = React.useState(false);
     const [expandedKeys, setExpandedKeys] = React.useState(['system-management', 'content-management', 'audit-management', 'exhibition-management', 'operation-statistics']);
     const [previewMode, setPreviewMode] = React.useState(false);
+
+    // 调试：显示菜单配置统计
+    React.useEffect(() => {
+        const total = Object.keys(menuConfig).length;
+        const level1 = Object.values(menuConfig).filter(item => item.level === 1).length;
+        const level2 = Object.values(menuConfig).filter(item => item.level === 2).length;
+        console.log(`菜单配置统计: 总计${total}个, 一级菜单${level1}个, 二级菜单${level2}个`);
+        console.log('菜单配置详情:', menuConfig);
+    }, [menuConfig]);
 
     // 保存配置到本地存储
     const saveMenuConfig = (config) => {
