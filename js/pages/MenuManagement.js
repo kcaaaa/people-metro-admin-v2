@@ -17,6 +17,8 @@ const MenuManagement = () => {
         
         // 内容管理子菜单
         'content': { enabled: true, label: '内容管理', level: 2, parent: 'content-management' },
+        'column-management': { enabled: true, label: '栏目管理', level: 2, parent: 'content-management' },
+        'column-permission': { enabled: true, label: '栏目权限', level: 2, parent: 'content-management' },
         'complaint': { enabled: true, label: '投诉管理', level: 2, parent: 'content-management' },
         'content-tags': { enabled: true, label: '内容标签', level: 2, parent: 'content-management' },
         

@@ -64,6 +64,20 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     page: 'ContentManagement'
                 },
                 {
+                    key: 'column-management',
+                    icon: '📋',
+                    label: '栏目管理',
+                    title: '内容发布栏目管理与配置',
+                    page: 'ColumnManagement'
+                },
+                {
+                    key: 'column-permission',
+                    icon: '🔐',
+                    label: '栏目权限',
+                    title: '栏目权限配置与管理',
+                    page: 'ColumnPermissionManagement'
+                },
+                {
                     key: 'complaint',
                     icon: '⚠️',
                     label: '投诉管理',

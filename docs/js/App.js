@@ -341,7 +341,11 @@ const App = () => {
             'MenuManagement': window.App.pages.MenuManagement,
             'personal': window.App.pages.PersonalCenter,
             'personal-center': window.App.pages.PersonalCenter,
-            'PersonalCenter': window.App.pages.PersonalCenter
+            'PersonalCenter': window.App.pages.PersonalCenter,
+            'column-management': window.App.pages.ColumnManagement,
+            'ColumnManagement': window.App.pages.ColumnManagement,
+            'column-permission': window.App.pages.ColumnPermissionManagement,
+            'ColumnPermissionManagement': window.App.pages.ColumnPermissionManagement
         };
 
         console.log('Looking for component:', currentPage);
