@@ -165,6 +165,13 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             title: '运营数据统计与分析',
             children: [
                 {
+                    key: 'screen-management',
+                    icon: '🖥️',
+                    label: '大屏管理',
+                    title: '数据大屏配置与监控管理',
+                    page: 'ScreenManagement'
+                },
+                {
                     key: 'operational',
                     icon: '📊',
                     label: '运营数据统计',

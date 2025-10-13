@@ -292,6 +292,8 @@ const App = () => {
             'Dashboard': window.App.pages.Dashboard,
             'content': window.App.pages.ContentManagement,
             'ContentManagement': window.App.pages.ContentManagement,
+            'screen-management': window.App.pages.ScreenManagement,
+            'ScreenManagement': window.App.pages.ScreenManagement,
             'complaint': window.App.pages.ComplaintManagement,
             'ComplaintManagement': window.App.pages.ComplaintManagement,
             'content-tags': window.App.pages.ContentTagManagement,
