@@ -64,6 +64,20 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     page: 'ContentManagement'
                 },
                 {
+                    key: 'column-management',
+                    icon: '📋',
+                    label: '栏目管理',
+                    title: '内容发布栏目管理与配置',
+                    page: 'ColumnManagement'
+                },
+                {
+                    key: 'column-permission',
+                    icon: '🔐',
+                    label: '栏目权限',
+                    title: '栏目权限配置与管理',
+                    page: 'ColumnPermissionManagement'
+                },
+                {
                     key: 'complaint',
                     icon: '⚠️',
                     label: '投诉管理',
@@ -150,6 +164,13 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             label: '运营管理',
             title: '运营数据统计与分析',
             children: [
+                {
+                    key: 'screen-management',
+                    icon: '🖥️',
+                    label: '大屏管理',
+                    title: '数据大屏配置与监控管理',
+                    page: 'ScreenManagement'
+                },
                 {
                     key: 'operational',
                     icon: '📊',
@@ -267,25 +288,38 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
         }
     ];
 
-    // 过滤菜单项 - 根据配置显示/隐藏
+    // 获取当前用户
+    const currentUser = window.AuthUtils && window.AuthUtils.getCurrentUser ? window.AuthUtils.getCurrentUser() : null;
+    // 判断是否有权限访问某个页面
+    const canAccessPage = (pageKey) => {
+        if (!currentUser) return false;
+        if (currentUser.permissions && currentUser.permissions.includes('*')) return true;
+        if (window.PermissionManager && window.PermissionManager.PAGE_PERMISSIONS) {
+            const perms = window.PermissionManager.PAGE_PERMISSIONS[pageKey] || [];
+            if (perms.length === 0) return true;
+            return perms.some(perm => currentUser.permissions && currentUser.permissions.includes(perm));
+        }
+        return true;
+    };
+    // 过滤菜单项 - 根据配置和权限显示/隐藏
     const filterMenuItems = (items) => {
         return items.filter(item => {
             // 检查当前菜单项是否启用
             if (!isMenuEnabled(item.key)) {
                 return false;
             }
-
+            // 权限判断（有page字段的菜单项才判断）
+            if (item.page && !canAccessPage(item.page)) {
+                return false;
+            }
             // 如果有子菜单，递归过滤子菜单
             if (item.children && item.children.length > 0) {
                 const filteredChildren = filterMenuItems(item.children);
-                // 如果所有子菜单都被禁用，则隐藏父菜单（可选行为）
                 if (filteredChildren.length === 0) {
-                    return false; // 或者返回 true 保留空的父菜单
+                    return false;
                 }
-                // 更新子菜单为过滤后的结果
                 item.children = filteredChildren;
             }
-            
             return true;
         });
     };
