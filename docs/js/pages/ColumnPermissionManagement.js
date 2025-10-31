@@ -38,14 +38,66 @@ const ColumnPermissionManagement = () => {
                     title: '关于我们',
                     code: 'about',
                     level: 1,
+                    sort: 1,
                     status: 'enabled',
+                    description: '协会相关信息和介绍',
                     contentCount: 156,
                     children: [
-                        { key: 'about-profile', title: '协会简介', code: 'about-profile', level: 2, contentCount: 45 },
-                        { key: 'about-articles', title: '协会章程', code: 'about-articles', level: 2, contentCount: 23 },
-                        { key: 'about-party', title: '党建园地', code: 'about-party', level: 2, contentCount: 34 },
-                        { key: 'about-documents', title: '4+N 纲领性文件', code: 'about-documents', level: 2, contentCount: 28 },
-                        { key: 'about-activities', title: '品牌活动', code: 'about-activities', level: 2, contentCount: 26 }
+                        {
+                            key: 'about-profile',
+                            title: '协会简介',
+                            code: 'about-profile',
+                            level: 2,
+                            sort: 1,
+                            status: 'enabled',
+                            description: '协会基本信息和介绍',
+                            contentCount: 45,
+                            parentKey: 'about'
+                        },
+                        {
+                            key: 'about-articles',
+                            title: '协会章程',
+                            code: 'about-articles',
+                            level: 2,
+                            sort: 2,
+                            status: 'enabled',
+                            description: '协会章程和规章制度',
+                            contentCount: 23,
+                            parentKey: 'about'
+                        },
+                        {
+                            key: 'about-party',
+                            title: '党建园地',
+                            code: 'about-party',
+                            level: 2,
+                            sort: 3,
+                            status: 'enabled',
+                            description: '党建相关内容和活动',
+                            contentCount: 34,
+                            parentKey: 'about'
+                        },
+                        {
+                            key: 'about-documents',
+                            title: '4+N 纲领性文件',
+                            code: 'about-documents',
+                            level: 2,
+                            sort: 4,
+                            status: 'enabled',
+                            description: '纲领性文件和重要政策',
+                            contentCount: 28,
+                            parentKey: 'about'
+                        },
+                        {
+                            key: 'about-activities',
+                            title: '品牌活动',
+                            code: 'about-activities',
+                            level: 2,
+                            sort: 5,
+                            status: 'enabled',
+                            description: '协会品牌活动和项目',
+                            contentCount: 26,
+                            parentKey: 'about'
+                        }
                     ]
                 },
                 {
@@ -53,11 +105,44 @@ const ColumnPermissionManagement = () => {
                     title: '资讯',
                     code: 'information',
                     level: 1,
+                    sort: 2,
                     status: 'enabled',
+                    description: '行业资讯和新闻动态',
                     contentCount: 234,
                     children: [
-                        { key: 'info-industry', title: '行业资讯', code: 'info-industry', level: 2, contentCount: 156 },
-                        { key: 'info-association', title: '协会信息', code: 'info-association', level: 2, contentCount: 78 }
+                        {
+                            key: 'information-news',
+                            title: '行业新闻',
+                            code: 'information-news',
+                            level: 2,
+                            sort: 1,
+                            status: 'enabled',
+                            description: '轨道交通行业最新新闻',
+                            contentCount: 89,
+                            parentKey: 'information'
+                        },
+                        {
+                            key: 'information-policy',
+                            title: '政策法规',
+                            code: 'information-policy',
+                            level: 2,
+                            sort: 2,
+                            status: 'enabled',
+                            description: '相关政策法规和标准',
+                            contentCount: 67,
+                            parentKey: 'information'
+                        },
+                        {
+                            key: 'information-tech',
+                            title: '技术动态',
+                            code: 'information-tech',
+                            level: 2,
+                            sort: 3,
+                            status: 'enabled',
+                            description: '技术发展和创新动态',
+                            contentCount: 78,
+                            parentKey: 'information'
+                        }
                     ]
                 },
                 {
@@ -65,15 +150,44 @@ const ColumnPermissionManagement = () => {
                     title: '服务',
                     code: 'services',
                     level: 1,
+                    sort: 3,
                     status: 'enabled',
+                    description: '协会提供的各项服务',
                     contentCount: 189,
                     children: [
-                        { key: 'service-member', title: '会员服务', code: 'service-member', level: 2, contentCount: 67 },
-                        { key: 'service-statistics', title: '统计', code: 'service-statistics', level: 2, contentCount: 45 },
-                        { key: 'service-standards', title: '标准', code: 'service-standards', level: 2, contentCount: 38 },
-                        { key: 'service-training', title: '人才培养', code: 'service-training', level: 2, contentCount: 29 },
-                        { key: 'service-review', title: '评审', code: 'service-review', level: 2, contentCount: 10 },
-                        { key: 'service-policy', title: '政策汇编', code: 'service-policy', level: 2, contentCount: 0 }
+                        {
+                            key: 'services-consultation',
+                            title: '咨询服务',
+                            code: 'services-consultation',
+                            level: 2,
+                            sort: 1,
+                            status: 'enabled',
+                            description: '专业咨询服务',
+                            contentCount: 56,
+                            parentKey: 'services'
+                        },
+                        {
+                            key: 'services-training',
+                            title: '培训服务',
+                            code: 'services-training',
+                            level: 2,
+                            sort: 2,
+                            status: 'enabled',
+                            description: '专业培训和教育服务',
+                            contentCount: 78,
+                            parentKey: 'services'
+                        },
+                        {
+                            key: 'services-certification',
+                            title: '认证服务',
+                            code: 'services-certification',
+                            level: 2,
+                            sort: 3,
+                            status: 'enabled',
+                            description: '产品认证和质量评估',
+                            contentCount: 55,
+                            parentKey: 'services'
+                        }
                     ]
                 },
                 {
@@ -81,210 +195,188 @@ const ColumnPermissionManagement = () => {
                     title: '专栏',
                     code: 'columns',
                     level: 1,
+                    sort: 4,
                     status: 'enabled',
+                    description: '专题专栏和特色内容',
                     contentCount: 312,
                     children: [
-                        { key: 'column-history', title: '口述历史', code: 'column-history', level: 2, contentCount: 89 },
-                        { key: 'column-decrypt', title: '解密', code: 'column-decrypt', level: 2, contentCount: 67 },
-                        { key: 'column-figures', title: '人物', code: 'column-figures', level: 2, contentCount: 78 },
-                        { key: 'column-science', title: '城轨科普', code: 'column-science', level: 2, contentCount: 56 },
-                        { key: 'column-beauty', title: '地铁之美', code: 'column-beauty', level: 2, contentCount: 22 }
+                        {
+                            key: 'columns-special',
+                            title: '专题专栏',
+                            code: 'columns-special',
+                            level: 2,
+                            sort: 1,
+                            status: 'enabled',
+                            description: '专题报道和深度分析',
+                            contentCount: 123,
+                            parentKey: 'columns'
+                        },
+                        {
+                            key: 'columns-interview',
+                            title: '人物访谈',
+                            code: 'columns-interview',
+                            level: 2,
+                            sort: 2,
+                            status: 'enabled',
+                            description: '行业专家和领袖访谈',
+                            contentCount: 89,
+                            parentKey: 'columns'
+                        },
+                        {
+                            key: 'columns-case',
+                            title: '案例分享',
+                            code: 'columns-case',
+                            level: 2,
+                            sort: 3,
+                            status: 'enabled',
+                            description: '成功案例和经验分享',
+                            contentCount: 100,
+                            parentKey: 'columns'
+                        }
                     ]
                 }
             ];
-
             setColumns(mockColumns);
             setLoading(false);
-        }, 800);
+        }, 1000);
     };
 
-    // 渲染栏目权限概览
+    // 渲染权限概览
     const renderPermissionOverview = () => {
-        if (!permissionManager) return null;
+        if (!permissionManager) return React.createElement('div', {}, '加载中...');
 
         const allColumns = permissionManager.getAllColumnKeys();
-        const totalColumns = allColumns.length;
-        let strictColumns = 0;
-        let moderateColumns = 0;
-        let looseColumns = 0;
+        const permissionSummary = permissionManager.getUserPermissionSummary('admin', ['admin']);
 
-        allColumns.forEach(columnKey => {
-            const permissions = permissionManager.getColumnPermissions(columnKey);
-            if (permissions.requireReview && !permissions.autoPublish) {
-                strictColumns++;
-            } else if (permissions.requireReview && permissions.autoPublish) {
-                moderateColumns++;
-            } else {
-                looseColumns++;
-            }
-        });
-
-        return React.createElement(Row, {
-            key: 'overview',
-            gutter: [24, 24],
-            style: { marginBottom: '24px' }
-        }, [
-            React.createElement(Col, { key: 'total', span: 6 }, React.createElement(Card, {
-                size: 'small'
-            }, [
-                React.createElement(Statistic, {
-                    key: 'stat',
-                    title: '总栏目数',
-                    value: totalColumns,
-                    valueStyle: { color: '#1890ff' }
-                })
-            ])),
-            React.createElement(Col, { key: 'strict', span: 6 }, React.createElement(Card, {
-                size: 'small'
-            }, [
-                React.createElement(Statistic, {
-                    key: 'stat',
-                    title: '严格审核',
-                    value: strictColumns,
-                    valueStyle: { color: '#f5222d' }
-                })
-            ])),
-            React.createElement(Col, { key: 'moderate', span: 6 }, React.createElement(Card, {
-                size: 'small'
-            }, [
-                React.createElement(Statistic, {
-                    key: 'stat',
-                    title: '适中模式',
-                    value: moderateColumns,
-                    valueStyle: { color: '#fa8c16' }
-                })
-            ])),
-            React.createElement(Col, { key: 'loose', span: 6 }, React.createElement(Card, {
-                size: 'small'
-            }, [
-                React.createElement(Statistic, {
-                    key: 'stat',
-                    title: '宽松模式',
-                    value: looseColumns,
-                    valueStyle: { color: '#52c41a' }
-                })
-            ]))
+        return React.createElement('div', {}, [
+            React.createElement(Row, { key: 'stats', gutter: 16, style: { marginBottom: '24px' } }, [
+                React.createElement(Col, { key: 'total', span: 6 }, 
+                    React.createElement(Card, {}, [
+                        React.createElement(Statistic, {
+                            title: '总栏目数',
+                            value: allColumns.length,
+                            prefix: React.createElement('span', {}, '📋')
+                        })
+                    ])
+                ),
+                React.createElement(Col, { key: 'publish', span: 6 }, 
+                    React.createElement(Card, {}, [
+                        React.createElement(Statistic, {
+                            title: '可发布栏目',
+                            value: permissionSummary.publishableColumns.length,
+                            prefix: React.createElement('span', {}, '✍️')
+                        })
+                    ])
+                ),
+                React.createElement(Col, { key: 'review', span: 6 }, 
+                    React.createElement(Card, {}, [
+                        React.createElement(Statistic, {
+                            title: '可审核栏目',
+                            value: permissionSummary.reviewableColumns.length,
+                            prefix: React.createElement('span', {}, '👁️')
+                        })
+                    ])
+                ),
+                React.createElement(Col, { key: 'templates', span: 6 }, 
+                    React.createElement(Card, {}, [
+                        React.createElement(Statistic, {
+                            title: '权限模板',
+                            value: Object.keys(permissionTemplates).length,
+                            prefix: React.createElement('span', {}, '📝')
+                        })
+                    ])
+                )
+            ]),
+            React.createElement(Card, { key: 'modes', title: '权限模式说明' }, [
+                React.createElement(Alert, {
+                    message: '权限配置模式',
+                    description: '系统支持三种权限配置模式：角色权限、用户权限和混合权限。每种模式都有其适用场景和配置方式。',
+                    type: 'info',
+                    showIcon: true,
+                    style: { marginBottom: '16px' }
+                }),
+                React.createElement(Collapse, {}, [
+                    React.createElement(Collapse.Panel, {
+                        key: 'role',
+                        header: '角色权限模式',
+                        extra: React.createElement(Tag, { color: 'blue' }, '推荐')
+                    }, '基于用户角色分配权限，适合大规模用户管理。管理员可以为不同角色配置不同的栏目权限，用户通过角色继承权限。'),
+                    React.createElement(Collapse.Panel, {
+                        key: 'user',
+                        header: '用户权限模式'
+                    }, '直接为用户分配特定栏目的权限，适合精细化权限控制。可以为特定用户配置特殊的栏目访问权限。'),
+                    React.createElement(Collapse.Panel, {
+                        key: 'mixed',
+                        header: '混合权限模式'
+                    }, '结合角色权限和用户权限，用户既继承角色权限，也可以拥有个人特殊权限。系统会合并两种权限配置。')
+                ])
+            ])
         ]);
     };
 
-    // 渲染栏目权限表格
+    // 渲染权限管理表格
     const renderPermissionTable = () => {
         const columns = [
             {
-                title: '栏目信息',
-                key: 'columnInfo',
-                render: (_, record) => React.createElement('div', {}, [
-                    React.createElement('div', {
-                        key: 'title',
-                        style: { fontWeight: 'bold' }
-                    }, record.title),
-                    React.createElement('div', {
-                        key: 'code',
-                        style: { fontSize: '12px', color: '#666' }
-                    }, `代码: ${record.code}`),
-                    React.createElement('div', {
-                        key: 'level',
-                        style: { fontSize: '12px', color: '#999' }
-                    }, record.level === 1 ? '主栏目' : '子栏目')
+                title: '栏目名称',
+                dataIndex: 'title',
+                key: 'title',
+                render: (text, record) => React.createElement('div', {}, [
+                    React.createElement('div', { key: 'title', style: { fontWeight: 'bold' } }, text),
+                    React.createElement('div', { key: 'code', style: { fontSize: '12px', color: '#999' } }, record.code)
                 ])
             },
             {
+                title: '层级',
+                dataIndex: 'level',
+                key: 'level',
+                render: (level) => React.createElement(Tag, { color: level === 1 ? 'blue' : 'green' }, `第${level}级`)
+            },
+            {
                 title: '发布权限',
-                key: 'publishPermissions',
+                key: 'publish',
                 render: (_, record) => {
-                    if (!permissionManager) return '-';
-                    const permissions = permissionManager.getColumnPermissions(record.key);
-                    return React.createElement('div', {}, [
-                        React.createElement('div', {
-                            key: 'roles',
-                            style: { marginBottom: '4px' }
-                        }, permissions.publishRoles.map(role => 
-                            React.createElement(Tag, {
-                                key: role,
-                                size: 'small',
-                                color: 'blue'
-                            }, role)
-                        )),
-                        permissions.publishUsers.length > 0 && React.createElement('div', {
-                            key: 'users',
-                            style: { fontSize: '12px', color: '#666' }
-                        }, `特定用户: ${permissions.publishUsers.length}人`)
-                    ]);
+                    const canPublish = permissionManager?.canPublish('admin', ['admin'], record.key);
+                    return React.createElement(Tag, { 
+                        color: canPublish ? 'green' : 'red' 
+                    }, canPublish ? '可发布' : '不可发布');
                 }
             },
             {
                 title: '审核权限',
-                key: 'reviewPermissions',
+                key: 'review',
                 render: (_, record) => {
-                    if (!permissionManager) return '-';
-                    const permissions = permissionManager.getColumnPermissions(record.key);
-                    return React.createElement('div', {}, [
-                        React.createElement('div', {
-                            key: 'roles',
-                            style: { marginBottom: '4px' }
-                        }, permissions.reviewRoles.map(role => 
-                            React.createElement(Tag, {
-                                key: role,
-                                size: 'small',
-                                color: 'green'
-                            }, role)
-                        )),
-                        permissions.reviewUsers.length > 0 && React.createElement('div', {
-                            key: 'users',
-                            style: { fontSize: '12px', color: '#666' }
-                        }, `特定用户: ${permissions.reviewUsers.length}人`)
-                    ]);
+                    const canReview = permissionManager?.canReview('admin', ['admin'], record.key);
+                    return React.createElement(Tag, { 
+                        color: canReview ? 'green' : 'red' 
+                    }, canReview ? '可审核' : '不可审核');
                 }
             },
             {
                 title: '发布设置',
-                key: 'publishSettings',
+                key: 'settings',
                 render: (_, record) => {
-                    if (!permissionManager) return '-';
-                    const permissions = permissionManager.getColumnPermissions(record.key);
-                    return React.createElement('div', {}, [
-                        React.createElement('div', {
-                            key: 'auto-publish',
-                            style: { marginBottom: '4px' }
-                        }, React.createElement(Tag, {
-                            color: permissions.autoPublish ? 'green' : 'red',
-                            size: 'small'
-                        }, permissions.autoPublish ? '自动发布' : '手动发布')),
-                        React.createElement('div', {
-                            key: 'require-review',
-                            style: { fontSize: '12px', color: '#666' }
-                        }, React.createElement(Tag, {
-                            color: permissions.requireReview ? 'orange' : 'blue',
-                            size: 'small'
-                        }, permissions.requireReview ? '需要审核' : '无需审核'))
+                    const requiresReview = permissionManager?.requiresReview(record.key);
+                    const supportsAutoPublish = permissionManager?.supportsAutoPublish(record.key);
+                    return React.createElement(Space, { direction: 'vertical', size: 'small' }, [
+                        React.createElement(Tag, { 
+                            key: 'review', 
+                            color: requiresReview ? 'orange' : 'default' 
+                        }, requiresReview ? '需审核' : '无需审核'),
+                        React.createElement(Tag, { 
+                            key: 'auto', 
+                            color: supportsAutoPublish ? 'blue' : 'default' 
+                        }, supportsAutoPublish ? '支持自动发布' : '手动发布')
                     ]);
                 }
             },
             {
-                title: '内容统计',
-                key: 'contentStats',
-                render: (_, record) => React.createElement('div', {}, [
-                    React.createElement('div', {
-                        key: 'count',
-                        style: { fontWeight: 'bold', color: '#1890ff' }
-                    }, `${record.contentCount} 篇`),
-                    React.createElement('div', {
-                        key: 'status',
-                        style: { fontSize: '12px', color: '#666' }
-                    }, React.createElement(Tag, {
-                        color: record.status === 'enabled' ? 'green' : 'red',
-                        size: 'small'
-                    }, record.status === 'enabled' ? '启用' : '禁用'))
-                ])
-            },
-            {
                 title: '操作',
                 key: 'actions',
-                render: (_, record) => React.createElement(Space, { size: 'small' }, [
+                render: (_, record) => React.createElement(Space, {}, [
                     React.createElement(Button, {
                         key: 'config',
                         size: 'small',
-                        type: 'primary',
                         onClick: () => handleConfigPermissions(record)
                     }, '配置权限'),
                     React.createElement(Button, {
@@ -295,41 +387,40 @@ const ColumnPermissionManagement = () => {
                     React.createElement(Button, {
                         key: 'history',
                         size: 'small',
-                        type: 'link',
                         onClick: () => handleViewHistory(record)
                     }, '变更历史')
                 ])
             }
         ];
 
-        // 扁平化栏目数据
+        // 扁平化栏目数据用于表格显示
         const flatColumns = [];
-        columns.forEach(column => {
-            flatColumns.push(column);
-            if (column.children) {
-                column.children.forEach(child => {
-                    flatColumns.push(child);
+        const flattenColumns = (cols, parentTitle = '') => {
+            cols.forEach(col => {
+                flatColumns.push({
+                    ...col,
+                    fullTitle: parentTitle ? `${parentTitle} > ${col.title}` : col.title
                 });
-            }
-        });
+                if (col.children) {
+                    flattenColumns(col.children, col.title);
+                }
+            });
+        };
+        flattenColumns(columns);
 
         return React.createElement(Table, {
-            dataSource: flatColumns,
             columns: columns,
+            dataSource: flatColumns,
             rowKey: 'key',
-            pagination: { pageSize: 20 },
-            size: 'small',
-            loading: loading
+            loading: loading,
+            pagination: { pageSize: 10 }
         });
     };
 
     // 配置权限
     const handleConfigPermissions = (column) => {
         setSelectedColumn(column);
-        if (permissionManager) {
-            const permissions = permissionManager.getColumnPermissions(column.key);
-            setCurrentPermissions(permissions);
-        }
+        setCurrentPermissions(permissionManager?.getColumnPermissions(column.key) || {});
         setPermissionModalVisible(true);
     };
 
@@ -342,505 +433,340 @@ const ColumnPermissionManagement = () => {
     // 查看历史
     const handleViewHistory = (column) => {
         setSelectedColumn(column);
-        if (permissionManager) {
-            const history = permissionManager.getPermissionChangeHistory(column.key);
-            setPermissionHistory(history);
-        }
+        setPermissionHistory(permissionManager?.getPermissionChangeHistory(column.key) || []);
         setHistoryDrawerVisible(true);
     };
 
-    // 保存权限配置
-    const handleSavePermissions = async () => {
-        try {
-            const values = await form.validateFields();
+    // 保存权限
+    const handleSavePermissions = (values) => {
+        if (selectedColumn && permissionManager) {
+            const newPermissions = {
+                ...currentPermissions,
+                ...values
+            };
             
             // 检查权限冲突
-            const conflicts = permissionManager.checkPermissionConflicts(values);
+            const conflicts = permissionManager.checkPermissionConflicts(newPermissions);
             if (conflicts.length > 0) {
                 setPermissionConflicts(conflicts);
                 setConflictModalVisible(true);
                 return;
             }
 
-            // 保存权限配置
-            permissionManager.updateColumnPermissions(selectedColumn.key, values);
-            message.success('权限配置已保存');
+            permissionManager.updateColumnPermissions(selectedColumn.key, newPermissions);
             setPermissionModalVisible(false);
-            
-            // 重新加载数据
-            loadColumns();
-        } catch (error) {
-            console.error('保存权限配置失败:', error);
+            message.success('权限配置保存成功');
         }
     };
 
-    // 应用权限模板
+    // 应用模板确认
     const handleApplyTemplateConfirm = (templateName) => {
-        try {
+        if (selectedColumn && permissionManager) {
             permissionManager.applyPermissionTemplate(selectedColumn.key, templateName);
-            message.success(`已应用 ${permissionTemplates[templateName].name} 模板`);
             setTemplateModalVisible(false);
-            
-            // 重新加载数据
-            loadColumns();
-        } catch (error) {
-            message.error(`应用模板失败: ${error.message}`);
+            message.success('权限模板应用成功');
         }
     };
 
     // 批量应用模板
     const handleBatchApplyTemplate = (templateName, columnKeys) => {
-        const updates = columnKeys.map(columnKey => ({
-            columnKey,
-            permissions: permissionTemplates[templateName].config
-        }));
-
-        const results = permissionManager.batchUpdatePermissions(updates);
-        const successCount = results.filter(r => r.success).length;
-        const failCount = results.filter(r => !r.success).length;
-
-        if (successCount > 0) {
-            message.success(`成功应用模板到 ${successCount} 个栏目`);
+        if (permissionManager) {
+            const updates = columnKeys.map(key => ({
+                columnKey: key,
+                templateName: templateName
+            }));
+            permissionManager.batchUpdatePermissions(updates);
+            message.success('批量应用模板成功');
         }
-        if (failCount > 0) {
-            message.error(`${failCount} 个栏目应用模板失败`);
-        }
-
-        // 重新加载数据
-        loadColumns();
     };
 
     // 渲染权限配置模态框
     const renderPermissionModal = () => {
-        if (!selectedColumn) return null;
-
         return React.createElement(Modal, {
-            title: `${selectedColumn.title} - 权限配置`,
-            open: permissionModalVisible,
+            title: `配置权限 - ${selectedColumn?.title}`,
+            visible: permissionModalVisible,
             onCancel: () => setPermissionModalVisible(false),
-            onOk: handleSavePermissions,
-            width: 800,
-            okText: '保存配置',
-            cancelText: '取消'
+            footer: null,
+            width: 800
         }, [
-            React.createElement(Alert, {
-                key: 'info',
-                message: '权限配置说明',
-                description: '配置当前栏目的内容发布和审核权限。支持角色级别和用户级别的权限控制。',
-                type: 'info',
-                showIcon: true,
-                style: { marginBottom: '24px' }
-            }),
-
             React.createElement(Form, {
-                key: 'permission-form',
                 form: form,
                 layout: 'vertical',
+                onFinish: handleSavePermissions,
                 initialValues: currentPermissions
             }, [
-                React.createElement(Row, { key: 'publish-section', gutter: 24 }, [
-                    React.createElement(Col, { key: 'publish', span: 12 }, React.createElement(Card, {
-                        title: '发布权限配置',
-                        size: 'small'
-                    }, [
-                        React.createElement(Form.Item, {
-                            key: 'publish-roles',
-                            name: 'publishRoles',
-                            label: '发布角色',
-                            extra: '选择可以在此栏目发布内容的角色'
-                        }, React.createElement(Select, {
-                            mode: 'multiple',
-                            placeholder: '选择发布角色',
-                            options: [
-                                { value: 'content_editor', label: '内容编辑' },
-                                { value: 'column_manager', label: '栏目管理员' },
-                                { value: 'senior_editor', label: '高级编辑' },
-                                { value: 'guest_editor', label: '特邀编辑' }
-                            ]
-                        })),
-
-                        React.createElement(Form.Item, {
-                            key: 'publish-users',
-                            name: 'publishUsers',
-                            label: '发布用户',
-                            extra: '选择可以在此栏目发布内容的特定用户'
-                        }, React.createElement(Select, {
-                            mode: 'multiple',
-                            placeholder: '选择发布用户',
-                            options: [
-                                { value: 'user_001', label: '张三 (内容编辑)' },
-                                { value: 'user_002', label: '李四 (栏目管理员)' },
-                                { value: 'user_003', label: '王五 (高级编辑)' }
-                            ]
-                        }))
-                    ])),
-
-                    React.createElement(Col, { key: 'review', span: 12 }, React.createElement(Card, {
-                        title: '审核权限配置',
-                        size: 'small'
-                    }, [
-                        React.createElement(Form.Item, {
-                            key: 'review-roles',
-                            name: 'reviewRoles',
-                            label: '审核角色',
-                            extra: '选择可以审核此栏目内容的角色'
-                        }, React.createElement(Select, {
-                            mode: 'multiple',
-                            placeholder: '选择审核角色',
-                            options: [
-                                { value: 'content_reviewer', label: '内容审核员' },
-                                { value: 'senior_reviewer', label: '高级审核员' },
-                                { value: 'content_manager', label: '内容管理员' },
-                                { value: 'chief_editor', label: '总编辑' }
-                            ]
-                        })),
-
-                        React.createElement(Form.Item, {
-                            key: 'review-users',
-                            name: 'reviewUsers',
-                            label: '审核用户',
-                            extra: '选择可以审核此栏目内容的特定用户'
-                        }, React.createElement(Select, {
-                            mode: 'multiple',
-                            placeholder: '选择审核用户',
-                            options: [
-                                { value: 'reviewer_001', label: '赵六 (内容审核员)' },
-                                { value: 'reviewer_002', label: '钱七 (高级审核员)' },
-                                { value: 'reviewer_003', label: '孙八 (内容管理员)' }
-                            ]
-                        }))
-                    ]))
+                React.createElement(Row, { key: 'header', gutter: 16 }, [
+                    React.createElement(Col, { key: 'info', span: 24 }, 
+                        React.createElement(Alert, {
+                            message: '权限配置说明',
+                            description: '请为当前栏目配置发布权限、审核权限和发布设置。权限配置会影响用户在该栏目的操作能力。',
+                            type: 'info',
+                            showIcon: true,
+                            style: { marginBottom: '16px' }
+                        })
+                    )
                 ]),
-
-                React.createElement(Card, {
-                    key: 'publish-settings',
-                    title: '发布设置',
-                    size: 'small',
-                    style: { marginTop: '16px' }
-                }, [
-                    React.createElement(Form.Item, {
-                        key: 'auto-publish',
-                        name: 'autoPublish',
-                        label: '自动发布',
-                        extra: '启用后，符合条件的内容将自动发布，无需人工审核'
-                    }, React.createElement(Switch, {
-                        checkedChildren: '启用',
-                        unCheckedChildren: '禁用'
-                    })),
-
-                    React.createElement(Form.Item, {
-                        key: 'require-review',
-                        name: 'requireReview',
-                        label: '强制审核',
-                        extra: '启用后，所有内容必须经过审核才能发布'
-                    }, React.createElement(Switch, {
-                        checkedChildren: '启用',
-                        unCheckedChildren: '禁用'
-                    }))
-                ])
+                React.createElement(Row, { key: 'permissions', gutter: 16 }, [
+                    React.createElement(Col, { key: 'publish', span: 12 }, [
+                        React.createElement(Card, { title: '发布权限', size: 'small' }, [
+                            React.createElement(Form.Item, {
+                                key: 'publishRoles',
+                                name: 'publishRoles',
+                                label: '可发布角色'
+                            }, React.createElement(Select, {
+                                mode: 'multiple',
+                                placeholder: '选择可发布的角色',
+                                options: [
+                                    { label: '管理员', value: 'admin' },
+                                    { label: '编辑', value: 'editor' },
+                                    { label: '作者', value: 'author' }
+                                ]
+                            })),
+                            React.createElement(Form.Item, {
+                                key: 'publishUsers',
+                                name: 'publishUsers',
+                                label: '可发布用户'
+                            }, React.createElement(Select, {
+                                mode: 'multiple',
+                                placeholder: '选择可发布的用户',
+                                options: [
+                                    { label: '张三', value: 'user1' },
+                                    { label: '李四', value: 'user2' },
+                                    { label: '王五', value: 'user3' }
+                                ]
+                            }))
+                        ])
+                    ]),
+                    React.createElement(Col, { key: 'review', span: 12 }, [
+                        React.createElement(Card, { title: '审核权限', size: 'small' }, [
+                            React.createElement(Form.Item, {
+                                key: 'reviewRoles',
+                                name: 'reviewRoles',
+                                label: '可审核角色'
+                            }, React.createElement(Select, {
+                                mode: 'multiple',
+                                placeholder: '选择可审核的角色',
+                                options: [
+                                    { label: '管理员', value: 'admin' },
+                                    { label: '审核员', value: 'reviewer' }
+                                ]
+                            })),
+                            React.createElement(Form.Item, {
+                                key: 'reviewUsers',
+                                name: 'reviewUsers',
+                                label: '可审核用户'
+                            }, React.createElement(Select, {
+                                mode: 'multiple',
+                                placeholder: '选择可审核的用户',
+                                options: [
+                                    { label: '审核员A', value: 'reviewer1' },
+                                    { label: '审核员B', value: 'reviewer2' }
+                                ]
+                            }))
+                        ])
+                    ])
+                ]),
+                React.createElement(Row, { key: 'settings', gutter: 16, style: { marginTop: '16px' } }, [
+                    React.createElement(Col, { key: 'settings', span: 24 }, [
+                        React.createElement(Card, { title: '发布设置', size: 'small' }, [
+                            React.createElement(Form.Item, {
+                                key: 'requiresReview',
+                                name: 'requiresReview',
+                                label: '发布设置',
+                                valuePropName: 'checked'
+                            }, React.createElement(Switch, { checkedChildren: '需审核', unCheckedChildren: '无需审核' })),
+                            React.createElement(Form.Item, {
+                                key: 'supportsAutoPublish',
+                                name: 'supportsAutoPublish',
+                                label: '自动发布',
+                                valuePropName: 'checked'
+                            }, React.createElement(Switch, { checkedChildren: '支持', unCheckedChildren: '不支持' }))
+                        ])
+                    ])
+                ]),
+                React.createElement(Form.Item, {
+                    key: 'actions',
+                    style: { marginTop: '16px', textAlign: 'right' }
+                }, React.createElement(Space, {}, [
+                    React.createElement(Button, { key: 'cancel', onClick: () => setPermissionModalVisible(false) }, '取消'),
+                    React.createElement(Button, { key: 'submit', type: 'primary', htmlType: 'submit' }, '保存')
+                ]))
             ])
         ]);
     };
 
     // 渲染模板应用模态框
     const renderTemplateModal = () => {
-        if (!selectedColumn) return null;
-
         return React.createElement(Modal, {
-            title: `${selectedColumn.title} - 应用权限模板`,
-            open: templateModalVisible,
+            title: `应用权限模板 - ${selectedColumn?.title}`,
+            visible: templateModalVisible,
             onCancel: () => setTemplateModalVisible(false),
-            footer: null,
-            width: 600
+            footer: null
         }, [
             React.createElement(Alert, {
-                key: 'info',
-                message: '模板应用说明',
-                description: '选择权限模板快速应用到当前栏目，模板会覆盖现有的权限配置。',
+                message: '权限模板说明',
+                description: '选择要应用的权限模板，系统将自动配置相应的权限设置。',
                 type: 'info',
                 showIcon: true,
-                style: { marginBottom: '24px' }
+                style: { marginBottom: '16px' }
             }),
-
-            React.createElement(Row, {
-                key: 'templates',
-                gutter: [16, 16]
-            }, Object.keys(permissionTemplates).map(templateKey => {
-                const template = permissionTemplates[templateKey];
-                return React.createElement(Col, {
-                    key: templateKey,
-                    span: 12
-                }, React.createElement(Card, {
-                    size: 'small',
-                    hoverable: true,
-                    style: { cursor: 'pointer' },
-                    onClick: () => handleApplyTemplateConfirm(templateKey)
-                }, [
-                    React.createElement('div', {
-                        key: 'title',
-                        style: { 
-                            fontSize: '16px', 
-                            fontWeight: 'bold', 
-                            marginBottom: '8px',
-                            color: '#1890ff'
-                        }
-                    }, template.name),
-                    React.createElement('div', {
-                        key: 'description',
-                        style: { 
-                            fontSize: '12px', 
-                            color: '#666',
-                            marginBottom: '16px',
-                            lineHeight: '1.4'
-                        }
-                    }, template.description),
-                    React.createElement('div', {
-                        key: 'features',
-                        style: { fontSize: '12px' }
-                    }, [
-                        React.createElement('div', {
-                            key: 'auto-publish',
-                            style: { marginBottom: '4px' }
-                        }, `自动发布: ${template.config.autoPublish ? '是' : '否'}`),
-                        React.createElement('div', {
-                            key: 'require-review',
-                            style: { marginBottom: '4px' }
-                        }, `需要审核: ${template.config.requireReview ? '是' : '否'}`),
-                        React.createElement('div', {
-                            key: 'publish-roles'
-                        }, `发布角色: ${template.config.publishRoles.length}个`)
-                    ])
-                ]));
-            }))
+            React.createElement(Collapse, {}, 
+                Object.entries(permissionTemplates).map(([name, template]) => 
+                    React.createElement(Collapse.Panel, {
+                        key: name,
+                        header: React.createElement('div', {
+                            style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
+                        }, [
+                            React.createElement('span', { key: 'name' }, template.name),
+                            React.createElement(Button, {
+                                key: 'apply',
+                                size: 'small',
+                                type: 'primary',
+                                onClick: () => handleApplyTemplateConfirm(name)
+                            }, '应用')
+                        ]),
+                        extra: React.createElement(Tag, { color: template.type === 'public' ? 'green' : 'blue' }, template.type === 'public' ? '公开' : '私有')
+                    }, React.createElement('div', {}, [
+                        React.createElement('p', { key: 'desc' }, template.description),
+                        React.createElement('div', { key: 'details' }, [
+                            React.createElement('div', { key: 'publish' }, `发布权限: ${template.publishRoles?.join(', ') || '无'}`),
+                            React.createElement('div', { key: 'review' }, `审核权限: ${template.reviewRoles?.join(', ') || '无'}`),
+                            React.createElement('div', { key: 'settings' }, `发布设置: ${template.requiresReview ? '需审核' : '无需审核'}`)
+                        ])
+                    ]))
+                )
+            )
         ]);
     };
 
-    // 渲染权限冲突模态框
+    // 渲染冲突提示模态框
     const renderConflictModal = () => {
         return React.createElement(Modal, {
-            title: '权限配置冲突检测',
-            open: conflictModalVisible,
+            title: '权限冲突检测',
+            visible: conflictModalVisible,
             onCancel: () => setConflictModalVisible(false),
-            onOk: () => {
-                setConflictModalVisible(false);
-                setPermissionModalVisible(false);
-            },
-            okText: '我知道了',
-            cancelText: '返回修改',
-            width: 600
+            footer: React.createElement(Space, {}, [
+                React.createElement(Button, { key: 'cancel', onClick: () => setConflictModalVisible(false) }, '取消'),
+                React.createElement(Button, { 
+                    key: 'continue', 
+                    type: 'primary', 
+                    onClick: () => {
+                        setConflictModalVisible(false);
+                        handleSavePermissions(form.getFieldsValue());
+                    }
+                }, '继续保存')
+            ])
         }, [
             React.createElement(Alert, {
-                key: 'warning',
                 message: '检测到权限配置冲突',
-                description: '以下问题可能影响权限配置的有效性，建议修改后重新保存。',
+                description: '以下权限配置可能存在冲突，请检查后确认是否继续保存。',
                 type: 'warning',
                 showIcon: true,
-                style: { marginBottom: '24px' }
+                style: { marginBottom: '16px' }
             }),
-
-            React.createElement('div', {
-                key: 'conflicts'
-            }, permissionConflicts.map((conflict, index) => 
-                React.createElement(Alert, {
-                    key: index,
-                    message: conflict.message,
-                    type: conflict.severity === 'error' ? 'error' : 'warning',
-                    showIcon: true,
-                    style: { marginBottom: '12px' }
-                })
-            ))
+            React.createElement(Collapse, {}, 
+                permissionConflicts.map((conflict, index) => 
+                    React.createElement(Collapse.Panel, {
+                        key: index,
+                        header: conflict.type,
+                        extra: React.createElement(Tag, { color: 'red' }, '冲突')
+                    }, conflict.description)
+                )
+            )
         ]);
     };
 
     // 渲染历史记录抽屉
     const renderHistoryDrawer = () => {
-        if (!selectedColumn) return null;
-
         return React.createElement(Drawer, {
-            title: `${selectedColumn.title} - 权限变更历史`,
-            open: historyDrawerVisible,
+            title: `权限变更历史 - ${selectedColumn?.title}`,
+            visible: historyDrawerVisible,
             onClose: () => setHistoryDrawerVisible(false),
             width: 600
         }, [
-            React.createElement(Timeline, {
-                key: 'history',
-                items: permissionHistory.map((item, index) => ({
-                    key: index,
-                    children: React.createElement('div', {}, [
-                        React.createElement('div', {
-                            key: 'header',
-                            style: { 
-                                display: 'flex', 
-                                justifyContent: 'space-between', 
-                                alignItems: 'center',
-                                marginBottom: '8px'
-                            }
-                        }, [
-                            React.createElement('span', {
-                                key: 'operator',
-                                style: { fontWeight: 'bold' }
-                            }, `操作人: ${item.changedBy}`),
-                            React.createElement('span', {
-                                key: 'time',
-                                style: { fontSize: '12px', color: '#666' }
-                            }, item.changedAt)
-                        ]),
-                        React.createElement('div', {
-                            key: 'reason',
-                            style: { marginBottom: '8px', color: '#666' }
-                        }, `变更原因: ${item.reason}`),
-                        React.createElement(Collapse, {
-                            key: 'details',
-                            size: 'small',
-                            items: [
-                                {
-                                    key: 'changes',
-                                    label: '查看变更详情',
-                                    children: React.createElement('div', {}, [
-                                        React.createElement('div', {
-                                            key: 'old',
-                                            style: { marginBottom: '8px' }
-                                        }, [
-                                            React.createElement('div', {
-                                                key: 'label',
-                                                style: { fontWeight: 'bold', marginBottom: '4px' }
-                                            }, '变更前:'),
-                                            React.createElement('pre', {
-                                                key: 'content',
-                                                style: { 
-                                                    fontSize: '12px', 
-                                                    background: '#f5f5f5', 
-                                                    padding: '8px',
-                                                    borderRadius: '4px'
-                                                }
-                                            }, JSON.stringify(item.oldPermissions, null, 2))
-                                        ]),
-                                        React.createElement('div', {
-                                            key: 'new'
-                                        }, [
-                                            React.createElement('div', {
-                                                key: 'label',
-                                                style: { fontWeight: 'bold', marginBottom: '4px' }
-                                            }, '变更后:'),
-                                            React.createElement('pre', {
-                                                key: 'content',
-                                                style: { 
-                                                    fontSize: '12px', 
-                                                    background: '#f0f9ff', 
-                                                    padding: '8px',
-                                                    borderRadius: '4px'
-                                                }
-                                            }, JSON.stringify(item.newPermissions, null, 2))
-                                        ])
-                                    ])
-                                }
-                            ]
-                        })
+            React.createElement(Timeline, {}, 
+                permissionHistory.map((record, index) => 
+                    React.createElement(Timeline.Item, {
+                        key: index,
+                        color: record.type === 'add' ? 'green' : record.type === 'update' ? 'blue' : 'red'
+                    }, [
+                        React.createElement('div', { key: 'time', style: { fontWeight: 'bold' } }, record.time),
+                        React.createElement('div', { key: 'operator' }, `操作人: ${record.operator}`),
+                        React.createElement('div', { key: 'action' }, `操作: ${record.action}`),
+                        React.createElement('div', { key: 'details' }, `详情: ${record.details}`)
                     ])
-                }))
-            })
+                )
+            )
         ]);
     };
 
     const tabItems = [
-        {
-            key: 'overview',
-            label: '📊 权限概览',
-            children: renderPermissionOverview()
-        },
-        {
-            key: 'management',
-            label: '⚙️ 权限管理',
-            children: React.createElement('div', {}, [
-                React.createElement('div', {
-                    key: 'header',
-                    style: {
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '16px'
-                    }
-                }, [
-                    React.createElement('h3', {
-                        key: 'title',
-                        style: { margin: 0 }
-                    }, '栏目权限配置'),
-                    React.createElement(Space, {
-                        key: 'actions'
-                    }, [
+        { key: 'overview', label: '📊 权限概览', children: renderPermissionOverview() },
+        { key: 'management', label: '⚙️ 权限管理', children: React.createElement('div', {}, [
+            React.createElement(Row, { key: 'header', style: { marginBottom: '16px' } }, [
+                React.createElement(Col, { key: 'title', span: 12 }, 
+                    React.createElement('h3', { style: { margin: 0 } }, '栏目权限列表')
+                ),
+                React.createElement(Col, { key: 'actions', span: 12, style: { textAlign: 'right' } }, 
+                    React.createElement(Space, {}, [
                         React.createElement(Button, {
-                            key: 'batch-template',
-                            onClick: () => {
-                                const selectedKeys = ['about', 'information']; // 这里应该从表格选择获取
-                                Modal.confirm({
-                                    title: '批量应用模板',
-                                    content: '选择要应用的权限模板',
-                                    onOk: () => handleBatchApplyTemplate('moderate', selectedKeys)
-                                });
-                            }
+                            key: 'batch',
+                            onClick: () => setTemplateModalVisible(true)
                         }, '批量应用模板'),
                         React.createElement(Button, {
-                            key: 'export',
-                            onClick: () => message.info('导出功能开发中...')
-                        }, '导出配置')
+                            key: 'refresh',
+                            onClick: () => {
+                                loadPermissionManager();
+                                loadColumns();
+                            }
+                        }, '刷新')
                     ])
-                ]),
-                renderPermissionTable()
-            ])
-        }
+                )
+            ]),
+            renderPermissionTable()
+        ]) }
     ];
 
     return React.createElement('div', { className: 'column-permission-management-page' }, [
-        React.createElement('div', {
-            key: 'header',
-            style: {
-                marginBottom: '24px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-            }
-        }, [
-            React.createElement('h2', {
-                key: 'title',
-                style: { margin: 0, fontSize: '24px', fontWeight: 'bold', color: '#1e293b' }
-            }, '栏目权限管理'),
-            React.createElement(Space, {
-                key: 'actions'
-            }, [
-                React.createElement(Button, {
-                    key: 'refresh',
-                    onClick: () => {
-                        if (permissionManager) {
-                            permissionManager.reloadPermissions();
-                            loadColumns();
-                            message.success('权限配置已刷新');
+        // 页面头部
+        React.createElement(Row, { key: 'header', style: { marginBottom: '24px' } }, [
+            React.createElement(Col, { key: 'title', span: 12 }, 
+                React.createElement('h1', { style: { margin: 0, fontSize: '24px', fontWeight: 'bold' } }, '栏目权限管理')
+            ),
+            React.createElement(Col, { key: 'actions', span: 12, style: { textAlign: 'right' } }, 
+                React.createElement(Space, {}, [
+                    React.createElement(Button, {
+                        key: 'templates',
+                        onClick: () => setTemplateModalVisible(true)
+                    }, '权限模板'),
+                    React.createElement(Button, {
+                        key: 'conflicts',
+                        onClick: () => {
+                            const conflicts = permissionManager?.checkPermissionConflicts(currentPermissions) || [];
+                            setPermissionConflicts(conflicts);
+                            setConflictModalVisible(true);
                         }
-                    }
-                }, '刷新配置'),
-                React.createElement(Button, {
-                    key: 'help',
-                    type: 'link',
-                    onClick: () => message.info('帮助文档开发中...')
-                }, '帮助')
-            ])
+                    }, '冲突检测'),
+                    React.createElement(Button, {
+                        key: 'export',
+                        type: 'primary'
+                    }, '导出配置')
+                ])
+            )
         ]),
 
-        React.createElement(Tabs, {
-            key: 'main-tabs',
-            items: tabItems,
-            defaultActiveKey: 'overview'
-        }),
+        // 主要内容区域
+        React.createElement(Card, { key: 'main' }, [
+            React.createElement(Tabs, {
+                items: tabItems,
+                defaultActiveKey: 'overview'
+            })
+        ]),
 
-        // 权限配置模态框
+        // 模态框和抽屉
         renderPermissionModal(),
-
-        // 模板应用模态框
         renderTemplateModal(),
-
-        // 权限冲突模态框
         renderConflictModal(),
-
-        // 历史记录抽屉
         renderHistoryDrawer()
     ]);
 };

@@ -90,6 +90,21 @@ const PermissionManager = {
             MESSAGE_SEND: 'operation:message:send'
         }
     },
+    
+    // 文创管理权限（新增）
+    CULTURAL: {
+        PRODUCT_VIEW: 'cultural_product:view',
+        PRODUCT_CREATE: 'cultural_product:create',
+        PRODUCT_EDIT: 'cultural_product:edit',
+        PRODUCT_DELETE: 'cultural_product:delete',
+        PRODUCT_PUBLISH: 'cultural_product:publish',
+        CATEGORY_VIEW: 'category:view',
+        CATEGORY_MANAGE: 'category:manage',
+        DISPLAY_VIEW: 'display:view',
+        DISPLAY_CONFIG: 'display:config',
+        CONTACT_VIEW: 'contact:view',
+        CONTACT_MANAGE: 'contact:manage'
+    },
 
     // 预定义角色
     ROLES: {
@@ -193,7 +208,12 @@ const PermissionManager = {
         'settings': ['system:setting:view'],
         'version': ['system:setting:view'],
         'traffic': ['system:setting:view'],
-        'menu': ['system:menu:manage']
+        'menu': ['system:menu:manage'],
+        // 文创页面
+        'cultural-product': ['cultural_product:view'],
+        'cultural-category': ['category:view'],
+        'cultural-display': ['display:view'],
+        'cultural-contact': ['contact:view']
     },
 
     // 初始化权限管理器

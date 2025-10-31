@@ -349,7 +349,18 @@ const App = () => {
             'column-management': window.App.pages.ColumnManagement,
             'ColumnManagement': window.App.pages.ColumnManagement,
             'column-permission': window.App.pages.ColumnPermissionManagement,
-            'ColumnPermissionManagement': window.App.pages.ColumnPermissionManagement
+            'ColumnPermissionManagement': window.App.pages.ColumnPermissionManagement,
+            // 文创管理
+            'cultural-product': window.App.pages.CulturalProductManagement,
+            'CulturalProductManagement': window.App.pages.CulturalProductManagement,
+            'cultural-category': window.App.pages.CulturalCategoryTagManagement,
+            'CulturalCategoryTagManagement': window.App.pages.CulturalCategoryTagManagement,
+            'cultural-display': window.App.pages.CulturalDisplayManagement,
+            'CulturalDisplayManagement': window.App.pages.CulturalDisplayManagement,
+            'cultural-contact': window.App.pages.CulturalContactManagement,
+            'CulturalContactManagement': window.App.pages.CulturalContactManagement,
+            'cultural-company': window.App.pages.CulturalCompanyManagement,
+            'CulturalCompanyManagement': window.App.pages.CulturalCompanyManagement
         };
 
         console.log('Looking for component:', currentPage);

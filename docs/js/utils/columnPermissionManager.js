@@ -7,119 +7,111 @@ class ColumnPermissionManager {
         this.initDefaultPermissions();
     }
 
-    // 初始化默认权限配置
+    // 初始化默认权限
     initDefaultPermissions() {
         // 默认角色权限
-        this.rolePermissions.set('content_editor', {
-            name: '内容编辑',
-            permissions: ['publish', 'edit_own', 'view_content'],
-            columns: ['*'] // 所有栏目
+        this.rolePermissions.set('admin', {
+            publishRoles: ['admin', 'editor'],
+            reviewRoles: ['admin', 'reviewer'],
+            publishUsers: [],
+            reviewUsers: [],
+            requiresReview: false,
+            supportsAutoPublish: true
         });
 
-        this.rolePermissions.set('column_manager', {
-            name: '栏目管理员',
-            permissions: ['publish', 'edit_all', 'delete', 'review', 'manage_permissions'],
-            columns: ['*']
+        this.rolePermissions.set('editor', {
+            publishRoles: ['editor'],
+            reviewRoles: [],
+            publishUsers: [],
+            reviewUsers: [],
+            requiresReview: true,
+            supportsAutoPublish: false
         });
 
-        this.rolePermissions.set('content_reviewer', {
-            name: '内容审核员',
-            permissions: ['review', 'reject', 'approve', 'view_content'],
-            columns: ['*']
-        });
-
-        this.rolePermissions.set('senior_reviewer', {
-            name: '高级审核员',
-            permissions: ['review', 'reject', 'approve', 'view_content', 'manage_reviewers'],
-            columns: ['*']
-        });
-
-        this.rolePermissions.set('content_manager', {
-            name: '内容管理员',
-            permissions: ['publish', 'edit_all', 'delete', 'review', 'manage_permissions', 'manage_columns'],
-            columns: ['*']
-        });
-
-        this.rolePermissions.set('chief_editor', {
-            name: '总编辑',
-            permissions: ['*'], // 所有权限
-            columns: ['*']
+        this.rolePermissions.set('reviewer', {
+            publishRoles: [],
+            reviewRoles: ['reviewer'],
+            publishUsers: [],
+            reviewUsers: [],
+            requiresReview: true,
+            supportsAutoPublish: false
         });
 
         // 默认栏目权限配置
-        this.defaultColumnPermissions = {
+        const defaultColumnPermissions = {
             'about': {
-                publishRoles: ['content_editor', 'column_manager'],
+                publishRoles: ['admin', 'editor'],
+                reviewRoles: ['admin', 'reviewer'],
                 publishUsers: [],
-                reviewRoles: ['content_reviewer', 'senior_reviewer'],
                 reviewUsers: [],
-                autoPublish: false,
-                requireReview: true,
+                requiresReview: true,
+                supportsAutoPublish: false,
                 specialRules: {
                     'about-documents': {
-                        requireReview: true,
-                        reviewRoles: ['senior_reviewer', 'chief_editor']
+                        publishRoles: ['admin'],
+                        reviewRoles: ['admin'],
+                        requiresReview: true,
+                        supportsAutoPublish: false
                     }
                 }
             },
             'information': {
-                publishRoles: ['content_editor', 'column_manager'],
+                publishRoles: ['admin', 'editor'],
+                reviewRoles: ['admin', 'reviewer'],
                 publishUsers: [],
-                reviewRoles: ['content_reviewer', 'senior_reviewer'],
                 reviewUsers: [],
-                autoPublish: false,
-                requireReview: true
+                requiresReview: true,
+                supportsAutoPublish: false
             },
             'services': {
-                publishRoles: ['content_editor', 'column_manager'],
+                publishRoles: ['admin', 'editor'],
+                reviewRoles: ['admin', 'reviewer'],
                 publishUsers: [],
-                reviewRoles: ['content_reviewer', 'senior_reviewer'],
                 reviewUsers: [],
-                autoPublish: false,
-                requireReview: true,
-                specialRules: {
-                    'service-policy': {
-                        requireReview: true,
-                        reviewRoles: ['senior_reviewer', 'chief_editor']
-                    }
-                }
+                requiresReview: true,
+                supportsAutoPublish: false
             },
             'columns': {
-                publishRoles: ['content_editor', 'column_manager', 'guest_editor'],
+                publishRoles: ['admin', 'editor'],
+                reviewRoles: ['admin', 'reviewer'],
                 publishUsers: [],
-                reviewRoles: ['content_reviewer', 'senior_reviewer'],
                 reviewUsers: [],
-                autoPublish: false,
-                requireReview: true
+                requiresReview: true,
+                supportsAutoPublish: false,
+                specialRules: {
+                    'columns-special': {
+                        publishRoles: ['admin'],
+                        reviewRoles: ['admin'],
+                        requiresReview: true,
+                        supportsAutoPublish: false
+                    }
+                }
             }
         };
+
+        // 设置默认权限到缓存
+        Object.entries(defaultColumnPermissions).forEach(([columnKey, permissions]) => {
+            this.permissionCache.set(columnKey, permissions);
+        });
     }
 
-    // 获取栏目权限配置
+    // 获取栏目权限
     getColumnPermissions(columnKey) {
-        // 先从缓存获取
         if (this.permissionCache.has(columnKey)) {
             return this.permissionCache.get(columnKey);
         }
-
-        // 获取默认配置
-        let permissions = this.defaultColumnPermissions[columnKey] || this.getDefaultPermissions();
-        
-        // 缓存权限配置
-        this.permissionCache.set(columnKey, permissions);
-        
-        return permissions;
+        return this.getDefaultPermissions();
     }
 
-    // 获取默认权限配置
+    // 获取默认权限
     getDefaultPermissions() {
         return {
-            publishRoles: ['content_editor'],
+            publishRoles: ['admin'],
+            reviewRoles: ['admin'],
             publishUsers: [],
-            reviewRoles: ['content_reviewer'],
             reviewUsers: [],
-            autoPublish: false,
-            requireReview: true
+            requiresReview: true,
+            supportsAutoPublish: false
         };
     }
 
@@ -127,198 +119,179 @@ class ColumnPermissionManager {
     canPublish(userId, userRoles, columnKey) {
         const permissions = this.getColumnPermissions(columnKey);
         
-        // 检查用户角色权限
-        for (const role of userRoles) {
-            if (permissions.publishRoles.includes(role)) {
-                return true;
-            }
-        }
+        // 检查角色权限
+        const hasRolePermission = userRoles.some(role => 
+            permissions.publishRoles.includes(role)
+        );
         
-        // 检查特定用户权限
-        if (permissions.publishUsers.includes(userId)) {
-            return true;
-        }
+        // 检查用户权限
+        const hasUserPermission = permissions.publishUsers.includes(userId);
         
-        return false;
+        return hasRolePermission || hasUserPermission;
     }
 
     // 检查用户是否有审核权限
     canReview(userId, userRoles, columnKey) {
         const permissions = this.getColumnPermissions(columnKey);
         
-        // 检查用户角色权限
-        for (const role of userRoles) {
-            if (permissions.reviewRoles.includes(role)) {
-                return true;
-            }
-        }
+        // 检查角色权限
+        const hasRolePermission = userRoles.some(role => 
+            permissions.reviewRoles.includes(role)
+        );
         
-        // 检查特定用户权限
-        if (permissions.reviewUsers.includes(userId)) {
-            return true;
-        }
+        // 检查用户权限
+        const hasUserPermission = permissions.reviewUsers.includes(userId);
         
-        return false;
+        return hasRolePermission || hasUserPermission;
     }
 
     // 检查栏目是否需要审核
     requiresReview(columnKey) {
         const permissions = this.getColumnPermissions(columnKey);
-        return permissions.requireReview;
+        return permissions.requiresReview;
     }
 
     // 检查栏目是否支持自动发布
     supportsAutoPublish(columnKey) {
         const permissions = this.getColumnPermissions(columnKey);
-        return permissions.autoPublish;
+        return permissions.supportsAutoPublish;
     }
 
-    // 更新栏目权限配置
+    // 更新栏目权限
     updateColumnPermissions(columnKey, newPermissions) {
-        // 验证权限配置
-        if (!this.validatePermissions(newPermissions)) {
-            throw new Error('权限配置格式不正确');
-        }
+        const oldPermissions = this.getColumnPermissions(columnKey);
+        const updatedPermissions = { ...oldPermissions, ...newPermissions };
         
-        // 更新权限配置
-        this.permissionCache.set(columnKey, newPermissions);
+        this.permissionCache.set(columnKey, updatedPermissions);
         
-        // 这里应该调用API保存到数据库
-        this.savePermissionsToDatabase(columnKey, newPermissions);
+        // 记录变更历史
+        this.recordPermissionChange(columnKey, 'update', {
+            old: oldPermissions,
+            new: updatedPermissions
+        });
+        
+        // 保存到数据库（模拟）
+        this.savePermissionsToDatabase(columnKey, updatedPermissions);
         
         return true;
     }
 
-    // 验证权限配置格式
+    // 验证权限配置
     validatePermissions(permissions) {
-        const requiredFields = ['publishRoles', 'publishUsers', 'reviewRoles', 'reviewUsers'];
+        const errors = [];
         
-        for (const field of requiredFields) {
-            if (!Array.isArray(permissions[field])) {
-                return false;
-            }
+        // 检查必填字段
+        if (!permissions.publishRoles && !permissions.publishUsers) {
+            errors.push('发布权限不能为空');
         }
         
-        if (typeof permissions.autoPublish !== 'boolean') {
-            return false;
+        if (!permissions.reviewRoles && !permissions.reviewUsers) {
+            errors.push('审核权限不能为空');
         }
         
-        if (typeof permissions.requireReview !== 'boolean') {
-            return false;
-        }
+        // 检查权限冲突
+        const conflicts = this.checkPermissionConflicts(permissions);
+        errors.push(...conflicts.map(c => c.description));
         
-        return true;
+        return errors;
     }
 
-    // 获取用户在所有栏目的权限摘要
+    // 获取用户权限摘要
     getUserPermissionSummary(userId, userRoles) {
-        const summary = {
-            canPublish: [],
-            canReview: [],
-            totalColumns: 0,
-            accessibleColumns: 0
-        };
-        
-        // 遍历所有栏目检查权限
         const allColumns = this.getAllColumnKeys();
-        summary.totalColumns = allColumns.length;
+        const publishableColumns = [];
+        const reviewableColumns = [];
         
-        for (const columnKey of allColumns) {
+        allColumns.forEach(columnKey => {
             if (this.canPublish(userId, userRoles, columnKey)) {
-                summary.canPublish.push(columnKey);
-                summary.accessibleColumns++;
+                publishableColumns.push(columnKey);
             }
-            
             if (this.canReview(userId, userRoles, columnKey)) {
-                summary.canReview.push(columnKey);
+                reviewableColumns.push(columnKey);
             }
-        }
+        });
         
-        return summary;
+        return {
+            userId,
+            userRoles,
+            publishableColumns,
+            reviewableColumns,
+            totalPublishable: publishableColumns.length,
+            totalReviewable: reviewableColumns.length
+        };
     }
 
     // 获取所有栏目键
     getAllColumnKeys() {
-        const keys = [];
-        
-        // 主栏目
-        for (const mainKey of Object.keys(this.defaultColumnPermissions)) {
-            keys.push(mainKey);
-            
-            // 子栏目
-            const mainPermissions = this.defaultColumnPermissions[mainKey];
-            if (mainPermissions.specialRules) {
-                for (const subKey of Object.keys(mainPermissions.specialRules)) {
-                    keys.push(subKey);
-                }
-            }
-        }
-        
-        return keys;
+        return Array.from(this.permissionCache.keys());
     }
 
-    // 批量更新权限配置
+    // 批量更新权限
     batchUpdatePermissions(updates) {
         const results = [];
         
-        for (const update of updates) {
+        updates.forEach(update => {
             try {
-                const success = this.updateColumnPermissions(update.columnKey, update.permissions);
-                results.push({
-                    columnKey: update.columnKey,
-                    success: true,
-                    message: '权限更新成功'
-                });
+                if (update.templateName) {
+                    this.applyPermissionTemplate(update.columnKey, update.templateName);
+                } else if (update.permissions) {
+                    this.updateColumnPermissions(update.columnKey, update.permissions);
+                }
+                results.push({ columnKey: update.columnKey, success: true });
             } catch (error) {
-                results.push({
-                    columnKey: update.columnKey,
-                    success: false,
-                    message: error.message
-                });
+                results.push({ columnKey: update.columnKey, success: false, error: error.message });
             }
-        }
+        });
         
         return results;
     }
 
-    // 获取权限配置模板
+    // 获取权限模板
     getPermissionTemplates() {
         return {
-            'strict': {
-                name: '严格模式',
-                description: '所有内容必须经过审核，仅允许特定角色发布',
-                config: {
-                    publishRoles: ['column_manager', 'content_manager'],
-                    publishUsers: [],
-                    reviewRoles: ['senior_reviewer', 'chief_editor'],
-                    reviewUsers: [],
-                    autoPublish: false,
-                    requireReview: true
-                }
+            'public': {
+                name: '公开栏目模板',
+                description: '适用于公开信息栏目，允许编辑发布，需要审核',
+                type: 'public',
+                publishRoles: ['admin', 'editor'],
+                reviewRoles: ['admin', 'reviewer'],
+                publishUsers: [],
+                reviewUsers: [],
+                requiresReview: true,
+                supportsAutoPublish: false
             },
-            'moderate': {
-                name: '适中模式',
-                description: '大部分内容需要审核，允许编辑角色发布',
-                config: {
-                    publishRoles: ['content_editor', 'column_manager'],
-                    publishUsers: [],
-                    reviewRoles: ['content_reviewer', 'senior_reviewer'],
-                    reviewUsers: [],
-                    autoPublish: false,
-                    requireReview: true
-                }
+            'internal': {
+                name: '内部栏目模板',
+                description: '适用于内部信息栏目，仅管理员可发布和审核',
+                type: 'private',
+                publishRoles: ['admin'],
+                reviewRoles: ['admin'],
+                publishUsers: [],
+                reviewUsers: [],
+                requiresReview: true,
+                supportsAutoPublish: false
             },
-            'loose': {
-                name: '宽松模式',
-                description: '允许自动发布，仅对敏感内容进行审核',
-                config: {
-                    publishRoles: ['content_editor', 'column_manager', 'guest_editor'],
-                    publishUsers: [],
-                    reviewRoles: ['content_reviewer'],
-                    reviewUsers: [],
-                    autoPublish: true,
-                    requireReview: false
-                }
+            'auto-publish': {
+                name: '自动发布模板',
+                description: '适用于新闻资讯栏目，支持自动发布',
+                type: 'public',
+                publishRoles: ['admin', 'editor'],
+                reviewRoles: ['admin'],
+                publishUsers: [],
+                reviewUsers: [],
+                requiresReview: false,
+                supportsAutoPublish: true
+            },
+            'strict-review': {
+                name: '严格审核模板',
+                description: '适用于重要栏目，需要严格审核流程',
+                type: 'private',
+                publishRoles: ['admin'],
+                reviewRoles: ['admin', 'reviewer'],
+                publishUsers: [],
+                reviewUsers: [],
+                requiresReview: true,
+                supportsAutoPublish: false
             }
         };
     }
@@ -329,82 +302,135 @@ class ColumnPermissionManager {
         const template = templates[templateName];
         
         if (!template) {
-            throw new Error(`权限模板 ${templateName} 不存在`);
+            throw new Error(`权限模板 "${templateName}" 不存在`);
         }
         
-        const newPermissions = { ...template.config };
-        return this.updateColumnPermissions(columnKey, newPermissions);
+        const templatePermissions = {
+            publishRoles: template.publishRoles,
+            reviewRoles: template.reviewRoles,
+            publishUsers: template.publishUsers,
+            reviewUsers: template.reviewUsers,
+            requiresReview: template.requiresReview,
+            supportsAutoPublish: template.supportsAutoPublish
+        };
+        
+        this.updateColumnPermissions(columnKey, templatePermissions);
+        
+        // 记录模板应用历史
+        this.recordPermissionChange(columnKey, 'template', {
+            templateName,
+            template: templatePermissions
+        });
+        
+        return true;
     }
 
     // 获取权限变更历史
     getPermissionChangeHistory(columnKey, limit = 10) {
-        // 这里应该从数据库获取权限变更历史
-        // 暂时返回模拟数据
-        return [
-            {
-                id: 1,
-                columnKey: columnKey,
-                changedBy: 'admin_001',
-                changedAt: '2024-01-15 10:30:00',
-                oldPermissions: { publishRoles: ['content_editor'] },
-                newPermissions: { publishRoles: ['content_editor', 'column_manager'] },
-                reason: '增加栏目管理员发布权限'
-            }
-        ].slice(0, limit);
+        const history = this.permissionCache.get(`${columnKey}_history`) || [];
+        return history.slice(0, limit);
     }
 
     // 检查权限冲突
     checkPermissionConflicts(permissions) {
         const conflicts = [];
         
-        // 检查发布用户和审核用户是否有重叠
-        const publishUsers = new Set(permissions.publishUsers);
-        const reviewUsers = new Set(permissions.reviewUsers);
+        // 检查用户同时拥有发布和审核权限
+        const publishUsers = permissions.publishUsers || [];
+        const reviewUsers = permissions.reviewUsers || [];
+        const conflictingUsers = publishUsers.filter(user => reviewUsers.includes(user));
         
-        for (const userId of publishUsers) {
-            if (reviewUsers.has(userId)) {
-                conflicts.push({
-                    type: 'user_conflict',
-                    message: `用户 ${userId} 同时具有发布和审核权限，可能存在利益冲突`,
-                    severity: 'warning'
-                });
-            }
+        if (conflictingUsers.length > 0) {
+            conflicts.push({
+                type: '用户权限冲突',
+                description: `用户 ${conflictingUsers.join(', ')} 同时拥有发布和审核权限，可能导致权限冲突`
+            });
         }
         
-        // 检查是否启用了自动发布但要求审核
-        if (permissions.autoPublish && permissions.requireReview) {
+        // 检查自动发布和需要审核的设置冲突
+        if (permissions.supportsAutoPublish && permissions.requiresReview) {
             conflicts.push({
-                type: 'logic_conflict',
-                message: '启用了自动发布但要求审核，逻辑冲突',
-                severity: 'error'
+                type: '发布设置冲突',
+                description: '同时启用自动发布和需要审核可能导致逻辑冲突'
+            });
+        }
+        
+        // 检查角色权限冲突
+        const publishRoles = permissions.publishRoles || [];
+        const reviewRoles = permissions.reviewRoles || [];
+        const conflictingRoles = publishRoles.filter(role => reviewRoles.includes(role));
+        
+        if (conflictingRoles.length > 0) {
+            conflicts.push({
+                type: '角色权限冲突',
+                description: `角色 ${conflictingRoles.join(', ')} 同时拥有发布和审核权限`
             });
         }
         
         return conflicts;
     }
 
+    // 记录权限变更
+    recordPermissionChange(columnKey, type, details) {
+        const history = this.permissionCache.get(`${columnKey}_history`) || [];
+        const record = {
+            time: new Date().toLocaleString(),
+            type: type,
+            operator: 'admin', // 这里应该从当前用户上下文获取
+            action: this.getActionDescription(type),
+            details: this.getDetailsDescription(type, details)
+        };
+        
+        history.unshift(record);
+        this.permissionCache.set(`${columnKey}_history`, history.slice(0, 50)); // 保留最近50条记录
+    }
+
+    // 获取操作描述
+    getActionDescription(type) {
+        const descriptions = {
+            'add': '添加权限配置',
+            'update': '更新权限配置',
+            'delete': '删除权限配置',
+            'template': '应用权限模板'
+        };
+        return descriptions[type] || '未知操作';
+    }
+
+    // 获取详情描述
+    getDetailsDescription(type, details) {
+        switch (type) {
+            case 'update':
+                return `权限配置已更新`;
+            case 'template':
+                return `应用了模板: ${details.templateName}`;
+            default:
+                return '权限配置变更';
+        }
+    }
+
     // 保存权限到数据库（模拟）
     savePermissionsToDatabase(columnKey, permissions) {
-        console.log(`保存栏目 ${columnKey} 的权限配置到数据库:`, permissions);
-        // 这里应该调用实际的API保存权限配置
+        // 这里应该是实际的数据库保存逻辑
+        console.log(`[ColumnPermissionManager] 保存权限到数据库: ${columnKey}`, permissions);
+        return true;
     }
 
     // 清除权限缓存
     clearPermissionCache() {
         this.permissionCache.clear();
+        this.initDefaultPermissions();
     }
 
-    // 重新加载权限配置
+    // 重新加载权限
     reloadPermissions() {
         this.clearPermissionCache();
-        this.initDefaultPermissions();
+        // 这里应该从数据库重新加载权限配置
+        console.log('[ColumnPermissionManager] 重新加载权限配置');
     }
 }
 
 // 创建全局实例
 const columnPermissionManager = new ColumnPermissionManager();
-
-// 导出实例和类
 window.columnPermissionManager = columnPermissionManager;
 window.ColumnPermissionManager = ColumnPermissionManager;
 

@@ -94,6 +94,35 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             ]
         },
         {
+            key: 'cultural-management',
+            icon: '🎨',
+            label: '文创管理',
+            title: '文创产品、分类标签与来源公司管理',
+            children: [
+                {
+                    key: 'cultural-product',
+                    icon: '📦',
+                    label: '文创产品',
+                    title: '文创产品的创建、上/下架与回收站',
+                    page: 'cultural-product'
+                },
+                {
+                    key: 'cultural-category',
+                    icon: '🗂️',
+                    label: '分类与标签',
+                    title: '文创分类树与标签管理',
+                    page: 'cultural-category'
+                },
+                {
+                    key: 'cultural-company',
+                    icon: '🏢',
+                    label: '来源公司',
+                    title: '来源公司信息与联系方式管理',
+                    page: 'cultural-company'
+                }
+            ]
+        },
+        {
             key: 'audit-management',
             icon: '🔍',
             label: '审核管理',

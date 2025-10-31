@@ -98,28 +98,39 @@ const ColumnManagement = () => {
                     level: 1,
                     sort: 2,
                     status: 'enabled',
-                    description: '行业资讯和协会信息',
+                    description: '行业资讯和新闻动态',
                     contentCount: 234,
                     children: [
                         {
-                            key: 'info-industry',
-                            title: '行业资讯',
-                            code: 'info-industry',
+                            key: 'information-news',
+                            title: '行业新闻',
+                            code: 'information-news',
                             level: 2,
                             sort: 1,
                             status: 'enabled',
-                            description: '轨道交通行业最新资讯',
-                            contentCount: 156,
+                            description: '轨道交通行业最新新闻',
+                            contentCount: 89,
                             parentKey: 'information'
                         },
                         {
-                            key: 'info-association',
-                            title: '协会信息',
-                            code: 'info-association',
+                            key: 'information-policy',
+                            title: '政策法规',
+                            code: 'information-policy',
                             level: 2,
                             sort: 2,
                             status: 'enabled',
-                            description: '协会内部信息和通知',
+                            description: '相关政策法规和标准',
+                            contentCount: 67,
+                            parentKey: 'information'
+                        },
+                        {
+                            key: 'information-tech',
+                            title: '技术动态',
+                            code: 'information-tech',
+                            level: 2,
+                            sort: 3,
+                            status: 'enabled',
+                            description: '技术发展和创新动态',
                             contentCount: 78,
                             parentKey: 'information'
                         }
@@ -132,73 +143,40 @@ const ColumnManagement = () => {
                     level: 1,
                     sort: 3,
                     status: 'enabled',
-                    description: '会员服务和专业服务',
+                    description: '协会提供的各项服务',
                     contentCount: 189,
                     children: [
                         {
-                            key: 'service-member',
-                            title: '会员服务',
-                            code: 'service-member',
+                            key: 'services-consultation',
+                            title: '咨询服务',
+                            code: 'services-consultation',
                             level: 2,
                             sort: 1,
                             status: 'enabled',
-                            description: '会员专享服务内容',
-                            contentCount: 67,
+                            description: '专业咨询服务',
+                            contentCount: 56,
                             parentKey: 'services'
                         },
                         {
-                            key: 'service-statistics',
-                            title: '统计',
-                            code: 'service-statistics',
+                            key: 'services-training',
+                            title: '培训服务',
+                            code: 'services-training',
                             level: 2,
                             sort: 2,
                             status: 'enabled',
-                            description: '行业统计数据和报告',
-                            contentCount: 45,
+                            description: '专业培训和教育服务',
+                            contentCount: 78,
                             parentKey: 'services'
                         },
                         {
-                            key: 'service-standards',
-                            title: '标准',
-                            code: 'service-standards',
+                            key: 'services-certification',
+                            title: '认证服务',
+                            code: 'services-certification',
                             level: 2,
                             sort: 3,
                             status: 'enabled',
-                            description: '行业标准和技术规范',
-                            contentCount: 38,
-                            parentKey: 'services'
-                        },
-                        {
-                            key: 'service-training',
-                            title: '人才培养',
-                            code: 'service-training',
-                            level: 2,
-                            sort: 4,
-                            status: 'enabled',
-                            description: '人才培养和培训项目',
-                            contentCount: 29,
-                            parentKey: 'services'
-                        },
-                        {
-                            key: 'service-review',
-                            title: '评审',
-                            code: 'service-review',
-                            level: 2,
-                            sort: 5,
-                            status: 'enabled',
-                            description: '专业评审和认证服务',
-                            contentCount: 10,
-                            parentKey: 'services'
-                        },
-                        {
-                            key: 'service-policy',
-                            title: '政策汇编',
-                            code: 'service-policy',
-                            level: 2,
-                            sort: 6,
-                            status: 'enabled',
-                            description: '政策文件和法规汇编',
-                            contentCount: 0,
+                            description: '产品认证和质量评估',
+                            contentCount: 55,
                             parentKey: 'services'
                         }
                     ]
@@ -210,146 +188,83 @@ const ColumnManagement = () => {
                     level: 1,
                     sort: 4,
                     status: 'enabled',
-                    description: '特色专栏和专题内容',
+                    description: '专题专栏和特色内容',
                     contentCount: 312,
                     children: [
                         {
-                            key: 'column-history',
-                            title: '口述历史',
-                            code: 'column-history',
+                            key: 'columns-special',
+                            title: '专题专栏',
+                            code: 'columns-special',
                             level: 2,
                             sort: 1,
                             status: 'enabled',
-                            description: '行业历史口述记录',
+                            description: '专题报道和深度分析',
+                            contentCount: 123,
+                            parentKey: 'columns'
+                        },
+                        {
+                            key: 'columns-interview',
+                            title: '人物访谈',
+                            code: 'columns-interview',
+                            level: 2,
+                            sort: 2,
+                            status: 'enabled',
+                            description: '行业专家和领袖访谈',
                             contentCount: 89,
                             parentKey: 'columns'
                         },
                         {
-                            key: 'column-decrypt',
-                            title: '解密',
-                            code: 'column-decrypt',
-                            level: 2,
-                            sort: 2,
-                            status: 'enabled',
-                            description: '解密行业内幕和故事',
-                            contentCount: 67,
-                            parentKey: 'columns'
-                        },
-                        {
-                            key: 'column-figures',
-                            title: '人物',
-                            code: 'column-figures',
+                            key: 'columns-case',
+                            title: '案例分享',
+                            code: 'columns-case',
                             level: 2,
                             sort: 3,
                             status: 'enabled',
-                            description: '行业人物专访和介绍',
-                            contentCount: 78,
-                            parentKey: 'columns'
-                        },
-                        {
-                            key: 'column-science',
-                            title: '城轨科普',
-                            code: 'column-science',
-                            level: 2,
-                            sort: 4,
-                            status: 'enabled',
-                            description: '城市轨道交通科普知识',
-                            contentCount: 56,
-                            parentKey: 'columns'
-                        },
-                        {
-                            key: 'column-beauty',
-                            title: '地铁之美',
-                            code: 'column-beauty',
-                            level: 2,
-                            sort: 5,
-                            status: 'enabled',
-                            description: '地铁艺术和美学展示',
-                            contentCount: 22,
+                            description: '成功案例和经验分享',
+                            contentCount: 100,
                             parentKey: 'columns'
                         }
                     ]
                 }
             ];
-
             setColumns(mockColumns);
-            setExpandedKeys(['about', 'information', 'services', 'columns']);
             setLoading(false);
-        }, 800);
+        }, 1000);
     };
 
     // 渲染栏目树
-    const renderColumnTree = () => {
-        const treeData = columns.map(column => ({
+    const renderColumnTree = (data) => {
+        return data.map(item => ({
             title: React.createElement('div', {
                 style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }
             }, [
-                React.createElement('span', { key: 'title' }, column.title),
-                React.createElement(Space, { key: 'actions', size: 'small' }, [
-                    React.createElement(Tag, {
-                        key: 'count',
+                React.createElement('span', { key: 'title' }, item.title),
+                React.createElement('div', { key: 'actions', style: { display: 'flex', gap: '4px' } }, [
+                    React.createElement(Tag, { 
+                        key: 'status', 
+                        color: item.status === 'enabled' ? 'green' : 'red',
+                        size: 'small'
+                    }, item.status === 'enabled' ? '启用' : '禁用'),
+                    React.createElement(Badge, { 
+                        key: 'count', 
+                        count: item.contentCount, 
                         size: 'small',
-                        color: 'blue'
-                    }, `${column.contentCount}篇`),
-                    React.createElement(Tag, {
-                        key: 'status',
-                        size: 'small',
-                        color: column.status === 'enabled' ? 'green' : 'red'
-                    }, column.status === 'enabled' ? '启用' : '禁用')
+                        style: { backgroundColor: '#1890ff' }
+                    })
                 ])
             ]),
-            key: column.key,
-            children: column.children?.map(child => ({
-                title: React.createElement('div', {
-                    style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }
-                }, [
-                    React.createElement('span', { key: 'title' }, child.title),
-                    React.createElement(Space, { key: 'actions', size: 'small' }, [
-                        React.createElement(Tag, {
-                            key: 'count',
-                            size: 'small',
-                            color: 'blue'
-                        }, `${child.contentCount}篇`),
-                        React.createElement(Tag, {
-                            key: 'status',
-                            size: 'small',
-                            color: child.status === 'enabled' ? 'green' : 'red'
-                        }, child.status === 'enabled' ? '启用' : '禁用')
-                    ])
-                ]),
-                key: child.key,
-                parentKey: child.parentKey
-            }))
+            key: item.key,
+            children: item.children ? renderColumnTree(item.children) : undefined
         }));
-
-        return React.createElement(Tree, {
-            treeData: treeData,
-            expandedKeys: expandedKeys,
-            checkedKeys: checkedKeys,
-            selectedKeys: selectedKeys,
-            onExpand: setExpandedKeys,
-            onCheck: setCheckedKeys,
-            onSelect: (keys, info) => {
-                setSelectedKeys(keys);
-                if (keys.length > 0) {
-                    const columnKey = keys[0];
-                    const column = findColumnByKey(columnKey);
-                    setSelectedColumn(column);
-                }
-            },
-            showLine: true,
-            showIcon: true,
-            blockNode: true
-        });
     };
 
-    // 根据key查找栏目
-    const findColumnByKey = (key) => {
-        for (const column of columns) {
-            if (column.key === key) return column;
-            if (column.children) {
-                const child = column.children.find(c => c.key === key);
-                if (child) return child;
+    // 查找栏目
+    const findColumnByKey = (key, data = columns) => {
+        for (const item of data) {
+            if (item.key === key) return item;
+            if (item.children) {
+                const found = findColumnByKey(key, item.children);
+                if (found) return found;
             }
         }
         return null;
@@ -360,276 +275,131 @@ const ColumnManagement = () => {
         if (!selectedColumn) {
             return React.createElement('div', {
                 style: { 
-                    textAlign: 'center', 
-                    padding: '40px', 
-                    color: '#999',
-                    fontSize: '14px'
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    height: '100%',
+                    color: '#999'
                 }
-            }, '请选择一个栏目查看详情');
+            }, [
+                React.createElement('div', { key: 'icon', style: { fontSize: '48px', marginBottom: '16px' } }, '📋'),
+                React.createElement('div', { key: 'text' }, '请选择一个栏目查看详情')
+            ]);
         }
 
-        const isMainColumn = selectedColumn.level === 1;
-        const parentColumn = isMainColumn ? null : columns.find(c => c.key === selectedColumn.parentKey);
-
         return React.createElement(Card, {
-            title: React.createElement('div', {}, [
-                React.createElement('span', { key: 'title' }, '栏目详情'),
-                React.createElement(Tag, {
-                    key: 'level',
-                    color: isMainColumn ? 'blue' : 'green',
-                    style: { marginLeft: '8px' }
-                }, isMainColumn ? '主栏目' : '子栏目')
-            ]),
+            title: '栏目详情',
             extra: React.createElement(Space, {}, [
                 React.createElement(Button, {
+                    key: 'edit',
+                    type: 'primary',
                     size: 'small',
                     onClick: () => setEditColumnModalVisible(true)
                 }, '编辑'),
                 React.createElement(Button, {
+                    key: 'permission',
                     size: 'small',
-                    type: 'primary',
-                    onClick: () => setPermissionDrawerVisible(true)
+                    onClick: () => setPermissionModalVisible(true)
                 }, '权限配置')
             ])
         }, [
-            React.createElement(Row, { key: 'basic-info', gutter: [24, 16] }, [
-                React.createElement(Col, { key: 'name', span: 12 }, [
-                    React.createElement('div', { key: 'label', style: { fontWeight: 'bold', marginBottom: '4px' } }, '栏目名称:'),
-                    React.createElement('div', { key: 'value' }, selectedColumn.title)
-                ]),
-                React.createElement(Col, { key: 'code', span: 12 }, [
-                    React.createElement('div', { key: 'label', style: { fontWeight: 'bold', marginBottom: '4px' } }, '栏目代码:'),
-                    React.createElement('div', { key: 'value' }, selectedColumn.code)
-                ]),
-                React.createElement(Col, { key: 'sort', span: 12 }, [
-                    React.createElement('div', { key: 'label', style: { fontWeight: 'bold', marginBottom: '4px' } }, '排序权重:'),
-                    React.createElement('div', { key: 'value' }, selectedColumn.sort)
-                ]),
-                React.createElement(Col, { key: 'status', span: 12 }, [
-                    React.createElement('div', { key: 'label', style: { fontWeight: 'bold', marginBottom: '4px' } }, '状态:'),
-                    React.createElement(Tag, {
-                        key: 'value',
-                        color: selectedColumn.status === 'enabled' ? 'green' : 'red'
-                    }, selectedColumn.status === 'enabled' ? '启用' : '禁用')
-                ]),
-                React.createElement(Col, { key: 'description', span: 24 }, [
-                    React.createElement('div', { key: 'label', style: { fontWeight: 'bold', marginBottom: '4px' } }, '栏目描述:'),
-                    React.createElement('div', { key: 'value' }, selectedColumn.description)
-                ]),
-                React.createElement(Col, { key: 'content-count', span: 12 }, [
-                    React.createElement('div', { key: 'label', style: { fontWeight: 'bold', marginBottom: '4px' } }, '内容数量:'),
-                    React.createElement('div', { key: 'value' }, `${selectedColumn.contentCount} 篇`)
-                ]),
-                React.createElement(Col, { key: 'parent', span: 12 }, [
-                    React.createElement('div', { key: 'label', style: { fontWeight: 'bold', marginBottom: '4px' } }, '上级栏目:'),
-                    React.createElement('div', { key: 'value' }, parentColumn ? parentColumn.title : '无')
-                ])
-            ])
-        ]);
-    };
-
-    // 渲染权限配置抽屉
-    const renderPermissionDrawer = () => {
-        if (!selectedColumn) return null;
-
-        return React.createElement(Drawer, {
-            title: `${selectedColumn.title} - 权限配置`,
-            open: permissionDrawerVisible,
-            onClose: () => setPermissionDrawerVisible(false),
-            width: 600,
-            extra: React.createElement(Button, {
-                type: 'primary',
-                onClick: () => {
-                    message.success('权限配置已保存');
-                    setPermissionDrawerVisible(false);
-                }
-            }, '保存配置')
-        }, [
-            React.createElement(Alert, {
+            React.createElement(Descriptions, {
                 key: 'info',
-                message: '权限配置说明',
-                description: '为当前栏目配置内容发布和审核权限，支持角色和用户级别的权限控制',
-                type: 'info',
-                showIcon: true,
-                style: { marginBottom: '24px' }
-            }),
-
-            React.createElement(Form, {
-                key: 'permission-form',
-                form: permissionForm,
-                layout: 'vertical',
-                initialValues: {
-                    publishRoles: ['content_editor', 'column_manager'],
-                    publishUsers: [],
-                    reviewRoles: ['content_reviewer', 'senior_reviewer'],
-                    reviewUsers: [],
-                    autoPublish: false,
-                    requireReview: true
-                }
+                column: 2,
+                bordered: true
             }, [
-                React.createElement(Card, {
-                    key: 'publish-permissions',
-                    title: '发布权限配置',
-                    size: 'small',
-                    style: { marginBottom: '16px' }
-                }, [
-                    React.createElement(Form.Item, {
-                        key: 'publish-roles',
-                        name: 'publishRoles',
-                        label: '发布角色',
-                        extra: '选择可以在此栏目发布内容的角色'
-                    }, React.createElement(Select, {
-                        mode: 'multiple',
-                        placeholder: '选择发布角色',
-                        options: [
-                            { value: 'content_editor', label: '内容编辑' },
-                            { value: 'column_manager', label: '栏目管理员' },
-                            { value: 'senior_editor', label: '高级编辑' },
-                            { value: 'guest_editor', label: '特邀编辑' }
-                        ]
-                    })),
-
-                    React.createElement(Form.Item, {
-                        key: 'publish-users',
-                        name: 'publishUsers',
-                        label: '发布用户',
-                        extra: '选择可以在此栏目发布内容的特定用户'
-                    }, React.createElement(Select, {
-                        mode: 'multiple',
-                        placeholder: '选择发布用户',
-                        options: [
-                            { value: 'user_001', label: '张三 (内容编辑)' },
-                            { value: 'user_002', label: '李四 (栏目管理员)' },
-                            { value: 'user_003', label: '王五 (高级编辑)' }
-                        ]
-                    }))
-                ]),
-
-                React.createElement(Card, {
-                    key: 'review-permissions',
-                    title: '审核权限配置',
-                    size: 'small',
-                    style: { marginBottom: '16px' }
-                }, [
-                    React.createElement(Form.Item, {
-                        key: 'review-roles',
-                        name: 'reviewRoles',
-                        label: '审核角色',
-                        extra: '选择可以审核此栏目内容的角色'
-                    }, React.createElement(Select, {
-                        mode: 'multiple',
-                        placeholder: '选择审核角色',
-                        options: [
-                            { value: 'content_reviewer', label: '内容审核员' },
-                            { value: 'senior_reviewer', label: '高级审核员' },
-                            { value: 'content_manager', label: '内容管理员' },
-                            { value: 'chief_editor', label: '总编辑' }
-                        ]
-                    })),
-
-                    React.createElement(Form.Item, {
-                        key: 'review-users',
-                        name: 'reviewUsers',
-                        label: '审核用户',
-                        extra: '选择可以审核此栏目内容的特定用户'
-                    }, React.createElement(Select, {
-                        mode: 'multiple',
-                        placeholder: '选择审核用户',
-                        options: [
-                            { value: 'reviewer_001', label: '赵六 (内容审核员)' },
-                            { value: 'reviewer_002', label: '钱七 (高级审核员)' },
-                            { value: 'reviewer_003', label: '孙八 (内容管理员)' }
-                        ]
-                    }))
-                ]),
-
-                React.createElement(Card, {
-                    key: 'publish-settings',
-                    title: '发布设置',
-                    size: 'small'
-                }, [
-                    React.createElement(Form.Item, {
-                        key: 'auto-publish',
-                        name: 'autoPublish',
-                        label: '自动发布',
-                        extra: '启用后，符合条件的内容将自动发布，无需人工审核'
-                    }, React.createElement(Switch, {
-                        checkedChildren: '启用',
-                        unCheckedChildren: '禁用'
-                    })),
-
-                    React.createElement(Form.Item, {
-                        key: 'require-review',
-                        name: 'requireReview',
-                        label: '强制审核',
-                        extra: '启用后，所有内容必须经过审核才能发布'
-                    }, React.createElement(Switch, {
-                        checkedChildren: '启用',
-                        unCheckedChildren: '禁用'
-                    }))
-                ])
+                React.createElement(Descriptions.Item, { key: 'title', label: '栏目名称' }, selectedColumn.title),
+                React.createElement(Descriptions.Item, { key: 'code', label: '栏目代码' }, selectedColumn.code),
+                React.createElement(Descriptions.Item, { key: 'level', label: '栏目层级' }, `第${selectedColumn.level}级`),
+                React.createElement(Descriptions.Item, { key: 'sort', label: '排序' }, selectedColumn.sort),
+                React.createElement(Descriptions.Item, { key: 'status', label: '状态' }, 
+                    React.createElement(Tag, { color: selectedColumn.status === 'enabled' ? 'green' : 'red' }, 
+                        selectedColumn.status === 'enabled' ? '启用' : '禁用')
+                ),
+                React.createElement(Descriptions.Item, { key: 'count', label: '内容数量' }, 
+                    React.createElement(Badge, { count: selectedColumn.contentCount, style: { backgroundColor: '#1890ff' } })
+                ),
+                React.createElement(Descriptions.Item, { key: 'description', label: '描述', span: 2 }, selectedColumn.description)
             ])
         ]);
     };
 
     // 添加栏目
-    const handleAddColumn = () => {
-        setAddColumnModalVisible(true);
+    const handleAddColumn = (values) => {
+        const newColumn = {
+            key: `column-${Date.now()}`,
+            title: values.title,
+            code: values.code,
+            level: values.parentKey ? 2 : 1,
+            sort: values.sort || 1,
+            status: 'enabled',
+            description: values.description,
+            contentCount: 0,
+            parentKey: values.parentKey
+        };
+
+        if (values.parentKey) {
+            // 添加到子栏目
+            const parentColumn = findColumnByKey(values.parentKey);
+            if (parentColumn) {
+                if (!parentColumn.children) parentColumn.children = [];
+                parentColumn.children.push(newColumn);
+            }
+        } else {
+            // 添加到主栏目
+            setColumns(prev => [...prev, newColumn]);
+        }
+
+        setAddColumnModalVisible(false);
+        form.resetFields();
+        message.success('栏目添加成功');
     };
 
     // 编辑栏目
-    const handleEditColumn = () => {
-        setEditColumnModalVisible(true);
+    const handleEditColumn = (values) => {
+        if (selectedColumn) {
+            Object.assign(selectedColumn, {
+                title: values.title,
+                code: values.code,
+                sort: values.sort,
+                description: values.description
+            });
+            setColumns([...columns]);
+            setEditColumnModalVisible(false);
+            message.success('栏目更新成功');
+        }
     };
 
     // 批量操作
     const handleBatchOperation = (operation) => {
         if (checkedKeys.length === 0) {
-            message.warning('请先选择要操作的栏目');
+            message.warning('请选择要操作的栏目');
             return;
         }
 
-        switch (operation) {
-            case 'enable':
-                message.success(`已启用 ${checkedKeys.length} 个栏目`);
-                break;
-            case 'disable':
-                message.success(`已禁用 ${checkedKeys.length} 个栏目`);
-                break;
-            case 'delete':
-                Modal.confirm({
-                    title: '确认删除',
-                    content: `确定要删除选中的 ${checkedKeys.length} 个栏目吗？此操作不可撤销。`,
-                    onOk: () => {
-                        message.success('栏目删除成功');
-                        setCheckedKeys([]);
-                    }
-                });
-                break;
-            default:
-                break;
-        }
+        const updateColumns = (data) => {
+            return data.map(item => {
+                if (checkedKeys.includes(item.key)) {
+                    item.status = operation === 'enable' ? 'enabled' : 'disabled';
+                }
+                if (item.children) {
+                    item.children = updateColumns(item.children);
+                }
+                return item;
+            });
+        };
+
+        setColumns(updateColumns(columns));
+        message.success(`批量${operation === 'enable' ? '启用' : '禁用'}成功`);
     };
 
-    // 栏目统计
+    // 获取栏目统计
     const getColumnStats = () => {
-        let totalColumns = 0;
-        let enabledColumns = 0;
-        let totalContent = 0;
-
-        columns.forEach(column => {
-            totalColumns++;
-            if (column.status === 'enabled') enabledColumns++;
-            totalContent += column.contentCount || 0;
-
-            if (column.children) {
-                column.children.forEach(child => {
-                    totalColumns++;
-                    if (child.status === 'enabled') enabledColumns++;
-                    totalContent += child.contentCount || 0;
-                });
-            }
-        });
+        const totalColumns = columns.length + columns.reduce((sum, col) => sum + (col.children?.length || 0), 0);
+        const enabledColumns = columns.filter(col => col.status === 'enabled').length + 
+                             columns.reduce((sum, col) => sum + (col.children?.filter(child => child.status === 'enabled').length || 0), 0);
+        const totalContent = columns.reduce((sum, col) => sum + col.contentCount + (col.children?.reduce((childSum, child) => childSum + child.contentCount, 0) || 0), 0);
 
         return { totalColumns, enabledColumns, totalContent };
     };
@@ -637,275 +407,200 @@ const ColumnManagement = () => {
     const stats = getColumnStats();
 
     return React.createElement('div', { className: 'column-management-page' }, [
-        React.createElement('div', {
-            key: 'header',
-            style: {
-                marginBottom: '24px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-            }
-        }, [
-            React.createElement('h2', {
-                key: 'title',
-                style: { margin: 0, fontSize: '24px', fontWeight: 'bold', color: '#1e293b' }
-            }, '栏目管理'),
-            React.createElement(Space, {
-                key: 'actions'
-            }, [
-                React.createElement(Button, {
-                    key: 'add',
-                    type: 'primary',
-                    onClick: handleAddColumn
-                }, '新增栏目'),
-                React.createElement(Button, {
-                    key: 'batch-enable',
-                    onClick: () => handleBatchOperation('enable')
-                }, '批量启用'),
-                React.createElement(Button, {
-                    key: 'batch-disable',
-                    onClick: () => handleBatchOperation('disable')
-                }, '批量禁用'),
-                React.createElement(Button, {
-                    key: 'batch-delete',
-                    danger: true,
-                    onClick: () => handleBatchOperation('delete')
-                }, '批量删除')
-            ])
+        // 页面头部
+        React.createElement(Row, { key: 'header', style: { marginBottom: '24px' } }, [
+            React.createElement(Col, { key: 'title', span: 12 }, 
+                React.createElement('h1', { style: { margin: 0, fontSize: '24px', fontWeight: 'bold' } }, '栏目管理')
+            ),
+            React.createElement(Col, { key: 'actions', span: 12, style: { textAlign: 'right' } }, 
+                React.createElement(Space, {}, [
+                    React.createElement(Button, {
+                        key: 'add',
+                        type: 'primary',
+                        onClick: () => setAddColumnModalVisible(true)
+                    }, '添加栏目'),
+                    React.createElement(Button, {
+                        key: 'enable',
+                        onClick: () => handleBatchOperation('enable')
+                    }, '批量启用'),
+                    React.createElement(Button, {
+                        key: 'disable',
+                        onClick: () => handleBatchOperation('disable')
+                    }, '批量禁用')
+                ])
+            )
         ]),
 
         // 统计卡片
-        React.createElement(Row, {
-            key: 'stats',
-            gutter: [24, 24],
-            style: { marginBottom: '24px' }
-        }, [
-            React.createElement(Col, { key: 'total', span: 6 }, React.createElement(Card, {
-                size: 'small'
-            }, [
-                React.createElement('div', {
-                    key: 'title',
-                    style: { fontSize: '14px', color: '#666', marginBottom: '8px' }
-                }, '总栏目数'),
-                React.createElement('div', {
-                    key: 'value',
-                    style: { fontSize: '24px', fontWeight: 'bold', color: '#1890ff' }
-                }, stats.totalColumns)
-            ])),
-            React.createElement(Col, { key: 'enabled', span: 6 }, React.createElement(Card, {
-                size: 'small'
-            }, [
-                React.createElement('div', {
-                    key: 'title',
-                    style: { fontSize: '14px', color: '#666', marginBottom: '8px' }
-                }, '启用栏目'),
-                React.createElement('div', {
-                    key: 'value',
-                    style: { fontSize: '24px', fontWeight: 'bold', color: '#52c41a' }
-                }, stats.enabledColumns)
-            ])),
-            React.createElement(Col, { key: 'content', span: 6 }, React.createElement(Card, {
-                size: 'small'
-            }, [
-                React.createElement('div', {
-                    key: 'title',
-                    style: { fontSize: '14px', color: '#666', marginBottom: '8px' }
-                }, '总内容数'),
-                React.createElement('div', {
-                    key: 'value',
-                    style: { fontSize: '24px', fontWeight: 'bold', color: '#722ed1' }
-                }, stats.totalContent)
-            ])),
-            React.createElement(Col, { key: 'usage', span: 6 }, React.createElement(Card, {
-                size: 'small'
-            }, [
-                React.createElement('div', {
-                    key: 'title',
-                    style: { fontSize: '14px', color: '#666', marginBottom: '8px' }
-                }, '使用率'),
-                React.createElement('div', {
-                    key: 'value',
-                    style: { fontSize: '24px', fontWeight: 'bold', color: '#fa8c16' }
-                }, `${Math.round((stats.enabledColumns / stats.totalColumns) * 100)}%`)
-            ]))
+        React.createElement(Row, { key: 'stats', gutter: 16, style: { marginBottom: '24px' } }, [
+            React.createElement(Col, { key: 'total', span: 8 }, 
+                React.createElement(Card, {}, [
+                    React.createElement(Statistic, {
+                        title: '总栏目数',
+                        value: stats.totalColumns,
+                        prefix: React.createElement('span', {}, '📋')
+                    })
+                ])
+            ),
+            React.createElement(Col, { key: 'enabled', span: 8 }, 
+                React.createElement(Card, {}, [
+                    React.createElement(Statistic, {
+                        title: '启用栏目',
+                        value: stats.enabledColumns,
+                        prefix: React.createElement('span', {}, '✅')
+                    })
+                ])
+            ),
+            React.createElement(Col, { key: 'content', span: 8 }, 
+                React.createElement(Card, {}, [
+                    React.createElement(Statistic, {
+                        title: '总内容数',
+                        value: stats.totalContent,
+                        prefix: React.createElement('span', {}, '📄')
+                    })
+                ])
+            )
         ]),
 
         // 主要内容区域
-        React.createElement(Row, {
-            key: 'main-content',
-            gutter: 24
-        }, [
+        React.createElement(Row, { key: 'main', gutter: 16 }, [
             // 左侧栏目树
-            React.createElement(Col, {
-                key: 'left',
-                span: 12
-            }, React.createElement(Card, {
-                title: '栏目结构',
-                extra: React.createElement(Button, {
-                    size: 'small',
-                    type: 'link',
-                    onClick: () => setExpandedKeys(columns.map(c => c.key))
-                }, '全部展开')
-            }, [
-                React.createElement(Alert, {
-                    key: 'info',
-                    message: '栏目管理说明',
-                    description: '点击栏目查看详情，支持拖拽排序和批量操作。主栏目下可创建子栏目，每个栏目可独立配置权限。',
-                    type: 'info',
-                    showIcon: true,
-                    style: { marginBottom: '16px' }
-                }),
-                renderColumnTree()
-            ])),
-
+            React.createElement(Col, { key: 'tree', span: 8 }, 
+                React.createElement(Card, {
+                    title: '栏目结构',
+                    extra: React.createElement(Button, {
+                        size: 'small',
+                        onClick: () => setExpandedKeys(columns.map(col => col.key))
+                    }, '展开全部')
+                }, [
+                    React.createElement(Tree, {
+                        treeData: renderColumnTree(columns),
+                        expandedKeys: expandedKeys,
+                        checkedKeys: checkedKeys,
+                        selectedKeys: selectedKeys,
+                        onExpand: setExpandedKeys,
+                        onCheck: setCheckedKeys,
+                        onSelect: (keys) => {
+                            setSelectedKeys(keys);
+                            if (keys.length > 0) {
+                                const column = findColumnByKey(keys[0]);
+                                setSelectedColumn(column);
+                            }
+                        },
+                        loading: loading
+                    })
+                ])
+            ),
             // 右侧详情
-            React.createElement(Col, {
-                key: 'right',
-                span: 12
-            }, renderColumnDetail())
+            React.createElement(Col, { key: 'detail', span: 16 }, 
+                React.createElement(Card, { style: { height: '600px' } }, renderColumnDetail())
+            )
         ]),
 
-        // 权限配置抽屉
-        renderPermissionDrawer(),
-
-        // 新增栏目模态框
+        // 添加栏目模态框
         React.createElement(Modal, {
-            key: 'add-column-modal',
-            title: '新增栏目',
-            open: addColumnModalVisible,
+            key: 'addModal',
+            title: '添加栏目',
+            visible: addColumnModalVisible,
             onCancel: () => setAddColumnModalVisible(false),
-            onOk: () => {
-                message.success('栏目创建成功');
-                setAddColumnModalVisible(false);
-            },
-            width: 600
-        }, React.createElement(Form, {
-            form: form,
-            layout: 'vertical'
+            footer: null
         }, [
-            React.createElement(Form.Item, {
-                key: 'parent',
-                name: 'parent',
-                label: '上级栏目',
-                extra: '选择上级栏目，留空表示创建主栏目'
-            }, React.createElement(TreeSelect, {
-                treeData: columns.map(c => ({
-                    title: c.title,
-                    key: c.key,
-                    value: c.key,
-                    children: c.children?.map(child => ({
-                        title: child.title,
-                        key: child.key,
-                        value: child.key
-                    }))
+            React.createElement(Form, {
+                form: form,
+                layout: 'vertical',
+                onFinish: handleAddColumn
+            }, [
+                React.createElement(Form.Item, {
+                    key: 'title',
+                    name: 'title',
+                    label: '栏目名称',
+                    rules: [{ required: true, message: '请输入栏目名称' }]
+                }, React.createElement(Input, { placeholder: '请输入栏目名称' })),
+                React.createElement(Form.Item, {
+                    key: 'code',
+                    name: 'code',
+                    label: '栏目代码',
+                    rules: [{ required: true, message: '请输入栏目代码' }]
+                }, React.createElement(Input, { placeholder: '请输入栏目代码' })),
+                React.createElement(Form.Item, {
+                    key: 'parentKey',
+                    name: 'parentKey',
+                    label: '父级栏目'
+                }, React.createElement(TreeSelect, {
+                    placeholder: '请选择父级栏目（可选）',
+                    treeData: columns.map(col => ({
+                        title: col.title,
+                        value: col.key,
+                        children: col.children?.map(child => ({
+                            title: child.title,
+                            value: child.key
+                        }))
+                    })),
+                    allowClear: true
                 })),
-                placeholder: '选择上级栏目',
-                allowClear: true,
-                treeDefaultExpandAll: true
-            })),
-
-            React.createElement(Form.Item, {
-                key: 'title',
-                name: 'title',
-                label: '栏目名称',
-                rules: [{ required: true, message: '请输入栏目名称' }]
-            }, React.createElement(Input, {
-                placeholder: '请输入栏目名称'
-            })),
-
-            React.createElement(Form.Item, {
-                key: 'code',
-                name: 'code',
-                label: '栏目代码',
-                rules: [{ required: true, message: '请输入栏目代码' }],
-                extra: '栏目代码用于系统识别，建议使用英文和数字'
-            }, React.createElement(Input, {
-                placeholder: '请输入栏目代码'
-            })),
-
-            React.createElement(Form.Item, {
-                key: 'description',
-                name: 'description',
-                label: '栏目描述'
-            }, React.createElement(Input.TextArea, {
-                placeholder: '请输入栏目描述',
-                rows: 3
-            })),
-
-            React.createElement(Form.Item, {
-                key: 'sort',
-                name: 'sort',
-                label: '排序权重',
-                initialValue: 1
-            }, React.createElement(Input, {
-                type: 'number',
-                placeholder: '数字越小排序越靠前'
-            }))
-        ])),
+                React.createElement(Form.Item, {
+                    key: 'sort',
+                    name: 'sort',
+                    label: '排序'
+                }, React.createElement(Input, { type: 'number', placeholder: '请输入排序值' })),
+                React.createElement(Form.Item, {
+                    key: 'description',
+                    name: 'description',
+                    label: '描述'
+                }, React.createElement(Input.TextArea, { placeholder: '请输入栏目描述' })),
+                React.createElement(Form.Item, {
+                    key: 'actions'
+                }, React.createElement(Space, {}, [
+                    React.createElement(Button, { key: 'cancel', onClick: () => setAddColumnModalVisible(false) }, '取消'),
+                    React.createElement(Button, { key: 'submit', type: 'primary', htmlType: 'submit' }, '确定')
+                ]))
+            ])
+        ]),
 
         // 编辑栏目模态框
         React.createElement(Modal, {
-            key: 'edit-column-modal',
+            key: 'editModal',
             title: '编辑栏目',
-            open: editColumnModalVisible,
+            visible: editColumnModalVisible,
             onCancel: () => setEditColumnModalVisible(false),
-            onOk: () => {
-                message.success('栏目更新成功');
-                setEditColumnModalVisible(false);
-            },
-            width: 600
-        }, selectedColumn && React.createElement(Form, {
-            form: form,
-            layout: 'vertical',
-            initialValues: selectedColumn
+            footer: null
         }, [
-            React.createElement(Form.Item, {
-                key: 'title',
-                name: 'title',
-                label: '栏目名称',
-                rules: [{ required: true, message: '请输入栏目名称' }]
-            }, React.createElement(Input, {
-                placeholder: '请输入栏目名称'
-            })),
-
-            React.createElement(Form.Item, {
-                key: 'code',
-                name: 'code',
-                label: '栏目代码',
-                rules: [{ required: true, message: '请输入栏目代码' }]
-            }, React.createElement(Input, {
-                placeholder: '请输入栏目代码'
-            })),
-
-            React.createElement(Form.Item, {
-                key: 'description',
-                name: 'description',
-                label: '栏目描述'
-            }, React.createElement(Input.TextArea, {
-                placeholder: '请输入栏目描述',
-                rows: 3
-            })),
-
-            React.createElement(Form.Item, {
-                key: 'sort',
-                name: 'sort',
-                label: '排序权重'
-            }, React.createElement(Input, {
-                type: 'number',
-                placeholder: '数字越小排序越靠前'
-            })),
-
-            React.createElement(Form.Item, {
-                key: 'status',
-                name: 'status',
-                label: '栏目状态'
-            }, React.createElement(Select, {
-                options: [
-                    { value: 'enabled', label: '启用' },
-                    { value: 'disabled', label: '禁用' }
-                ]
-            }))
-        ]))
+            React.createElement(Form, {
+                form: form,
+                layout: 'vertical',
+                onFinish: handleEditColumn,
+                initialValues: selectedColumn
+            }, [
+                React.createElement(Form.Item, {
+                    key: 'title',
+                    name: 'title',
+                    label: '栏目名称',
+                    rules: [{ required: true, message: '请输入栏目名称' }]
+                }, React.createElement(Input, { placeholder: '请输入栏目名称' })),
+                React.createElement(Form.Item, {
+                    key: 'code',
+                    name: 'code',
+                    label: '栏目代码',
+                    rules: [{ required: true, message: '请输入栏目代码' }]
+                }, React.createElement(Input, { placeholder: '请输入栏目代码' })),
+                React.createElement(Form.Item, {
+                    key: 'sort',
+                    name: 'sort',
+                    label: '排序'
+                }, React.createElement(Input, { type: 'number', placeholder: '请输入排序值' })),
+                React.createElement(Form.Item, {
+                    key: 'description',
+                    name: 'description',
+                    label: '描述'
+                }, React.createElement(Input.TextArea, { placeholder: '请输入栏目描述' })),
+                React.createElement(Form.Item, {
+                    key: 'actions'
+                }, React.createElement(Space, {}, [
+                    React.createElement(Button, { key: 'cancel', onClick: () => setEditColumnModalVisible(false) }, '取消'),
+                    React.createElement(Button, { key: 'submit', type: 'primary', htmlType: 'submit' }, '确定')
+                ]))
+            ])
+        ])
     ]);
 };
 

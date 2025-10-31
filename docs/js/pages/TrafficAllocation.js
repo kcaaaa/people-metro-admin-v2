@@ -367,6 +367,57 @@ const TrafficAllocation = () => {
         return names[filter] || filter;
     };
 
+    const getContentTypeDisplayName = (type) => {
+        const names = {
+            quality: '优质内容',
+            popular: '热门内容',
+            latest: '最新内容',
+            personalized: '个性化',
+            trending: '趋势内容',
+            diverse: '多样化',
+            premium: '精品内容',
+            exclusive: '独家内容',
+            engaging: '互动内容',
+            recommended: '推荐内容'
+        };
+        return names[type] || type;
+    };
+
+    const getContentPreferenceDisplayName = (pref) => {
+        const names = {
+            industry: '行业资讯',
+            policy: '政策解读',
+            technical: '技术分享',
+            exhibition: '展会信息',
+            business: '商业资讯',
+            marketing: '营销推广',
+            general: '综合内容',
+            entertainment: '娱乐资讯',
+            news: '新闻资讯'
+        };
+        return names[pref] || pref;
+    };
+
+    const getUserTierDisplayName = (tier) => {
+        const names = {
+            newUser: '新手用户',
+            activeUser: '活跃用户',
+            coreUser: '核心用户',
+            churningUser: '流失风险用户'
+        };
+        return names[tier] || tier;
+    };
+
+    const getPerformanceMetricDisplayName = (metric) => {
+        const names = {
+            avgEngagementRate: '平均参与率',
+            userRetentionRate: '用户留存率',
+            contentClickRate: '内容点击率',
+            recommendationAccuracy: '推荐准确率'
+        };
+        return names[metric] || metric;
+    };
+
     const getTotalWeight = () => {
         return Object.keys(weightSettings).reduce((total, key) => {
             return total + (weightSettings[key]?.weight || 0);
@@ -379,6 +430,399 @@ const TrafficAllocation = () => {
 
     const testModule = (moduleKey) => {
         message.loading(`测试 ${moduleSettings[moduleKey]?.name} 推荐效果...`, 2);
+    };
+
+    // 渲染用户级别流量分配
+    const renderUserLevelAllocation = () => {
+        if (!userLevelSettings.userTiers) return React.createElement('div', {}, '加载中...');
+
+        return React.createElement('div', {}, [
+            React.createElement(Alert, {
+                key: 'info',
+                message: '用户级别流量分配配置',
+                description: '基于用户分层和用户类型进行差异化的流量分配策略，提升用户体验和平台留存率',
+                type: 'success',
+                showIcon: true,
+                style: { marginBottom: '24px' }
+            }),
+
+            // 用户分层配置
+            React.createElement(Card, {
+                key: 'user-tiers',
+                title: '用户分层流量配置',
+                style: { marginBottom: '24px' },
+                extra: React.createElement(Button, {
+                    type: 'primary',
+                    size: 'small',
+                    onClick: () => message.info('批量配置功能开发中...')
+                }, '批量设置')
+            }, [
+                React.createElement(Row, {
+                    key: 'tier-cards',
+                    gutter: [16, 16]
+                }, Object.keys(userLevelSettings.userTiers).map(tierKey => {
+                    const tier = userLevelSettings.userTiers[tierKey];
+                    return React.createElement(Col, {
+                        key: tierKey,
+                        span: 12
+                    }, React.createElement(Card, {
+                        size: 'small',
+                        style: { height: '280px' }
+                    }, [
+                        React.createElement('div', {
+                            key: 'header',
+                            style: { 
+                                display: 'flex', 
+                                justifyContent: 'space-between', 
+                                alignItems: 'center',
+                                marginBottom: '12px'
+                            }
+                        }, [
+                            React.createElement('div', {
+                                key: 'title'
+                            }, [
+                                React.createElement('h4', {
+                                    key: 'name',
+                                    style: { margin: 0, color: '#1890ff' }
+                                }, tier.name),
+                                React.createElement('p', {
+                                    key: 'desc',
+                                    style: { margin: '4px 0', fontSize: '12px', color: '#666' }
+                                }, tier.description)
+                            ]),
+                            React.createElement(Switch, {
+                                key: 'switch',
+                                checked: tier.enabled,
+                                size: 'small',
+                                onChange: (checked) => updateTierSetting(tierKey, 'enabled', checked)
+                            })
+                        ]),
+                        
+                        React.createElement('div', {
+                            key: 'stats',
+                            style: { marginBottom: '16px' }
+                        }, [
+                            React.createElement('div', {
+                                key: 'count',
+                                style: { fontSize: '12px', color: '#666' }
+                            }, `用户数量: ${tier.userCount?.toLocaleString() || 0}`),
+                            React.createElement('div', {
+                                key: 'boost',
+                                style: { fontSize: '12px', color: '#666', marginTop: '4px' }
+                            }, `流量倾斜: +${tier.trafficBoost}%`)
+                        ]),
+
+                        React.createElement('div', {
+                            key: 'boost-slider',
+                            style: { marginBottom: '16px' }
+                        }, [
+                            React.createElement('div', {
+                                key: 'label',
+                                style: { fontSize: '12px', marginBottom: '8px' }
+                            }, '流量倾斜比例'),
+                            React.createElement(Slider, {
+                                key: 'slider',
+                                min: 0,
+                                max: 50,
+                                value: tier.trafficBoost,
+                                onChange: (value) => updateTierSetting(tierKey, 'trafficBoost', value),
+                                tooltip: { formatter: value => `+${value}%` },
+                                marks: { 0: '0%', 25: '25%', 50: '50%' }
+                            })
+                        ]),
+
+                        React.createElement('div', {
+                            key: 'content-types',
+                            style: { fontSize: '12px' }
+                        }, [
+                            React.createElement('div', {
+                                key: 'label',
+                                style: { marginBottom: '8px', fontWeight: 'bold' }
+                            }, '内容类型配置:'),
+                            React.createElement('div', {
+                                key: 'types'
+                            }, Object.keys(tier.contentTypes).map(typeKey => 
+                                React.createElement(Tag, {
+                                    key: typeKey,
+                                    size: 'small',
+                                    style: { marginBottom: '4px' }
+                                }, `${getContentTypeDisplayName(typeKey)}: ${tier.contentTypes[typeKey]}%`)
+                            ))
+                        ]),
+
+                        React.createElement('div', {
+                            key: 'actions',
+                            style: { marginTop: '12px', textAlign: 'right' }
+                        }, React.createElement(Button, {
+                            size: 'small',
+                            onClick: () => editTierConfig(tierKey)
+                        }, '详细配置'))
+                    ]));
+                }))
+            ]),
+
+            // 用户类型权重配置
+            React.createElement(Card, {
+                key: 'user-types',
+                title: '用户类型权重配置',
+                style: { marginBottom: '24px' }
+            }, [
+                React.createElement(Row, {
+                    key: 'type-cards',
+                    gutter: [16, 16]
+                }, Object.keys(userLevelSettings.userTypeWeights).map(typeKey => {
+                    const userType = userLevelSettings.userTypeWeights[typeKey];
+                    return React.createElement(Col, {
+                        key: typeKey,
+                        span: 8
+                    }, React.createElement(Card, {
+                        size: 'small',
+                        style: { textAlign: 'center' }
+                    }, [
+                        React.createElement('div', {
+                            key: 'header',
+                            style: { marginBottom: '12px' }
+                        }, [
+                            React.createElement('h4', {
+                                key: 'name',
+                                style: { margin: 0, color: '#1890ff' }
+                            }, userType.name),
+                            React.createElement(Switch, {
+                                key: 'switch',
+                                checked: userType.enabled,
+                                size: 'small',
+                                style: { marginTop: '8px' },
+                                onChange: (checked) => updateUserTypeWeight(typeKey, 'enabled', checked)
+                            })
+                        ]),
+                        
+                        React.createElement('div', {
+                            key: 'weight',
+                            style: { marginBottom: '12px' }
+                        }, [
+                            React.createElement('div', {
+                                key: 'label',
+                                style: { fontSize: '12px', marginBottom: '8px' }
+                            }, '基础权重'),
+                            React.createElement('div', {
+                                key: 'value',
+                                style: { fontSize: '24px', fontWeight: 'bold', color: '#1890ff' }
+                            }, `×${userType.baseWeight}`),
+                            React.createElement(Slider, {
+                                key: 'slider',
+                                min: 0.5,
+                                max: 2.0,
+                                step: 0.1,
+                                value: userType.baseWeight,
+                                onChange: (value) => updateUserTypeWeight(typeKey, 'baseWeight', value),
+                                tooltip: { formatter: value => `×${value}` },
+                                style: { marginTop: '8px' }
+                            })
+                        ]),
+
+                        React.createElement('div', {
+                            key: 'preferences',
+                            style: { fontSize: '12px' }
+                        }, [
+                            React.createElement('div', {
+                                key: 'label',
+                                style: { marginBottom: '4px', fontWeight: 'bold' }
+                            }, '内容偏好:'),
+                            React.createElement('div', {
+                                key: 'prefs'
+                            }, userType.contentPreference.map(pref => 
+                                React.createElement(Tag, {
+                                    key: pref,
+                                    size: 'small',
+                                    style: { margin: '2px' }
+                                }, getContentPreferenceDisplayName(pref))
+                            ))
+                        ])
+                    ]));
+                }))
+            ])
+        ]);
+    };
+
+    // 渲染实时监控
+    const renderRealTimeMonitor = () => {
+        if (!realTimeData.currentTrafficDistribution) return React.createElement('div', {}, '加载中...');
+
+        return React.createElement('div', {}, [
+            React.createElement(Alert, {
+                key: 'info',
+                message: '实时流量分配监控',
+                description: '监控当前流量分配状态，评估推荐策略效果，支持A/B测试和实时调整',
+                type: 'info',
+                showIcon: true,
+                style: { marginBottom: '24px' }
+            }),
+
+            React.createElement(Row, {
+                key: 'metrics',
+                gutter: [16, 16],
+                style: { marginBottom: '24px' }
+            }, [
+                React.createElement(Col, {
+                    key: 'traffic',
+                    span: 12
+                }, React.createElement(Card, {
+                    title: '当前流量分布',
+                    size: 'small'
+                }, [
+                    React.createElement('div', {
+                        key: 'chart',
+                        style: { textAlign: 'center', marginBottom: '16px' }
+                    }, [
+                        React.createElement('div', {
+                            key: 'placeholder',
+                            style: { 
+                                height: '200px', 
+                                background: '#f5f5f5', 
+                                borderRadius: '6px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '14px',
+                                color: '#666'
+                            }
+                        }, '📊 流量分布饼图')
+                    ]),
+                    React.createElement('div', {
+                        key: 'legend'
+                    }, Object.keys(realTimeData.currentTrafficDistribution).map(key => 
+                        React.createElement('div', {
+                            key: key,
+                            style: { 
+                                display: 'flex', 
+                                justifyContent: 'space-between',
+                                margin: '4px 0',
+                                fontSize: '12px'
+                            }
+                        }, [
+                            React.createElement('span', { key: 'label' }, getUserTierDisplayName(key)),
+                            React.createElement('span', { 
+                                key: 'value',
+                                style: { fontWeight: 'bold', color: '#1890ff' }
+                            }, `${realTimeData.currentTrafficDistribution[key]}%`)
+                        ])
+                    ))
+                ])),
+
+                React.createElement(Col, {
+                    key: 'performance',
+                    span: 12
+                }, React.createElement(Card, {
+                    title: '性能指标',
+                    size: 'small'
+                }, [
+                    React.createElement(Row, {
+                        key: 'stats',
+                        gutter: [8, 8]
+                    }, Object.keys(realTimeData.performanceMetrics).map(key => 
+                        React.createElement(Col, {
+                            key: key,
+                            span: 12
+                        }, React.createElement('div', {
+                            style: { 
+                                textAlign: 'center',
+                                padding: '12px',
+                                background: '#f8f9fa',
+                                borderRadius: '6px',
+                                margin: '4px 0'
+                            }
+                        }, [
+                            React.createElement('div', {
+                                key: 'value',
+                                style: { 
+                                    fontSize: '20px', 
+                                    fontWeight: 'bold', 
+                                    color: '#1890ff',
+                                    marginBottom: '4px'
+                                }
+                            }, `${realTimeData.performanceMetrics[key]}%`),
+                            React.createElement('div', {
+                                key: 'label',
+                                style: { fontSize: '12px', color: '#666' }
+                            }, getPerformanceMetricDisplayName(key))
+                        ]))
+                    ))
+                ]))
+            ]),
+
+            React.createElement(Card, {
+                key: 'ab-tests',
+                title: 'A/B测试结果',
+                style: { marginBottom: '24px' },
+                extra: React.createElement(Button, {
+                    type: 'primary',
+                    size: 'small',
+                    onClick: () => message.info('创建新测试功能开发中...')
+                }, '创建新测试')
+            }, React.createElement(Table, {
+                dataSource: realTimeData.abTestResults,
+                columns: [
+                    {
+                        title: '测试名称',
+                        dataIndex: 'testName',
+                        width: '40%'
+                    },
+                    {
+                        title: '状态',
+                        dataIndex: 'status',
+                        width: '15%',
+                        render: (status) => React.createElement(Tag, {
+                            color: status === '进行中' ? 'blue' : 'green'
+                        }, status)
+                    },
+                    {
+                        title: '改进指标',
+                        dataIndex: 'metric',
+                        width: '20%'
+                    },
+                    {
+                        title: '提升效果',
+                        dataIndex: 'improvement',
+                        width: '15%',
+                        render: (improvement) => React.createElement('span', {
+                            style: { 
+                                color: improvement.startsWith('+') ? '#52c41a' : '#f5222d',
+                                fontWeight: 'bold'
+                            }
+                        }, improvement)
+                    },
+                    {
+                        title: '操作',
+                        width: '10%',
+                        render: (_, record) => React.createElement(Button, {
+                            size: 'small',
+                            onClick: () => message.info(`查看 ${record.testName} 详情...`)
+                        }, '详情')
+                    }
+                ],
+                pagination: false,
+                size: 'small'
+            }))
+        ]);
+    };
+
+    // 更新用户分层设置
+    const updateTierSetting = (tierKey, field, value) => {
+        setUserLevelSettings(prev => ({
+            ...prev,
+            userTiers: {
+                ...prev.userTiers,
+                [tierKey]: {
+                    ...prev.userTiers[tierKey],
+                    [field]: value
+                }
+            }
+        }));
+    };
+
+    // 编辑分层配置
+    const editTierConfig = (tierKey) => {
+        message.info('分层配置功能开发中...');
     };
 
     const saveSettings = () => {
@@ -1040,4 +1484,4 @@ const TrafficAllocation = () => {
 };
 
 window.App.pages.TrafficAllocation = TrafficAllocation;
-console.log('[TrafficAllocation] 组件挂载成功');
+console.log('[TrafficAllocation] 组件挂载成功'); 

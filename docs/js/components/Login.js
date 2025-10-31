@@ -11,49 +11,68 @@ const Login = ({ onLogin }) => {
     const [sendingCode, setSendingCode] = React.useState(false);
     const [countdown, setCountdown] = React.useState(0);
     
-    // 演示用的账号数据
+    // 统一演示账号：手机号与 UserManagement.js 中保持一致
     const demoAccounts = [
         {
-            phone: '13800138000',
+            phone: '18800000000',
             password: '123456',
-            name: '系统管理员',
-            role: 'admin',
+            name: '超级管理员',
+            role: 'super_admin',
             permissions: ['*'],
-            userId: 'admin_001'
+            userId: 'super_admin_demo'
         },
         {
-            phone: '13800138001',
+            phone: '18800000001',
             password: '123456',
-            name: '运营总监',
-            role: 'operation_director',
-            permissions: ['content:*', 'audit:*', 'exhibition:*', 'stats:*', 'user:view'],
-            userId: 'operation_001'
+            name: '协会管理员',
+            role: 'union_admin',
+            permissions: ['association:*', 'content:*', 'exhibition:*', 'operation:*'],
+            userId: 'union_admin_demo'
         },
         {
-            phone: '13800138002',
+            phone: '18800000002',
             password: '123456',
-            name: '内容审核员',
-            role: 'content_auditor',
-            permissions: ['content:view', 'content:edit', 'audit:review', 'audit:approve'],
-            userId: 'auditor_001'
+            name: '会展管理员',
+            role: 'expo_admin',
+            permissions: ['exhibition:*', 'content:*', 'operation:stats:view'],
+            userId: 'expo_admin_demo'
         },
         {
-            phone: '13800138003',
+            phone: '18800000003',
             password: '123456',
-            name: '展会管理员',
-            role: 'exhibition_manager',
-            permissions: ['exhibition:*', 'booth:*', 'exhibitor:*'],
-            userId: 'exhibition_001'
+            name: '运营管理员',
+            role: 'ops_admin',
+            permissions: ['content:*', 'operation:*'],
+            userId: 'ops_admin_demo'
         },
         {
-            phone: '13800138004',
+            phone: '18800000004',
             password: '123456',
-            name: '数据分析师',
-            role: 'data_analyst',
-            permissions: ['stats:*', 'data:view', 'user:view'],
-            userId: 'analyst_001'
+            name: '协会普通用户',
+            role: 'union_user',
+            permissions: ['content:publish'],
+            userId: 'union_user_demo'
+        },
+        {
+            phone: '18800000005',
+            password: '123456',
+            name: '参展公司',
+            role: 'exhibitor',
+            permissions: ['content:publish'],
+            userId: 'exhibitor_demo'
+        },
+        {
+            phone: '18800000006',
+            password: '123456',
+            name: '游客',
+            role: 'visitor',
+            permissions: ['content:view'],
+            userId: 'visitor_demo'
         }
     ];
+ 
+    // 演示账号快捷按钮，自动填写手机号 + 默认密码
+    const demoAccountButtons = demoAccounts.map(acc => ({ phone: acc.phone, label: acc.name }));
     
     // 倒计时效果
     React.useEffect(() => {
@@ -239,6 +258,18 @@ const Login = ({ onLogin }) => {
                     onFinish: handlePasswordLogin,
                     size: 'large'
                 }, [
+                    React.createElement('div', { style: { marginBottom: 24, textAlign: 'center' } },
+                      demoAccountButtons.map(acc =>
+                        React.createElement(Button, {
+                          key: acc.phone,
+                          size: 'small',
+                          style: { margin: '0 4px' },
+                          onClick: () => {
+                            passwordForm.setFieldsValue({ phone: acc.phone, password: '123456' });
+                          }
+                        }, acc.label)
+                      )
+                    ),
                     React.createElement(Form.Item, {
                         key: 'phone',
                         label: '手机号',
@@ -288,6 +319,18 @@ const Login = ({ onLogin }) => {
                     onFinish: handleCodeLogin,
                     size: 'large'
                 }, [
+                    React.createElement('div', { style: { marginBottom: 24, textAlign: 'center' } },
+                      demoAccountButtons.map(acc =>
+                        React.createElement(Button, {
+                          key: acc.phone,
+                          size: 'small',
+                          style: { margin: '0 4px' },
+                          onClick: () => {
+                            codeForm.setFieldsValue({ phone: acc.phone, code: '123456' });
+                          }
+                        }, acc.label)
+                      )
+                    ),
                     React.createElement(Form.Item, {
                         key: 'phone',
                         label: '手机号',
@@ -368,40 +411,63 @@ const Login = ({ onLogin }) => {
                         marginBottom: '8px',
                         color: '#495057'
                     }
-                }, '💡 演示账号说明'),
-                React.createElement('div', {
-                    key: 'demo-accounts',
+                }, '💡 演示账号与角色权限对照表'),
+                React.createElement('table', {
+                    key: 'demo-table',
                     style: {
-                        fontSize: '12px',
-                        color: '#6c757d',
-                        lineHeight: '1.5'
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        fontSize: '13px',
+                        background: '#fff',
+                        borderRadius: '6px',
+                        overflow: 'hidden',
+                        marginBottom: '8px'
                     }
                 }, [
-                    React.createElement('p', {
-                        key: 'admin',
-                        style: { margin: '4px 0' }
-                    }, '🔧 系统管理员：13800138000 / 123456'),
-                    React.createElement('p', {
-                        key: 'operation',
-                        style: { margin: '4px 0' }
-                    }, '📊 运营总监：13800138001 / 123456'),
-                    React.createElement('p', {
-                        key: 'auditor',
-                        style: { margin: '4px 0' }
-                    }, '🔍 内容审核员：13800138002 / 123456'),
-                    React.createElement('p', {
-                        key: 'exhibition',
-                        style: { margin: '4px 0' }
-                    }, '🏢 展会管理员：13800138003 / 123456'),
-                    React.createElement('p', {
-                        key: 'analyst',
-                        style: { margin: '4px 0' }
-                    }, '📈 数据分析师：13800138004 / 123456'),
-                    React.createElement('p', {
-                        key: 'code-tip',
-                        style: { margin: '8px 0 4px', color: '#28a745' }
-                    }, '验证码登录统一使用：123456')
-                ])
+                    React.createElement('thead', { key: 'thead' }, [
+                        React.createElement('tr', { key: 'tr-head', style: { background: '#f1f3f4' } }, [
+                            React.createElement('th', { key: 'th-role', style: { padding: '6px 8px', border: '1px solid #e9ecef' } }, '角色'),
+                            React.createElement('th', { key: 'th-phone', style: { padding: '6px 8px', border: '1px solid #e9ecef' } }, '手机号'),
+                            React.createElement('th', { key: 'th-password', style: { padding: '6px 8px', border: '1px solid #e9ecef' } }, '密码/验证码'),
+                            React.createElement('th', { key: 'th-desc', style: { padding: '6px 8px', border: '1px solid #e9ecef' } }, '权限说明')
+                        ])
+                    ]),
+                    React.createElement('tbody', { key: 'tbody' },
+                        demoAccounts.map((acc, idx) =>
+                            React.createElement('tr', { key: acc.phone, style: { background: idx % 2 === 0 ? '#fafbfc' : '#fff' } }, [
+                                React.createElement('td', { style: { padding: '6px 8px', border: '1px solid #e9ecef', minWidth: 60 } }, acc.name),
+                                React.createElement('td', { style: { padding: '6px 8px', border: '1px solid #e9ecef', minWidth: 110 } },
+                                    React.createElement('span', {
+                                        style: { cursor: 'pointer', color: '#1677ff' },
+                                        title: '点击复制',
+                                        onClick: () => { navigator.clipboard && navigator.clipboard.writeText(acc.phone); }
+                                    }, acc.phone)
+                                ),
+                                React.createElement('td', { style: { padding: '6px 8px', border: '1px solid #e9ecef', minWidth: 80 } },
+                                    React.createElement('span', {
+                                        style: { cursor: 'pointer', color: '#1677ff' },
+                                        title: '点击复制',
+                                        onClick: () => { navigator.clipboard && navigator.clipboard.writeText(acc.password); }
+                                    }, acc.password)
+                                ),
+                                React.createElement('td', { style: { padding: '6px 8px', border: '1px solid #e9ecef', minWidth: 100 } },
+                                    acc.role === 'super_admin' ? '全站最高权限' :
+                                    acc.role === 'union_admin' ? '协会管理' :
+                                    acc.role === 'expo_admin' ? '会展管理' :
+                                    acc.role === 'ops_admin' ? '内容运营' :
+                                    acc.role === 'union_user' ? '协会数据查看' :
+                                    acc.role === 'exhibitor' ? '展位申请' :
+                                    acc.role === 'visitor' ? '浏览公开信息' :
+                                    '—'
+                                )
+                            ])
+                        )
+                    )
+                ]),
+                React.createElement('div', {
+                    key: 'demo-tip',
+                    style: { color: '#888', fontSize: '12px', marginTop: '4px' }
+                }, '支持手机号+密码 或 手机号+验证码（验证码：123456）两种登录方式，点击表格可快速复制。')
             ])
         ])
     ]);
