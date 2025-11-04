@@ -314,7 +314,7 @@ const App = () => {
             'ExhibitorManagement': window.App.pages.ExhibitorManagement,
             'exhibitor-maintenance': window.App.pages.ExhibitorMaintenance,
             'ExhibitorMaintenance': window.App.pages.ExhibitorMaintenance,
-            'live': window.App.pages.LiveManagement,
+            'live-management': window.App.pages.LiveManagement,
             'LiveManagement': window.App.pages.LiveManagement,
             'live-stats': window.App.pages.LiveStatsManagement,
             'stats': window.App.pages.BehaviorStats,

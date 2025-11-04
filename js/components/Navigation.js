@@ -123,6 +123,13 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             ]
         },
         {
+            key: 'live-management',
+            icon: '📺',
+            label: '直播管理',
+            title: '直播活动创建、配置与管理',
+            page: 'LiveManagement'
+        },
+        {
             key: 'audit-management',
             icon: '🔍',
             label: '审核管理',
@@ -177,13 +184,6 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     label: '展商中心',
                     title: '展商自主维护公司信息和产品信息',
                     page: 'exhibitor-maintenance'
-                },
-                {
-                    key: 'live',
-                    icon: '📺',
-                    label: '论坛直播',
-                    title: '论坛直播内容管理',
-                    page: 'live'
                 }
             ]
         },

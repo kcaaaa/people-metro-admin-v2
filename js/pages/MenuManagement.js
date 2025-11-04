@@ -10,6 +10,8 @@ const MenuManagement = () => {
         // 一级菜单
         'dashboard': { enabled: true, label: '首页', level: 1 },
         'content-management': { enabled: true, label: '内容管理', level: 1 },
+        'cultural-management': { enabled: true, label: '文创管理', level: 1 },
+        'live-management': { enabled: true, label: '直播管理', level: 1 },
         'audit-management': { enabled: true, label: '审核管理', level: 1 },
         'exhibition-management': { enabled: true, label: '展会管理', level: 1 },
         'operation-statistics': { enabled: true, label: '运营管理', level: 1 },
@@ -31,7 +33,6 @@ const MenuManagement = () => {
         'booth': { enabled: true, label: '展位管理', level: 2, parent: 'exhibition-management' },
         'exhibitor': { enabled: true, label: '展商管理', level: 2, parent: 'exhibition-management' },
         'exhibitor-maintenance': { enabled: true, label: '展商中心', level: 2, parent: 'exhibition-management' },
-        'live': { enabled: true, label: '论坛直播', level: 2, parent: 'exhibition-management' },
         
         // 运营管理子菜单
         'operational': { enabled: true, label: '运营数据统计', level: 2, parent: 'operation-statistics' },
