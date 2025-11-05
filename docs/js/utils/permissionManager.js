@@ -197,6 +197,8 @@ const PermissionManager = {
         'booth': ['exhibition:booth:view'],
         'exhibitor': ['exhibition:exhibitor:view'],
         'live': ['exhibition:live:view'],
+        'live-management': ['exhibition:live:view'],
+        'LiveManagement': ['exhibition:live:view'],
         'stats': ['operation:stats:view'],
         'operational': ['operation:stats:view'],
         'data': ['operation:data:view'],

@@ -1,7 +1,7 @@
 // 直播管理模块 - 独立的一级功能模块，支持三种直播类型
 // 基于功能需求文档实现：外部链接直播、微赞直播、关联展会直播
 const LiveManagement = () => {
-    const { Row, Col, Card, Button, Space, Alert, Tag, Table, Modal, Form, Input, Select, message, DatePicker, Upload, Radio, Switch, Steps, Divider, InputNumber, Popconfirm } = antd;
+    const { Row, Col, Card, Button, Space, Alert, Tag, Table, Modal, Form, Input, Select, message, DatePicker, Upload, Radio, Switch, Steps, Divider, InputNumber, Popconfirm, Spin } = antd;
     const { Search, TextArea } = Input;
     const { Option } = Select;
     const { RangePicker } = DatePicker;
@@ -16,6 +16,8 @@ const LiveManagement = () => {
     const [editingLive, setEditingLive] = React.useState(null);
     const [viewDetailModalVisible, setViewDetailModalVisible] = React.useState(false);
     const [selectedLive, setSelectedLive] = React.useState(null);
+    const [registrationStatistics, setRegistrationStatistics] = React.useState(null);
+    const [loadingStatistics, setLoadingStatistics] = React.useState(false);
     
     // 表单实例
     const [liveForm] = Form.useForm();
@@ -23,7 +25,6 @@ const LiveManagement = () => {
     // 搜索和筛选状态
     const [searchText, setSearchText] = React.useState('');
     const [typeFilter, setTypeFilter] = React.useState('all');
-    const [statusFilter, setStatusFilter] = React.useState('all');
     const [timeRange, setTimeRange] = React.useState(null);
     const [creatorFilter, setCreatorFilter] = React.useState('all');
     
@@ -68,7 +69,7 @@ const LiveManagement = () => {
                     description: '介绍最新的城市轨道交通技术发展趋势和创新应用',
                     enableRegistration: true,
                     registrationUrl: 'https://www.wjx.cn/jq/12345678.aspx',
-                    isMultipleSessions: false,
+                    isMultipleSessions: true, // 多场直播
                     externalUrl: null,
                     exhibitionId: null,
                     exhibitionName: null,
@@ -184,10 +185,6 @@ const LiveManagement = () => {
                 return false;
             }
             
-            // 状态筛选
-            if (statusFilter !== 'all' && live.status !== statusFilter) {
-                return false;
-            }
             
             // 创建人筛选
             if (creatorFilter !== 'all' && live.createdBy !== creatorFilter) {
@@ -206,7 +203,7 @@ const LiveManagement = () => {
             
             return true;
         });
-    }, [liveList, searchText, typeFilter, statusFilter, creatorFilter, timeRange]);
+    }, [liveList, searchText, typeFilter, creatorFilter, timeRange]);
     
     // 获取创建人列表（用于筛选）
     const creators = React.useMemo(() => {
@@ -234,18 +231,10 @@ const LiveManagement = () => {
         // 根据类型设置表单默认值
         liveForm.setFieldsValue({
             type: type,
-            status: 'not_started',
             enableRegistration: false,
             isMultipleSessions: false,
             allowDownload: true
         });
-        
-        // 如果是微赞直播，需要设置频道
-        if (type === 'weizan') {
-            liveForm.setFieldsValue({
-                channelId: channels.length > 0 ? channels[0].id : null
-            });
-        }
     };
     
     // 返回类型选择
@@ -257,6 +246,14 @@ const LiveManagement = () => {
     
     // 编辑直播
     const handleEditLive = (live) => {
+        console.log('[LiveManagement] 开始编辑直播:', live.id, live.type);
+        
+        // 重置状态
+        setIsMultipleSessions(false);
+        setSessions([]);
+        setMeetingMaterials([]);
+        
+        // 设置基本状态
         setEditingLive(live);
         setSelectedLiveType(live.type);
         setCurrentStep(1);
@@ -268,18 +265,29 @@ const LiveManagement = () => {
             endTime: live.endTime ? window.moment(live.endTime) : null
         };
         
+        liveForm.resetFields(); // 先重置表单，避免字段冲突
         liveForm.setFieldsValue(formValues);
         
-        // 设置多场直播状态
+        // 设置多场直播状态和加载相关数据
         if (live.isMultipleSessions) {
             setIsMultipleSessions(true);
-            // 加载场次数据
-            loadSessions(live.id);
+            // 同步设置场次数据
+            const mockSessions = [
+                { id: 'session_001', sessionName: '开幕式', sessionTime: '2024-02-01 10:00:00', sessionUrl: 'https://live.example.com/session1' },
+                { id: 'session_002', sessionName: '主题演讲', sessionTime: '2024-02-01 14:00:00', sessionUrl: 'https://live.example.com/session2' }
+            ];
+            setSessions(mockSessions);
         }
         
-        // 加载会议资料
-        loadMeetingMaterials(live.id);
+        // 同步设置会议资料
+        const mockMaterials = [
+            { id: 'material_001', materialType: 'introduction', fileName: '会议介绍.pdf', fileUrl: '/files/introduction.pdf', allowDownload: true },
+            { id: 'material_002', materialType: 'agenda', fileName: '会议议程.pdf', fileUrl: '/files/agenda.pdf', allowDownload: true }
+        ];
+        setMeetingMaterials(mockMaterials);
         
+        // 最后打开模态框
+        console.log('[LiveManagement] 打开编辑模态框');
         setModalVisible(true);
     };
     
@@ -306,11 +314,6 @@ const LiveManagement = () => {
     
     // 删除直播
     const handleDeleteLive = async (live) => {
-        if (live.status === 'live') {
-            message.warning('进行中的直播不允许删除');
-            return;
-        }
-        
         try {
             setLoading(true);
             await new Promise(resolve => setTimeout(resolve, 500));
@@ -330,122 +333,90 @@ const LiveManagement = () => {
         }
     };
     
-    // 开始直播
-    const handleStartLive = async (live) => {
-        if (live.status !== 'not_started') {
-            message.warning('只有未开始的直播可以执行开始操作');
-            return;
-        }
-        
-        try {
-            setLoading(true);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            // 更新状态
-            setLiveList(prev => prev.map(item => 
-                item.id === live.id 
-                    ? { ...item, status: 'live', statusLabel: '直播中' }
-                    : item
-            ));
-            
-            message.success('直播已开始');
-            
-            // 如果是微赞直播，调用微赞API
-            if (live.type === 'weizan') {
-                // await startWeizanLive(live.channelId);
-            }
-        } catch (error) {
-            console.error('开始直播失败:', error);
-            message.error('开始直播失败，请稍后重试');
-        } finally {
-            setLoading(false);
-        }
-    };
-    
-    // 结束直播
-    const handleEndLive = async (live) => {
-        if (live.status !== 'live') {
-            message.warning('只有进行中的直播可以执行结束操作');
-            return;
-        }
-        
-        try {
-            setLoading(true);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            const endTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-            
-            // 更新状态
-            setLiveList(prev => prev.map(item => 
-                item.id === live.id 
-                    ? { ...item, status: 'ended', statusLabel: '已结束', endTime }
-                    : item
-            ));
-            
-            message.success('直播已结束');
-            
-            // 如果是微赞直播，调用微赞API
-            if (live.type === 'weizan') {
-                // await endWeizanLive(live.channelId);
-            }
-        } catch (error) {
-            console.error('结束直播失败:', error);
-            message.error('结束直播失败，请稍后重试');
-        } finally {
-            setLoading(false);
-        }
-    };
-    
-    // 生成回放
-    const handleGenerateReplay = async (live) => {
-        if (live.status !== 'ended') {
-            message.warning('只有已结束的直播可以生成回放');
-            return;
-        }
-        
-        try {
-            setLoading(true);
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            message.success('回放生成任务已提交，预计5分钟内完成处理');
-            
-            // 如果是微赞直播，调用微赞API
-            if (live.type === 'weizan') {
-                // await generateWeizanReplay(live.channelId);
-            }
-        } catch (error) {
-            console.error('生成回放失败:', error);
-            message.error('生成回放失败，请稍后重试');
-        } finally {
-            setLoading(false);
-        }
-    };
-    
-    // 刷新状态
-    const handleRefreshStatus = async (live) => {
-        try {
-            setLoading(true);
-            await new Promise(resolve => setTimeout(resolve, 800));
-            
-            // 模拟状态更新
-            if (live.type === 'weizan') {
-                // const status = await getWeizanLiveStatus(live.channelId);
-                // 更新状态
-            }
-            
-            message.success('状态刷新成功');
-        } catch (error) {
-            console.error('刷新状态失败:', error);
-            message.error('刷新状态失败，请稍后重试');
-        } finally {
-            setLoading(false);
-        }
-    };
     
     // 查看详情
-    const handleViewDetail = (live) => {
-        setSelectedLive(live);
-        setViewDetailModalVisible(true);
+    // 加载报名统计数据
+    const loadRegistrationStatistics = async (liveId) => {
+        setLoadingStatistics(true);
+        try {
+            // 模拟API调用
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // 模拟报名统计数据
+            const mockStatistics = {
+                totalCount: 156,
+                fieldStatistics: [
+                    {
+                        fieldName: '单位',
+                        fieldLabel: '所属单位',
+                        statistics: [
+                            { value: '北京地铁', count: 45, percentage: 28.8 },
+                            { value: '上海地铁', count: 38, percentage: 24.4 },
+                            { value: '广州地铁', count: 32, percentage: 20.5 },
+                            { value: '深圳地铁', count: 25, percentage: 16.0 },
+                            { value: '其他', count: 16, percentage: 10.3 }
+                        ]
+                    },
+                    {
+                        fieldName: '职位',
+                        fieldLabel: '职位',
+                        statistics: [
+                            { value: '工程师', count: 68, percentage: 43.6 },
+                            { value: '技术主管', count: 42, percentage: 26.9 },
+                            { value: '部门经理', count: 28, percentage: 17.9 },
+                            { value: '其他', count: 18, percentage: 11.5 }
+                        ]
+                    },
+                    {
+                        fieldName: '参会目的',
+                        fieldLabel: '参会目的',
+                        statistics: [
+                            { value: '学习新技术', count: 89, percentage: 57.1 },
+                            { value: '了解行业趋势', count: 45, percentage: 28.8 },
+                            { value: '业务交流', count: 22, percentage: 14.1 }
+                        ]
+                    }
+                ],
+                latestRegistrations: [
+                    { name: '张工程师', company: '北京地铁', position: '工程师', registerTime: '2024-01-14 10:30:00' },
+                    { name: '李主管', company: '上海地铁', position: '技术主管', registerTime: '2024-01-14 11:15:00' },
+                    { name: '王经理', company: '广州地铁', position: '部门经理', registerTime: '2024-01-14 14:20:00' },
+                    { name: '赵工程师', company: '深圳地铁', position: '工程师', registerTime: '2024-01-14 15:45:00' },
+                    { name: '孙主管', company: '北京地铁', position: '技术主管', registerTime: '2024-01-14 16:10:00' }
+                ]
+            };
+            
+            setRegistrationStatistics(mockStatistics);
+        } catch (error) {
+            console.error('加载报名统计数据失败:', error);
+            message.error('加载报名统计数据失败');
+        } finally {
+            setLoadingStatistics(false);
+        }
+    };
+    
+    const handleViewDetail = (live, e) => {
+        // 阻止事件冒泡
+        if (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        
+        console.log('[LiveManagement] 点击详情按钮，直播ID:', live.id);
+        
+        // 跳转到详情页面
+        if (window.StateManager) {
+            console.log('[LiveManagement] StateManager 存在，准备触发页面切换');
+            // 通过事件传递直播ID和直播数据
+            window.StateManager.emit('page:change', { 
+                page: 'LiveDetail',
+                liveId: live.id,
+                liveData: live
+            });
+            console.log('[LiveManagement] 页面切换事件已触发');
+        } else {
+            console.error('[LiveManagement] StateManager 不存在！');
+        }
     };
     
     // 表单提交
@@ -460,14 +431,6 @@ const LiveManagement = () => {
             }
             
             if (values.type === 'weizan') {
-                if (!values.presenter) {
-                    message.error('微赞直播必须填写主讲人');
-                    return;
-                }
-                if (!values.channelId) {
-                    message.error('微赞直播必须选择所属频道');
-                    return;
-                }
                 if (!values.coverUrl) {
                     message.error('微赞直播必须上传封面图片');
                     return;
@@ -497,14 +460,11 @@ const LiveManagement = () => {
                 id: editingLive ? editingLive.id : `live_${Date.now()}`,
                 startTime: values.startTime ? values.startTime.format('YYYY-MM-DD HH:mm:ss') : null,
                 endTime: values.endTime ? values.endTime.format('YYYY-MM-DD HH:mm:ss') : null,
-                typeLabel: values.type === 'external' ? '外部链接直播' : 
+                typeLabel: values.type === 'external' ? '外部链接直播' :
                            values.type === 'weizan' ? '微赞直播' : '关联展会直播',
-                statusLabel: values.status === 'not_started' ? '未开始' :
-                            values.status === 'live' ? '直播中' : '已结束',
                 createdBy: editingLive ? editingLive.createdBy : '当前用户',
                 createdAt: editingLive ? editingLive.createdAt : new Date().toISOString().slice(0, 19).replace('T', ' '),
                 updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
-                channelName: values.channelId ? channels.find(c => c.id === values.channelId)?.name : null,
                 exhibitionName: values.exhibitionId ? exhibitions.find(e => e.id === values.exhibitionId)?.name : null
             };
             
@@ -546,7 +506,6 @@ const LiveManagement = () => {
     const handleResetFilters = () => {
         setSearchText('');
         setTypeFilter('all');
-        setStatusFilter('all');
         setCreatorFilter('all');
         setTimeRange(null);
     };
@@ -742,65 +701,30 @@ const LiveManagement = () => {
                 orientation: 'left'
             }, '基本信息'),
             
-            React.createElement(Row, { key: 'basic-row', gutter: 16 }, [
-                React.createElement(Col, { span: 12 }, [
-                    React.createElement(Form.Item, {
-                        key: 'title',
-                        name: 'title',
-                        label: React.createElement('span', {}, [
-                            React.createElement('span', { key: 'star', style: { color: 'red' } }, '*'),
-                            React.createElement('span', { key: 'text' }, ' 直播名称')
-                        ]),
-                        rules: [{ required: true, message: '请输入直播名称' }]
-                    }, React.createElement(Input, { placeholder: '请输入直播名称' }))
+            React.createElement(Form.Item, {
+                key: 'title',
+                name: 'title',
+                label: React.createElement('span', {}, [
+                    React.createElement('span', { key: 'star', style: { color: 'red' } }, '*'),
+                    React.createElement('span', { key: 'text' }, ' 直播名称')
                 ]),
-                
-                React.createElement(Col, { span: 12 }, [
-                    React.createElement(Form.Item, {
-                        key: 'presenter',
-                        name: 'presenter',
-                        label: React.createElement('span', {}, [
-                            React.createElement('span', { key: 'star', style: { color: 'red' } }, '*'),
-                            React.createElement('span', { key: 'text' }, ' 主讲人')
-                        ]),
-                        rules: [{ required: true, message: '请输入主讲人姓名' }]
-                    }, React.createElement(Input, { placeholder: '请输入主讲人姓名' }))
-                ])
-            ]),
+                rules: [{ required: true, message: '请输入直播名称' }]
+            }, React.createElement(Input, { placeholder: '请输入直播名称' })),
             
-            React.createElement(Row, { key: 'time-channel-row', gutter: 16 }, [
-                React.createElement(Col, { span: 12 }, [
-                    React.createElement(Form.Item, {
-                        key: 'startTime',
-                        name: 'startTime',
-                        label: React.createElement('span', {}, [
-                            React.createElement('span', { key: 'star', style: { color: 'red' } }, '*'),
-                            React.createElement('span', { key: 'text' }, ' 开播时间')
-                        ]),
-                        rules: [{ required: true, message: '请选择开播时间' }]
-                    }, React.createElement(DatePicker, {
-                        showTime: { format: 'HH:mm' },
-                        style: { width: '100%' },
-                        format: 'YYYY-MM-DD HH:mm',
-                        disabledDate: (current) => current && current < window.moment().startOf('day')
-                    }))
+            React.createElement(Form.Item, {
+                key: 'startTime',
+                name: 'startTime',
+                label: React.createElement('span', {}, [
+                    React.createElement('span', { key: 'star', style: { color: 'red' } }, '*'),
+                    React.createElement('span', { key: 'text' }, ' 开播时间')
                 ]),
-                
-                React.createElement(Col, { span: 12 }, [
-                    React.createElement(Form.Item, {
-                        key: 'channelId',
-                        name: 'channelId',
-                        label: React.createElement('span', {}, [
-                            React.createElement('span', { key: 'star', style: { color: 'red' } }, '*'),
-                            React.createElement('span', { key: 'text' }, ' 所属频道')
-                        ]),
-                        rules: [{ required: true, message: '请选择所属频道' }]
-                    }, React.createElement(Select, {
-                        placeholder: '请选择频道',
-                        options: channels.map(ch => ({ value: ch.id, label: ch.name }))
-                    }))
-                ])
-            ]),
+                rules: [{ required: true, message: '请选择开播时间' }]
+            }, React.createElement(DatePicker, {
+                showTime: { format: 'HH:mm' },
+                style: { width: '100%' },
+                format: 'YYYY-MM-DD HH:mm',
+                disabledDate: (current) => current && current < window.moment().startOf('day')
+            })),
             
             React.createElement(Form.Item, {
                 key: 'coverUrl',
@@ -903,7 +827,7 @@ const LiveManagement = () => {
             }, (fields, { add, remove }) => {
                 return React.createElement('div', {}, [
                     ...fields.map((field, index) => React.createElement(Card, {
-                        key: field.key,
+                        key: field.key || `session-${index}`,
                         title: `第${index + 1}场`,
                         extra: React.createElement(Button, {
                             type: 'link',
@@ -969,7 +893,7 @@ const LiveManagement = () => {
                                                   materialType === 'agenda' ? '会议议程' : '会议资料';
                         
                         return React.createElement(Card, {
-                            key: field.key,
+                            key: field.key || `material-${index}`,
                             title: materialTypeLabel || `资料${index + 1}`,
                             extra: React.createElement(Button, {
                                 type: 'link',
@@ -1057,52 +981,6 @@ const LiveManagement = () => {
                 ]);
             }),
             
-            React.createElement(Divider, {
-                key: 'settings-divider',
-                orientation: 'left'
-            }, '其他设置'),
-            
-            React.createElement(Row, { key: 'settings-row', gutter: 16 }, [
-                React.createElement(Col, { span: 12 }, [
-                    React.createElement(Form.Item, {
-                        key: 'quality',
-                        name: 'quality',
-                        label: '画质设置'
-                    }, React.createElement(Select, {
-                        placeholder: '选择画质',
-                        options: [
-                            { value: '720p', label: '720P 高清' },
-                            { value: '1080p', label: '1080P 超清 (推荐)' },
-                            { value: '4k', label: '4K 超高清' }
-                        ]
-                    }))
-                ]),
-                
-                React.createElement(Col, { span: 12 }, [
-                    React.createElement(Form.Item, {
-                        key: 'bitrate',
-                        name: 'bitrate',
-                        label: '码率设置'
-                    }, React.createElement(Select, {
-                        placeholder: '选择码率',
-                        options: [
-                            { value: '2000', label: '2Mbps (720P推荐)' },
-                            { value: '4000', label: '4Mbps (1080P推荐)' },
-                            { value: '8000', label: '8Mbps (4K推荐)' }
-                        ]
-                    }))
-                ])
-            ]),
-            
-            React.createElement(Form.Item, {
-                key: 'status',
-                name: 'status',
-                label: '直播状态'
-            }, React.createElement(Select, {}, [
-                React.createElement(Option, { value: 'not_started' }, '未开始'),
-                React.createElement(Option, { value: 'live' }, '直播中'),
-                React.createElement(Option, { value: 'ended' }, '已结束')
-            ]))
         ]);
     };
     
@@ -1248,19 +1126,6 @@ const LiveManagement = () => {
             }, text)
         },
         {
-            title: '状态',
-            dataIndex: 'statusLabel',
-            width: 100,
-            render: (text, record) => {
-                const colorMap = {
-                    'not_started': 'default',
-                    'live': 'red',
-                    'ended': 'green'
-                };
-                return React.createElement(Tag, { color: colorMap[record.status] }, text);
-            }
-        },
-        {
             title: '开播时间',
             dataIndex: 'startTime',
             width: 160
@@ -1277,50 +1142,38 @@ const LiveManagement = () => {
         },
         {
             title: '操作',
-            width: 280,
+            width: 200,
             fixed: 'right',
-            render: (_, record) => React.createElement(Space, { size: 'small' }, [
+            render: (_, record) => React.createElement(Space, { 
+                key: `actions-${record.id}`,
+                size: 'small' 
+            }, [
                 React.createElement(Button, {
-                    key: 'view',
+                    key: `view-${record.id}`,
                     size: 'small',
-                    onClick: () => handleViewDetail(record)
+                    onClick: (e) => handleViewDetail(record, e)
                 }, '详情'),
                 React.createElement(Button, {
-                    key: 'edit',
+                    key: `edit-${record.id}`,
                     size: 'small',
-                    onClick: () => handleEditLive(record)
+                    onClick: (e) => {
+                        e.stopPropagation();
+                        handleEditLive(record);
+                    }
                 }, '编辑'),
-                record.status === 'not_started' && React.createElement(Button, {
-                    key: 'start',
-                    size: 'small',
-                    type: 'primary',
-                    onClick: () => handleStartLive(record)
-                }, '开始'),
-                record.status === 'live' && React.createElement(Button, {
-                    key: 'end',
-                    size: 'small',
-                    danger: true,
-                    onClick: () => handleEndLive(record)
-                }, '结束'),
-                record.status === 'ended' && record.type === 'weizan' && React.createElement(Button, {
-                    key: 'replay',
-                    size: 'small',
-                    onClick: () => handleGenerateReplay(record)
-                }, '生成回放'),
-                record.type === 'weizan' && React.createElement(Button, {
-                    key: 'refresh',
-                    size: 'small',
-                    onClick: () => handleRefreshStatus(record)
-                }, '刷新'),
                 React.createElement(Popconfirm, {
-                    key: 'delete',
+                    key: `delete-${record.id}`,
                     title: '确定要删除这个直播吗？',
-                    onConfirm: () => handleDeleteLive(record),
+                    onConfirm: (e) => {
+                        if (e) e.stopPropagation();
+                        handleDeleteLive(record);
+                    },
                     okText: '确定',
                     cancelText: '取消'
                 }, React.createElement(Button, {
                     size: 'small',
-                    danger: true
+                    danger: true,
+                    onClick: (e) => e.stopPropagation()
                 }, '删除'))
             ])
         }
@@ -1369,7 +1222,7 @@ const LiveManagement = () => {
                     })
                 ]),
                 
-                React.createElement(Col, { span: 4 }, [
+                React.createElement(Col, { span: 5 }, [
                     React.createElement(Select, {
                         placeholder: '直播类型',
                         value: typeFilter,
@@ -1383,21 +1236,7 @@ const LiveManagement = () => {
                     ])
                 ]),
                 
-                React.createElement(Col, { span: 4 }, [
-                    React.createElement(Select, {
-                        placeholder: '状态',
-                        value: statusFilter,
-                        onChange: setStatusFilter,
-                        style: { width: '100%' }
-                    }, [
-                        React.createElement(Option, { value: 'all' }, '全部状态'),
-                        React.createElement(Option, { value: 'not_started' }, '未开始'),
-                        React.createElement(Option, { value: 'live' }, '直播中'),
-                        React.createElement(Option, { value: 'ended' }, '已结束')
-                    ])
-                ]),
-                
-                React.createElement(Col, { span: 4 }, [
+                React.createElement(Col, { span: 5 }, [
                     React.createElement(Select, {
                         placeholder: '创建人',
                         value: creatorFilter,
@@ -1412,7 +1251,7 @@ const LiveManagement = () => {
                     ])
                 ]),
                 
-                React.createElement(Col, { span: 6 }, [
+                React.createElement(Col, { span: 8 }, [
                     React.createElement(RangePicker, {
                         placeholder: ['开始时间', '结束时间'],
                         value: timeRange,
@@ -1422,7 +1261,7 @@ const LiveManagement = () => {
                     })
                 ]),
                 
-                React.createElement(Col, { span: 4 }, [
+                React.createElement(Col, { span: 6 }, [
                     React.createElement(Space, {}, [
                         React.createElement(Button, {
                             onClick: handleResetFilters
@@ -1441,7 +1280,8 @@ const LiveManagement = () => {
             key: 'table'
         }, [
             React.createElement(Table, {
-                dataSource: filteredLiveList.map((item, index) => ({ ...item, key: index })),
+                dataSource: filteredLiveList,
+                rowKey: (record) => record.id || record.key || 'live-id',
                 columns: columns,
                 loading: loading,
                 pagination: {
@@ -1459,12 +1299,16 @@ const LiveManagement = () => {
             title: editingLive ? '编辑直播' : '新建直播',
             open: modalVisible,
             onCancel: () => {
+                console.log('[LiveManagement] 关闭模态框');
                 setModalVisible(false);
                 setCurrentStep(0);
                 setSelectedLiveType(null);
+                setEditingLive(null);
+                setIsMultipleSessions(false);
                 liveForm.resetFields();
             },
             width: currentStep === 0 ? 800 : 900,
+            forceRender: true, // 强制渲染，确保内容正确显示
             footer: currentStep === 0 ? null : [
                 React.createElement(Button, {
                     key: 'cancel',
@@ -1477,7 +1321,10 @@ const LiveManagement = () => {
                 }, '取消'),
                 currentStep === 1 && React.createElement(Button, {
                     key: 'back',
-                    onClick: handleBackToTypeSelection
+                    onClick: () => {
+                        console.log('[LiveManagement] 返回类型选择');
+                        handleBackToTypeSelection();
+                    }
                 }, '上一步'),
                 React.createElement(Button, {
                     key: 'submit',
@@ -1528,14 +1375,6 @@ const LiveManagement = () => {
                 React.createElement('strong', {}, '结束时间：'),
                 selectedLive.endTime
             ]),
-            selectedLive.presenter && React.createElement('p', { key: 'presenter' }, [
-                React.createElement('strong', {}, '主讲人：'),
-                selectedLive.presenter
-            ]),
-            selectedLive.channelName && React.createElement('p', { key: 'channel' }, [
-                React.createElement('strong', {}, '所属频道：'),
-                selectedLive.channelName
-            ]),
             selectedLive.exhibitionName && React.createElement('p', { key: 'exhibition' }, [
                 React.createElement('strong', {}, '关联展会：'),
                 selectedLive.exhibitionName
@@ -1551,6 +1390,136 @@ const LiveManagement = () => {
             selectedLive.description && React.createElement('div', { key: 'description' }, [
                 React.createElement('strong', {}, '直播简介：'),
                 React.createElement('p', { style: { marginTop: 8 } }, selectedLive.description)
+            ]),
+            
+            // 报名统计信息（仅微赞直播且开启报名时显示）
+            selectedLive.type === 'weizan' && selectedLive.enableRegistration && React.createElement('div', {
+                key: 'registration-statistics',
+                style: { marginTop: 24, paddingTop: 24, borderTop: '1px solid #f0f0f0' }
+            }, [
+                React.createElement(Divider, {
+                    key: 'statistics-divider',
+                    orientation: 'left'
+                }, '报名统计信息'),
+                
+                loadingStatistics ? React.createElement('div', {
+                    key: 'loading',
+                    style: { textAlign: 'center', padding: '40px 0' }
+                }, React.createElement(Spin, { size: 'large' })) :
+                
+                registrationStatistics ? React.createElement('div', { key: 'statistics-content' }, [
+                    // 总报名人数
+                    React.createElement(Card, {
+                        key: 'total-count',
+                        style: { marginBottom: 16, backgroundColor: '#f0f9ff' },
+                        bordered: false
+                    }, [
+                        React.createElement('div', { style: { textAlign: 'center' } }, [
+                            React.createElement('div', {
+                                style: { fontSize: '32px', fontWeight: 'bold', color: '#1890ff', marginBottom: 8 }
+                            }, registrationStatistics.totalCount),
+                            React.createElement('div', { style: { color: '#666' } }, '总报名人数')
+                        ])
+                    ]),
+                    
+                    // 字段统计
+                    ...registrationStatistics.fieldStatistics.map((fieldStat, index) => 
+                        React.createElement(Card, {
+                            key: `field-stat-${index}`,
+                            title: fieldStat.fieldLabel,
+                            style: { marginBottom: 16 },
+                            size: 'small'
+                        }, [
+                            React.createElement(Table, {
+                                key: `table-${index}`,
+                                columns: [
+                                    {
+                                        title: '选项',
+                                        dataIndex: 'value',
+                                        key: 'value',
+                                        width: '40%'
+                                    },
+                                    {
+                                        title: '人数',
+                                        dataIndex: 'count',
+                                        key: 'count',
+                                        width: '25%',
+                                        align: 'center'
+                                    },
+                                    {
+                                        title: '占比',
+                                        dataIndex: 'percentage',
+                                        key: 'percentage',
+                                        width: '35%',
+                                        render: (percentage) => React.createElement('div', {}, [
+                                            React.createElement('div', {
+                                                style: {
+                                                    width: '100%',
+                                                    height: 8,
+                                                    backgroundColor: '#f0f0f0',
+                                                    borderRadius: 4,
+                                                    overflow: 'hidden',
+                                                    marginBottom: 4
+                                                }
+                                            }, React.createElement('div', {
+                                                style: {
+                                                    width: `${percentage}%`,
+                                                    height: '100%',
+                                                    backgroundColor: '#1890ff',
+                                                    transition: 'width 0.3s'
+                                                }
+                                            })),
+                                            React.createElement('span', {}, `${percentage}%`)
+                                        ])
+                                    }
+                                ],
+                                dataSource: fieldStat.statistics,
+                                pagination: false,
+                                size: 'small',
+                                rowKey: (record, idx) => `${fieldStat.fieldName}-${idx}`
+                            })
+                        ])
+                    ),
+                    
+                    // 最新报名列表
+                    React.createElement(Card, {
+                        key: 'latest-registrations',
+                        title: '最新报名（最近5条）',
+                        style: { marginBottom: 16 },
+                        size: 'small'
+                    }, React.createElement(Table, {
+                        columns: [
+                            {
+                                title: '姓名',
+                                dataIndex: 'name',
+                                key: 'name',
+                                width: '25%'
+                            },
+                            {
+                                title: '单位',
+                                dataIndex: 'company',
+                                key: 'company',
+                                width: '30%'
+                            },
+                            {
+                                title: '职位',
+                                dataIndex: 'position',
+                                key: 'position',
+                                width: '25%'
+                            },
+                            {
+                                title: '报名时间',
+                                dataIndex: 'registerTime',
+                                key: 'registerTime',
+                                width: '20%'
+                            }
+                        ],
+                        dataSource: registrationStatistics.latestRegistrations,
+                        pagination: false,
+                        size: 'small',
+                        rowKey: (record, index) => `latest-${index}`
+                    }))
+                ]) : null
             ])
         ]))
     ]);

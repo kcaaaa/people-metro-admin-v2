@@ -123,6 +123,13 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             ]
         },
         {
+            key: 'live-management',
+            icon: '📺',
+            label: '直播管理',
+            title: '直播活动创建、配置与管理',
+            page: 'LiveManagement'
+        },
+        {
             key: 'audit-management',
             icon: '🔍',
             label: '审核管理',

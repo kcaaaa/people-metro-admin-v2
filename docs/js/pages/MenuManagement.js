@@ -10,6 +10,8 @@ const MenuManagement = () => {
         // 一级菜单
         'dashboard': { enabled: true, label: '首页', level: 1 },
         'content-management': { enabled: true, label: '内容管理', level: 1 },
+        'cultural-management': { enabled: true, label: '文创管理', level: 1 },
+        'live-management': { enabled: true, label: '直播管理', level: 1 },
         'audit-management': { enabled: true, label: '审核管理', level: 1 },
         'exhibition-management': { enabled: true, label: '展会管理', level: 1 },
         'operation-statistics': { enabled: true, label: '运营管理', level: 1 },

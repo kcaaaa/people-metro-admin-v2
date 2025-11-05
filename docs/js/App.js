@@ -187,6 +187,21 @@ const App = () => {
                     console.log('Current user permissions updated');
                 }
             });
+
+            // 监听页面切换事件
+            window.StateManager.on('page:change', (data) => {
+                if (data && data.page) {
+                    console.log('Page change event received:', data.page, data);
+                    // 保存直播详情数据
+                    if (data.liveId && data.liveData) {
+                        if (!window.StateManager.state.liveDetailData) {
+                            window.StateManager.state.liveDetailData = {};
+                        }
+                        window.StateManager.state.liveDetailData[data.liveId] = data.liveData;
+                    }
+                    handlePageChange(data.page);
+                }
+            });
         }
     };
 
@@ -314,8 +329,10 @@ const App = () => {
             'ExhibitorManagement': window.App.pages.ExhibitorManagement,
             'exhibitor-maintenance': window.App.pages.ExhibitorMaintenance,
             'ExhibitorMaintenance': window.App.pages.ExhibitorMaintenance,
-            'live': window.App.pages.LiveManagement,
+            'live-management': window.App.pages.LiveManagement,
             'LiveManagement': window.App.pages.LiveManagement,
+            'live-detail': window.App.pages.LiveDetail,
+            'LiveDetail': window.App.pages.LiveDetail,
             'live-stats': window.App.pages.LiveStatsManagement,
             'stats': window.App.pages.BehaviorStats,
             'BehaviorStats': window.App.pages.BehaviorStats,
