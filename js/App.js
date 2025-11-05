@@ -381,13 +381,20 @@ const App = () => {
         };
 
         console.log('Looking for component:', currentPage);
+        console.log('Available components:', Object.keys(window.App.pages || {}));
         console.log('Component mapping:', {
             operational: window.App.pages.OperationalStats,
-            OperationalStats: window.App.pages.OperationalStats
+            OperationalStats: window.App.pages.OperationalStats,
+            LiveDetail: window.App.pages.LiveDetail,
+            'live-detail': window.App.pages.LiveDetail
         });
         
         const Component = pageComponents[currentPage];
         console.log('Found component:', Component ? 'yes' : 'no');
+        if (!Component && currentPage === 'LiveDetail') {
+            console.warn('LiveDetail component not found in window.App.pages:', window.App.pages.LiveDetail);
+            console.warn('All available pages:', Object.keys(window.App.pages || {}));
+        }
         
         if (Component) {
             console.log('Rendering component for page:', currentPage);
