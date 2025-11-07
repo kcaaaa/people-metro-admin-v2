@@ -314,6 +314,28 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     page: 'UserProfile'
                 }
             ]
+        },
+        {
+            key: 'ai-management',
+            icon: '🤖',
+            label: 'AI管理',
+            title: 'AI智能体与知识库管理模块',
+            children: [
+                {
+                    key: 'ai-agents',
+                    icon: '👾',
+                    label: '智能体管理',
+                    title: 'AI智能体的创建、配置与权限管理',
+                    page: 'AIAgentManagement'
+                },
+                {
+                    key: 'ai-knowledge',
+                    icon: '🧠',
+                    label: '知识库管理',
+                    title: 'AI知识库的创建与文件管理',
+                    page: 'AIKnowledgeManagement'
+                }
+            ]
         }
     ];
 
@@ -652,4 +674,4 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
     ]);
 };
 
-window.Navigation = Navigation; 
+window.Navigation = Navigation;

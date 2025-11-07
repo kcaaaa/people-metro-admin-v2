@@ -101,13 +101,17 @@ const App = () => {
         }
     };
 
-    const handlePageChange = (page) => {
+    const handlePageChange = (page, params = {}) => {
         console.log('🚀 [FIXED] 页面切换开始');
         console.log('🎯 [FIXED] 目标页面:', page);
         console.log('📍 [FIXED] 当前页面:', currentPage);
+        console.log('📋 [FIXED] 页面参数:', params);
         
         // 设置新页面
         setCurrentPage(page);
+        
+        // 保存参数到全局状态
+        window.App.currentPageParams = params;
         
         // 强制重新渲染
         setRenderKey(prev => prev + 1);
@@ -119,6 +123,7 @@ const App = () => {
         if (isAuthenticated) {
             AuthUtils.logActivity('page_visit', {
                 page: page,
+                params: params,
                 timestamp: new Date().toISOString()
             });
         }
@@ -212,7 +217,7 @@ const App = () => {
             }
         }
         
-        // 组件映射表 - 简化版本
+        // 组件映射表
         const pageComponents = {
             'dashboard': window.Dashboard,
             'review': window.ReviewManagement,
@@ -230,7 +235,13 @@ const App = () => {
             'traffic': window.TrafficAllocation,
             'logs': window.LogManagement,
             'settings': window.SystemSettings,
-            'profile': window.UserProfile
+            'profile': window.UserProfile,
+            'ai-agents': window.AIAgentManagement,
+            'AIAgentManagement': window.AIAgentManagement,
+            'ai-knowledge': window.AIKnowledgeManagement,
+            'AIKnowledgeManagement': window.AIKnowledgeManagement,
+            'ai-knowledge-detail': window.AIKnowledgeDetail,
+            'AIKnowledgeDetail': window.AIKnowledgeDetail
         };
         
         const PageComponent = pageComponents[currentPage];
@@ -239,7 +250,17 @@ const App = () => {
         if (PageComponent) {
             console.log('✅ [FIXED] 渲染页面组件:', currentPage);
             try {
-                return React.createElement(PageComponent, { key: `${currentPage}-${renderKey}` });
+                // 获取当前页面参数
+                const params = window.App?.currentPageParams || {};
+                console.log('📋 [FIXED] 渲染参数:', params);
+                
+                // 传递页面参数给组件
+                return React.createElement(PageComponent, {
+                    key: `${currentPage}-${renderKey}`,
+                    currentPage: currentPage,
+                    onPageChange: handlePageChange,
+                    currentPageParams: params
+                });
             } catch (error) {
                 console.error('❌ [FIXED] 页面组件渲染失败:', error);
                 return React.createElement('div', {
@@ -361,4 +382,4 @@ const App = () => {
 
 console.log('🚀 [FIXED] App 组件定义完成，准备挂载到 window');
 window.App = App;
-console.log('✅ [FIXED] App 组件已挂载到 window.App'); 
+console.log('✅ [FIXED] App 组件已挂载到 window.App');

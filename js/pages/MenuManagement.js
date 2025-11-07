@@ -16,6 +16,7 @@ const MenuManagement = () => {
         'exhibition-management': { enabled: true, label: '展会管理', level: 1 },
         'operation-statistics': { enabled: true, label: '运营管理', level: 1 },
         'system-management': { enabled: true, label: '系统管理', level: 1 },
+        'ai-management': { enabled: true, label: 'AI管理', level: 1 },
         
         // 内容管理子菜单
         'content': { enabled: true, label: '内容管理', level: 2, parent: 'content-management' },
@@ -51,7 +52,11 @@ const MenuManagement = () => {
         'traffic': { enabled: true, label: '流量分配', level: 2, parent: 'system-management' },
         'menu': { enabled: true, label: '菜单管理', level: 2, parent: 'system-management' },
         'personal-center': { enabled: true, label: '个人中心', level: 2, parent: 'system-management' },
-        'profile': { enabled: true, label: '用户画像', level: 2, parent: 'system-management' }
+        'profile': { enabled: true, label: '用户画像', level: 2, parent: 'system-management' },
+        
+        // AI管理子菜单
+        'ai-agents': { enabled: true, label: '智能体管理', level: 2, parent: 'ai-management' },
+        'ai-knowledge': { enabled: true, label: '知识库管理', level: 2, parent: 'ai-management' },
     };
 
     // 状态管理
@@ -62,7 +67,7 @@ const MenuManagement = () => {
         return defaultMenuConfig;
     });
     const [loading, setLoading] = React.useState(false);
-    const [expandedKeys, setExpandedKeys] = React.useState(['system-management', 'content-management', 'audit-management', 'exhibition-management', 'operation-statistics']);
+    const [expandedKeys, setExpandedKeys] = React.useState(['system-management', 'content-management', 'audit-management', 'exhibition-management', 'operation-statistics', 'ai-management']);
     const [previewMode, setPreviewMode] = React.useState(false);
 
     // 调试：显示菜单配置统计
@@ -461,4 +466,4 @@ const MenuManagement = () => {
 };
 
 window.App.pages.MenuManagement = MenuManagement;
-console.log('[MenuManagement] 组件挂载成功'); 
+console.log('[MenuManagement] 组件挂载成功');
