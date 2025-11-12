@@ -2,6 +2,15 @@
 const PermissionManager = {
     // 权限定义
     PERMISSIONS: {
+        // AI管理权限
+        AI: {
+            CHAT_VIEW: 'ai:chat:view',
+            CHAT_MANAGE: 'ai:chat:manage',
+            AGENT_VIEW: 'ai:agent:view',
+            AGENT_MANAGE: 'ai:agent:manage',
+            KNOWLEDGE_VIEW: 'ai:knowledge:view',
+            KNOWLEDGE_MANAGE: 'ai:knowledge:manage'
+        },
         // 系统管理权限
         SYSTEM: {
             USER_VIEW: 'system:user:view',
@@ -119,7 +128,8 @@ const PermissionManager = {
                 'system:*',
                 'content:view',
                 'audit:*:view',
-                'operation:stats:view'
+                'operation:stats:view',
+                'ai:*:view'
             ],
             level: 90
         },
@@ -179,7 +189,8 @@ const PermissionManager = {
                 'content:view',
                 'audit:*:view',
                 'exhibition:*:view',
-                'operation:stats:view'
+                'operation:stats:view',
+                'ai:chat:view'
             ],
             level: 10
         }
@@ -215,7 +226,13 @@ const PermissionManager = {
         'cultural-product': ['cultural_product:view'],
         'cultural-category': ['category:view'],
         'cultural-display': ['display:view'],
-        'cultural-contact': ['contact:view']
+        'cultural-contact': ['contact:view'],
+        // AI相关页面
+        'AIAgentManagement': ['ai:agent:view'],
+        'AIKnowledgeManagement': ['ai:knowledge:view'],
+        'AIKnowledgeDetail': ['ai:knowledge:view'],
+        'AIChat': ['ai:chat:view'],
+        'ai-chat': ['ai:chat:view']
     },
 
     // 初始化权限管理器
@@ -576,4 +593,4 @@ if (typeof window !== 'undefined') {
 }
 
 // 导出
-window.PermissionManager = PermissionManager; 
+window.PermissionManager = PermissionManager;

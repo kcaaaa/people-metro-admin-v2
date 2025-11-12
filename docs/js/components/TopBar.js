@@ -30,7 +30,14 @@ const TopBar = ({ currentPage, user, notifications, onNotificationClick, onLogou
         'traffic': { title: '流量分配', breadcrumb: ['系统管理', '流量分配'] },
         'menu': { title: '菜单管理', breadcrumb: ['系统管理', '菜单管理'] },
         'personal-center': { title: '个人中心', breadcrumb: ['系统管理', '个人中心'] },
-        'profile': { title: '用户画像', breadcrumb: ['系统管理', '用户画像'] }
+        'profile': { title: '用户画像', breadcrumb: ['系统管理', '用户画像'] },
+        // AI管理
+        'ai-agents': { title: '智能体管理', breadcrumb: ['AI管理', '智能体管理'] },
+        'AIAgentManagement': { title: '智能体管理', breadcrumb: ['AI管理', '智能体管理'] },
+        'ai-knowledge': { title: '知识库管理', breadcrumb: ['AI管理', '知识库管理'] },
+        'AIKnowledgeManagement': { title: '知识库管理', breadcrumb: ['AI管理', '知识库管理'] },
+        'ai-knowledge-detail': { title: '知识库详情', breadcrumb: ['AI管理', '知识库管理', '知识库详情'] },
+        'AIKnowledgeDetail': { title: '知识库详情', breadcrumb: ['AI管理', '知识库管理', '知识库详情'] }
     };
 
     const currentPageInfo = pageTitleMap[currentPage] || { title: '未知页面', breadcrumb: ['未知页面'] };
@@ -391,4 +398,4 @@ const TopBar = ({ currentPage, user, notifications, onNotificationClick, onLogou
     ]);
 };
 
-window.TopBar = TopBar; 
+window.TopBar = TopBar;

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI聊天组件测试</title>
+    <!-- 引入Ant Design样式 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5.12.8/dist/reset.css">
+    <!-- 引入FontAwesome图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        .container {
+            width: 100%;
+            height: 90vh;
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="ai-chat-container"></div>
+    
+    <!-- 引入React -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- 引入Ant Design -->
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/antd@5.12.8/dist/antd.min.js"></script>
+    
+    <!-- 定义全局App对象 -->
+    <script>
+        window.App = window.App || {};
+        window.App.pages = window.App.pages || {};
+        
+        // 简化版AIChat组件 - 使用React.createElement
+        const AIChat = ({ onPageChange, currentPage }) => {
+            console.log('AIChat component is rendering...');
+            
+            const { Row, Col, Card, Button, Space, Input, Select, Avatar, Tabs, Empty, Tooltip } = antd;
+            const { Option } = Select;
+            const { TextArea } = Input;
+            
+            // 模拟静态数据
+            const mockAgents = [
+                { id: 'agent1', name: '千问3', description: '阿里云千问大模型，提供精准回答和多轮对话能力' },
+                { id: 'agent2', name: '法睿', description: '专注于法律领域的智能助手，提供专业法律建议' }
+            ];
+            
+            const mockKnowledgeBases = [
+                { id: 'global1', name: '客服FAQ知识库', isGlobal: true },
+                { id: 'global2', name: '产品手册', isGlobal: true },
+                { id: 'personal1', name: '我的学习笔记', isGlobal: false },
+                { id: 'personal2', name: '项目规划文档', isGlobal: false }
+            ];
+            
+            const mockChatHistory = [
+                { id: 'chat1', title: '关于产品功能的咨询', agentName: '千问3', lastMessage: '好的，我会为您详细介绍产品功能。', timestamp: '2024-01-20 15:30' },
+                { id: 'chat2', title: '知识库查询', agentName: '法睿', lastMessage: '已为您查询到相关法律条款。', timestamp: '2024-01-19 10:15' },
+                { id: 'chat3', title: '技术问题咨询', agentName: '千问3', lastMessage: '建议您查看相关技术文档。', timestamp: '2024-01-18 14:45' }
+            ];
+            
+            const mockMessages = [
+                { id: 'msg1', role: 'user', content: '你好，我想了解一下人民城轨系统的主要功能。', timestamp: '2024-01-20 15:25' },
+                { id: 'msg2', role: 'assistant', content: '您好！欢迎使用人民城轨智能助手。人民城轨系统主要提供以下功能：\n\n1. 内容管理：新闻、公告、活动等信息发布与管理\n2. 文创管理：文创产品展示、交易与企业管理\n3. 直播管理：线上活动直播、嘉宾管理与统计\n4. AI智能服务：知识库查询、智能问答等\n\n请问您想了解哪个方面的具体内容？', timestamp: '2024-01-20 15:30' },
+                { id: 'msg3', role: 'user', content: '请帮我查询一下客服FAQ中的退款政策。', timestamp: '2024-01-20 15:32' },
+                { id: 'msg4', role: 'assistant', content: '根据客服FAQ知识库，退款政策如下：\n\n1. 文创产品：收到商品后7天内可申请无理由退款，需保持商品完好\n2. 直播门票：直播开始前24小时可全额退款，之后不予退款\n3. 展览门票：展览开始前可全额退款\n\n如需申请退款，请前往个人中心-我的订单页面操作。', timestamp: '2024-01-20 15:33' }
+            ];
+            
+            // 渲染消息项
+            const renderMessage = (message) => {
+                const isUser = message.role === 'user';
+                const contentLines = message.content.split('\n');
+                
+                return React.createElement('div', {
+                    key: message.id,
+                    className: `chat-message ${isUser ? 'user-message' : 'ai-message'}`
+                },
+                    React.createElement(Row, { gutter: [10, 0], align: 'start' },
+                        React.createElement(Col, { span: isUser ? { xs: 3, sm: 2, md: 1 } : { xs: 3, sm: 2, md: 1 } },
+                            React.createElement(Avatar, { 
+                                size: "small", 
+                                style: { backgroundColor: isUser ? '#1890ff' : '#52c41a' } 
+                            },
+                                isUser ? '用' : 'AI'
+                            )
+                        ),
+                        React.createElement(Col, { span: isUser ? { xs: 21, sm: 22, md: 23 } : { xs: 21, sm: 22, md: 23 } },
+                            React.createElement('div', { className: "message-content" },
+                                React.createElement('div', { className: "message-text" },
+                                    contentLines.map((line, idx) => 
+                                        React.createElement(React.Fragment, { key: idx },
+                                            line,
+                                            React.createElement('br')
+                                        )
+                                    )
+                                ),
+                                React.createElement('div', { className: "message-time" }, message.timestamp)
+                            )
+                        )
+                    )
+                );
+            };
+            
+            // 渲染界面
+            return React.createElement('div', { className: 'ai-chat-container' },
+                // 添加样式
+                React.createElement('style', null, `
+                    .ai-chat-container { height: 100%; }
+                    .chat-history-list { padding: 8px; }
+                    .chat-history-item { 
+                        padding: 12px; border-radius: 8px; margin-bottom: 8px; 
+                        cursor: pointer; transition: all 0.3s; 
+                        background: #ffffff; border: 1px solid #f0f0f0;
+                    }
+                    .chat-history-item:hover { background: #f5f5f5; border-color: #d9d9d9; }
+                    .chat-history-item.active { background: #e6f7ff; border-color: #91d5ff; }
+                    .chat-title { font-weight: bold; font-size: 14px; margin-bottom: 4px; color: #262626; }
+                    .chat-agent { font-size: 12px; color: #8c8c8c; margin-bottom: 4px; }
+                    .chat-preview { 
+                        font-size: 12px; color: #595959; margin-bottom: 4px; 
+                        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+                    }
+                    .chat-time { font-size: 11px; color: #bfbfbf; text-align: right; }
+                    .chat-messages { background: #ffffff; }
+                    .chat-message { margin-bottom: 16px; }
+                    .message-content { 
+                        display: inline-block; max-width: 80%; 
+                        padding: 10px 15px; border-radius: 8px;
+                    }
+                    .user-message .message-content { background: #e6f7ff; float: right; }
+                    .ai-message .message-content { background: #f5f5f5; float: left; }
+                    .message-text { 
+                        font-size: 14px; line-height: 1.6; 
+                        color: #262626; word-break: break-word;
+                    }
+                    .message-time { 
+                        font-size: 11px; color: #8c8c8c; 
+                        margin-top: 4px; text-align: right;
+                    }
+                `),
+                
+                // 主布局
+                React.createElement(Row, { gutter: [16, 0], style: { height: '100%' } },
+                    // 左侧聊天历史面板
+                    React.createElement(Col, { 
+                        xs: 24, sm: 24, md: 6, lg: 5, xl: 4, 
+                        style: { height: '100%', borderRight: '1px solid #f0f0f0', overflow: 'hidden' } 
+                    },
+                        React.createElement('div', { style: { padding: '16px', borderBottom: '1px solid #f0f0f0' } },
+                            React.createElement(Button, { type: 'primary', block },
+                                React.createElement('i', { className: 'fa-solid fa-plus' }),
+                                ' 新建对话'
+                            )
+                        ),
+                        
+                        React.createElement('div', { style: { height: 'calc(100% - 64px)', overflowY: 'auto' } },
+                            React.createElement('div', { className: 'chat-history-list' },
+                                mockChatHistory.map(chat => 
+                                    React.createElement('div', {
+                                        key: chat.id,
+                                        className: `chat-history-item ${chat.id === 'chat1' ? 'active' : ''}`,
+                                        onClick: () => console.log('加载聊天:', chat.id)
+                                    },
+                                        React.createElement('div', { className: 'chat-title' }, chat.title),
+                                        React.createElement('div', { className: 'chat-agent' }, chat.agentName),
+                                        React.createElement('div', { className: 'chat-preview' }, chat.lastMessage),
+                                        React.createElement('div', { className: 'chat-time' }, chat.timestamp)
+                                    )
+                                )
+                            )
+                        )
+                    ),
+                    
+                    // 右侧聊天区域
+                    React.createElement(Col, { 
+                        xs: 24, sm: 24, md: 18, lg: 19, xl: 20, 
+                        style: { height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' } 
+                    },
+                        // 聊天头部 - 配置区域
+                        React.createElement('div', { style: { padding: '16px', borderBottom: '1px solid #f0f0f0', background: '#fafafa' } },
+                            React.createElement(Row, { gutter: [16, 0], align: 'middle' },
+                                React.createElement(Col, { span: 24, md: 12 },
+                                    React.createElement('div', { style: { fontWeight: 'bold', fontSize: '16px', marginBottom: '8px' } },
+                                        '关于产品功能的咨询'
+                                    )
+                                ),
+                                React.createElement(Col, { span: 24, md: 6 },
+                                    React.createElement('div', { style: { marginBottom: '8px' } }, '选择智能体'),
+                                    React.createElement(Select, {
+                                        value: 'agent1',
+                                        onChange: (value) => console.log('选择智能体:', value),
+                                        placeholder: '请选择智能体',
+                                        style: { width: '100%' }
+                                    },
+                                        mockAgents.map(agent => 
+                                            React.createElement(Option, { key: agent.id, value: agent.id },
+                                                React.createElement(Tooltip, { title: agent.description },
+                                                    React.createElement('span', null, agent.name)
+                                                )
+                                            )
+                                        )
+                                    )
+                                ),
+                                React.createElement(Col, { span: 24, md: 6 },
+                                    React.createElement('div', { style: { marginBottom: '8px' } }, '选择知识库（可选）'),
+                                    React.createElement(Select, {
+                                        value: '',
+                                        onChange: (value) => console.log('选择知识库:', value),
+                                        placeholder: '不使用知识库',
+                                        allowClear: true,
+                                        style: { width: '100%' }
+                                    },
+                                        React.createElement(Option, { value: '' }, '不使用知识库'),
+                                        mockKnowledgeBases.filter(kb => kb.isGlobal).map(kb => 
+                                            React.createElement(Option, { key: kb.id, value: kb.id },
+                                                `${kb.name}（全局）`
+                                            )
+                                        ),
+                                        mockKnowledgeBases.filter(kb => !kb.isGlobal).map(kb => 
+                                            React.createElement(Option, { key: kb.id, value: kb.id },
+                                                `${kb.name}（个人）`
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        ),
+                        
+                        // 聊天消息区域
+                        React.createElement('div', { className: 'chat-messages', style: { flex: 1, padding: '16px', overflowY: 'auto' } },
+                            mockMessages.length > 0 ? (
+                                mockMessages.map(message => renderMessage(message))
+                            ) : (
+                                React.createElement(Empty, { description: '暂无消息，开始对话吧！', style: { padding: '40px 0' } })
+                            )
+                        ),
+                        
+                        // 输入区域
+                        React.createElement('div', { style: { padding: '16px', borderTop: '1px solid #f0f0f0', background: '#ffffff' } },
+                            React.createElement(Row, { gutter: [16, 0], align: 'bottom' },
+                                React.createElement(Col, { span: 22 },
+                                    React.createElement(TextArea,
+                                        {
+                                            rows: 4,
+                                            placeholder: '与千问3对话...\n\n（支持选择知识库进行问答，Enter发送，Shift+Enter换行）',
+                                            style: { resize: 'none' }
+                                        }
+                                    )
+                                ),
+                                React.createElement(Col, { span: 2 },
+                                    React.createElement(Button,
+                                        {
+                                            type: 'primary',
+                                            size: 'large',
+                                            onClick: () => console.log('发送消息'),
+                                            style: { width: '100%', height: '100%' }
+                                        },
+                                        React.createElement('i', { className: 'fa-solid fa-paper-plane' })
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        };
+        
+        // 渲染组件
+        ReactDOM.render(
+            React.createElement(AIChat, {}),
+            document.getElementById('ai-chat-container')
+        );
+    </script>
+</body>
+</html>

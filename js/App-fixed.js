@@ -165,12 +165,12 @@ const App = () => {
         // 专门处理内容管理页面
         if (currentPage === 'content') {
             console.log('📝 [FIXED] 准备渲染内容管理页面');
-            console.log('🔍 [FIXED] ContentManagement 组件可用:', !!window.ContentManagement);
+            console.log('🔍 [FIXED] ContentManagement 组件可用:', !!window.App?.pages?.ContentManagement);
             
-            if (window.ContentManagement) {
+            if (window.App?.pages?.ContentManagement) {
                 console.log('✅ [FIXED] 找到 ContentManagement 组件，开始创建');
                 try {
-                    const contentComponent = React.createElement(window.ContentManagement, { key: `content-${renderKey}` });
+                    const contentComponent = React.createElement(window.App.pages.ContentManagement, { key: `content-${renderKey}` });
                     console.log('🎉 [FIXED] ContentManagement 组件创建成功');
                     return contentComponent;
                 } catch (error) {
@@ -195,7 +195,7 @@ const App = () => {
                     ]);
                 }
             } else {
-                console.error('❌ [FIXED] ContentManagement 组件未找到');
+                console.error('❌ [FIXED] App.pages.ContentManagement 组件未找到');
                 return React.createElement('div', {
                     style: { 
                         padding: '24px', 

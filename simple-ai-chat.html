@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI聊天界面演示</title>
+    <!-- 引入FontAwesome图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #262626;
+            line-height: 1.6;
+        }
+        
+        .ai-chat-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: row;
+            background-color: #ffffff;
+        }
+        
+        /* 左侧聊天历史面板 */
+        .chat-sidebar {
+            width: 300px;
+            border-right: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .new-chat-btn {
+            width: 100%;
+            padding: 10px 16px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background-color 0.3s;
+        }
+        
+        .new-chat-btn:hover {
+            background-color: #40a9ff;
+        }
+        
+        .chat-history-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        
+        .chat-history-item {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #ffffff;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .chat-history-item:hover {
+            background: #f5f5f5;
+            border-color: #d9d9d9;
+        }
+        
+        .chat-history-item.active {
+            background: #e6f7ff;
+            border-color: #91d5ff;
+        }
+        
+        .chat-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #262626;
+        }
+        
+        .chat-agent {
+            font-size: 12px;
+            color: #8c8c8c;
+            margin-bottom: 4px;
+        }
+        
+        .chat-preview {
+            font-size: 12px;
+            color: #595959;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .chat-time {
+            font-size: 11px;
+            color: #bfbfbf;
+            text-align: right;
+        }
+        
+        /* 右侧聊天区域 */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            background: #fafafa;
+        }
+        
+        .chat-header-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .chat-title-large {
+            flex: 1;
+            min-width: 200px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .header-controls {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            min-width: 200px;
+        }
+        
+        .control-label {
+            font-size: 12px;
+            color: #8c8c8c;
+            margin-bottom: 4px;
+        }
+        
+        .custom-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        .custom-select:hover {
+            border-color: #40a9ff;
+        }
+        
+        .custom-select:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+        
+        /* 消息区域 */
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: #ffffff;
+        }
+        
+        .chat-message {
+            margin-bottom: 16px;
+            display: flex;
+            clear: both;
+        }
+        
+        .user-message {
+            justify-content: flex-end;
+        }
+        
+        .ai-message {
+            justify-content: flex-start;
+        }
+        
+        .message-wrapper {
+            max-width: 80%;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .user-message .message-wrapper {
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar {
+            background-color: #1890ff;
+            color: white;
+        }
+        
+        .ai-avatar {
+            background-color: #52c41a;
+            color: white;
+        }
+        
+        .user-message .message-avatar {
+            margin-left: 8px;
+        }
+        
+        .ai-message .message-avatar {
+            margin-right: 8px;
+        }
+        
+        .message-content {
+            padding: 10px 15px;
+            border-radius: 8px;
+            word-break: break-word;
+        }
+        
+        .user-message .message-content {
+            background: #e6f7ff;
+            border-top-right-radius: 2px;
+        }
+        
+        .ai-message .message-content {
+            background: #f5f5f5;
+            border-top-left-radius: 2px;
+        }
+        
+        .message-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #262626;
+            white-space: pre-wrap;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: #8c8c8c;
+            margin-top: 4px;
+            text-align: right;
+        }
+        
+        /* 输入区域 */
+        .chat-input-area {
+            padding: 16px;
+            border-top: 1px solid #f0f0f0;
+            background: #ffffff;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 16px;
+            align-items: flex-end;
+        }
+        
+        .message-textarea {
+            flex: 1;
+            min-height: 80px;
+            max-height: 200px;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .message-textarea:hover {
+            border-color: #40a9ff;
+        }
+        
+        .message-textarea:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+        
+        .send-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: none;
+            background-color: #1890ff;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        
+        .send-button:hover {
+            background-color: #40a9ff;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .ai-chat-container {
+                flex-direction: column;
+            }
+            
+            .chat-sidebar {
+                width: 100%;
+                height: 30%;
+                border-right: none;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .chat-header-content {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .chat-title-large {
+                min-width: auto;
+            }
+            
+            .header-controls {
+                flex-direction: column;
+            }
+            
+            .message-wrapper {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ai-chat-container">
+        <!-- 左侧聊天历史面板 -->
+        <div class="chat-sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn">
+                    <i class="fa-solid fa-plus"></i>
+                    新建对话
+                </button>
+            </div>
+            
+            <div class="chat-history-list">
+                <div class="chat-history-item active">
+                    <div class="chat-title">关于产品功能的咨询</div>
+                    <div class="chat-agent">千问3</div>
+                    <div class="chat-preview">好的，我会为您详细介绍产品功能。</div>
+                    <div class="chat-time">2024-01-20 15:30</div>
+                </div>
+                
+                <div class="chat-history-item">
+                    <div class="chat-title">知识库查询</div>
+                    <div class="chat-agent">法睿</div>
+                    <div class="chat-preview">已为您查询到相关法律条款。</div>
+                    <div class="chat-time">2024-01-19 10:15</div>
+                </div>
+                
+                <div class="chat-history-item">
+                    <div class="chat-title">技术问题咨询</div>
+                    <div class="chat-agent">千问3</div>
+                    <div class="chat-preview">建议您查看相关技术文档。</div>
+                    <div class="chat-time">2024-01-18 14:45</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧聊天区域 -->
+        <div class="chat-main">
+            <!-- 聊天头部 - 配置区域 -->
+            <div class="chat-header">
+                <div class="chat-header-content">
+                    <div class="chat-title-large">关于产品功能的咨询</div>
+                    
+                    <div class="header-controls">
+                        <div class="control-group">
+                            <div class="control-label">选择智能体</div>
+                            <select class="custom-select">
+                                <option value="agent1" selected>
+                                    千问3（阿里云千问大模型，提供精准回答和多轮对话能力）
+                                </option>
+                                <option value="agent2">
+                                    法睿（专注于法律领域的智能助手，提供专业法律建议）
+                                </option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <div class="control-label">选择知识库（可选）</div>
+                            <select class="custom-select">
+                                <option value="" selected>不使用知识库</option>
+                                <option value="global1">客服FAQ知识库（全局）</option>
+                                <option value="global2">产品手册（全局）</option>
+                                <option value="personal1">我的学习笔记（个人）</option>
+                                <option value="personal2">项目规划文档（个人）</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 聊天消息区域 -->
+            <div class="chat-messages">
+                <!-- 用户消息 -->
+                <div class="chat-message user-message">
+                    <div class="message-wrapper">
+                        <div class="message-avatar user-avatar">用</div>
+                        <div class="message-content">
+                            <div class="message-text">你好，我想了解一下人民城轨系统的主要功能。</div>
+                            <div class="message-time">2024-01-20 15:25</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI消息 -->
+                <div class="chat-message ai-message">
+                    <div class="message-wrapper">
+                        <div class="message-avatar ai-avatar">AI</div>
+                        <div class="message-content">
+                            <div class="message-text">您好！欢迎使用人民城轨智能助手。人民城轨系统主要提供以下功能：
+
+1. 内容管理：新闻、公告、活动等信息发布与管理
+2. 文创管理：文创产品展示、交易与企业管理
+3. 直播管理：线上活动直播、嘉宾管理与统计
+4. AI智能服务：知识库查询、智能问答等
+
+请问您想了解哪个方面的具体内容？</div>
+                            <div class="message-time">2024-01-20 15:30</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 用户消息 -->
+                <div class="chat-message user-message">
+                    <div class="message-wrapper">
+                        <div class="message-avatar user-avatar">用</div>
+                        <div class="message-content">
+                            <div class="message-text">请帮我查询一下客服FAQ中的退款政策。</div>
+                            <div class="message-time">2024-01-20 15:32</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI消息 -->
+                <div class="chat-message ai-message">
+                    <div class="message-wrapper">
+                        <div class="message-avatar ai-avatar">AI</div>
+                        <div class="message-content">
+                            <div class="message-text">根据客服FAQ知识库，退款政策如下：
+
+1. 文创产品：收到商品后7天内可申请无理由退款，需保持商品完好
+2. 直播门票：直播开始前24小时可全额退款，之后不予退款
+3. 展览门票：展览开始前可全额退款
+
+如需申请退款，请前往个人中心-我的订单页面操作。</div>
+                            <div class="message-time">2024-01-20 15:33</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 输入区域 -->
+            <div class="chat-input-area">
+                <div class="input-container">
+                    <textarea 
+                        class="message-textarea" 
+                        placeholder="与千问3对话...
+
+（支持选择知识库进行问答，Enter发送，Shift+Enter换行）"
+                    ></textarea>
+                    <button class="send-button">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 添加简单的交互功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 聊天历史项点击事件
+            const chatItems = document.querySelectorAll('.chat-history-item');
+            chatItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有active类
+                    chatItems.forEach(i => i.classList.remove('active'));
+                    // 添加当前项的active类
+                    this.classList.add('active');
+                });
+            });
+            
+            // 发送按钮点击事件
+            const sendButton = document.querySelector('.send-button');
+            const textarea = document.querySelector('.message-textarea');
+            
+            sendButton.addEventListener('click', function() {
+                const message = textarea.value.trim();
+                if (message) {
+                    console.log('发送消息:', message);
+                    // 清空输入框
+                    textarea.value = '';
+                    // 这里只是演示，不会真正发送消息
+                    alert('这是一个演示系统，消息不会被真正发送。');
+                }
+            });
+            
+            // Enter发送，Shift+Enter换行
+            textarea.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendButton.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

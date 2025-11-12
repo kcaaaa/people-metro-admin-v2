@@ -334,6 +334,13 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     label: '知识库管理',
                     title: 'AI知识库的创建与文件管理',
                     page: 'AIKnowledgeManagement'
+                },
+                {
+                    key: 'ai-chat',
+                    icon: '💬',
+                    label: 'AI对话聊天',
+                    title: '与AI智能体进行对话，支持知识库增强',
+                    page: 'AIChat'
                 }
             ]
         }

@@ -184,13 +184,6 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     label: '展商中心',
                     title: '展商自主维护公司信息和产品信息',
                     page: 'exhibitor-maintenance'
-                },
-                {
-                    key: 'live',
-                    icon: '📺',
-                    label: '论坛直播',
-                    title: '论坛直播内容管理',
-                    page: 'live'
                 }
             ]
         },
@@ -319,6 +312,35 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     label: '用户画像',
                     title: '用户行为分析与画像管理',
                     page: 'UserProfile'
+                }
+            ]
+        },
+        {
+            key: 'ai-management',
+            icon: '🤖',
+            label: 'AI管理',
+            title: 'AI智能体与知识库管理模块',
+            children: [
+                {
+                    key: 'ai-agents',
+                    icon: '👾',
+                    label: '智能体管理',
+                    title: 'AI智能体的创建、配置与权限管理',
+                    page: 'AIAgentManagement'
+                },
+                {
+                    key: 'ai-knowledge',
+                    icon: '🧠',
+                    label: '知识库管理',
+                    title: 'AI知识库的创建与文件管理',
+                    page: 'AIKnowledgeManagement'
+                },
+                {
+                    key: 'ai-chat',
+                    icon: '💬',
+                    label: 'AI对话聊天',
+                    title: '与AI智能体进行对话，支持知识库增强',
+                    page: 'AIChat'
                 }
             ]
         }
@@ -659,4 +681,4 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
     ]);
 };
 
-window.Navigation = Navigation; 
+window.Navigation = Navigation;

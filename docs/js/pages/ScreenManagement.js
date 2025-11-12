@@ -9,90 +9,97 @@ const ScreenManagement = () => {
     // 状态管理
     const [activeTab, setActiveTab] = React.useState('list');
     const [loading, setLoading] = React.useState(false);
+    const [configVisible, setConfigVisible] = React.useState(false);
+    const [selectedScreen, setSelectedScreen] = React.useState(null);
+    const [basicInfoForm] = Form.useForm();
     const [screenList, setScreenList] = React.useState([
         {
             id: 1,
-            name: '人民城轨数据大屏-日常版',
-            type: '日常',
-            resolution: '4800x1350',
-            status: 'running',
+            name: '日常版大屏 (P1)',
+            maintenanceUser: '张三',
+            maintenanceTime: '2025-10-13 14:30:00',
             refreshInterval: 30,
-            viewCount: 1234,
-            lastUpdate: '2025-05-16 10:30:15',
-            modules: 9,
-            activeModules: 9
+            createTime: '2025-09-01 10:00:00',
+            createUser: '系统管理员',
+            status: 'running',
+            type: '日常'
         },
         {
             id: 2,
-            name: '协会概况',
-            type: '协会版',
-            resolution: '4800x1350',
-            status: 'running',
+            name: '协会简介大屏 (P2)',
+            maintenanceUser: '李四',
+            maintenanceTime: '2025-10-13 15:20:00',
             refreshInterval: 30,
-            viewCount: 856,
-            lastUpdate: '2025-05-16 10:30:15',
-            modules: 8,
-            activeModules: 8
+            createTime: '2025-09-05 09:30:00',
+            createUser: '王五',
+            status: 'running',
+            type: '协会版'
         },
         {
             id: 3,
-            name: '标准部',
-            type: '标准版',
-            resolution: '4800x1350',
-            status: 'running',
+            name: '标准制定大屏 (P3)',
+            maintenanceUser: '赵六',
+            maintenanceTime: '2025-10-12 16:45:00',
             refreshInterval: 30,
-            viewCount: 432,
-            lastUpdate: '2025-05-16 10:30:15',
-            modules: 6,
-            activeModules: 6
+            createTime: '2025-09-10 11:15:00',
+            createUser: '陈七',
+            status: 'running',
+            type: '标准版'
         },
         {
             id: 4,
-            name: '行业概况',
-            type: '行业版',
-            resolution: '4800x1350',
-            status: 'running',
+            name: '行业概况大屏 (P4)',
+            maintenanceUser: '孙八',
+            maintenanceTime: '2025-10-13 10:30:00',
             refreshInterval: 30,
-            viewCount: 678,
-            lastUpdate: '2025-05-16 10:30:15',
-            modules: 7,
-            activeModules: 7
+            createTime: '2025-09-15 14:20:00',
+            createUser: '周九',
+            status: 'running',
+            type: '行业版'
         },
         {
             id: 5,
-            name: '评审部',
-            type: '评审版',
-            resolution: '4800x1350',
-            status: 'running',
+            name: '评审工作大屏 (P5)',
+            maintenanceUser: '吴十',
+            maintenanceTime: '2025-10-11 13:10:00',
             refreshInterval: 30,
-            viewCount: 234,
-            lastUpdate: '2025-05-16 10:30:15',
-            modules: 5,
-            activeModules: 5
+            createTime: '2025-09-20 16:00:00',
+            createUser: '郑一',
+            status: 'running',
+            type: '评审版'
         },
         {
             id: 6,
-            name: '人民城轨数据大屏-展会版',
-            type: '展会',
-            resolution: '4800x1350',
-            status: 'stopped',
-            refreshInterval: 60,
-            viewCount: 567,
-            lastUpdate: '2025-05-15 18:20:00',
-            modules: 9,
-            activeModules: 0
+            name: '城市信息大屏 (P6)',
+            maintenanceUser: '钱二',
+            maintenanceTime: '2025-10-13 09:00:00',
+            refreshInterval: 30,
+            createTime: '2025-09-25 13:45:00',
+            createUser: '孙三',
+            status: 'running',
+            type: '城市版'
         },
         {
             id: 7,
-            name: '人民城轨数据大屏-特殊活动版',
-            type: '特殊活动',
-            resolution: '4800x1350',
-            status: 'maintenance',
+            name: '科技奖类大屏 (P7)',
+            maintenanceUser: '李四',
+            maintenanceTime: '2025-10-12 11:30:00',
             refreshInterval: 30,
-            viewCount: 89,
-            lastUpdate: '2025-05-14 09:15:00',
-            modules: 9,
-            activeModules: 7
+            createTime: '2025-09-30 10:20:00',
+            createUser: '王五',
+            status: 'running',
+            type: '科技版'
+        },
+        {
+            id: 8,
+            name: '紧急播报大屏 (P8)',
+            maintenanceUser: '赵六',
+            maintenanceTime: '2025-10-11 15:45:00',
+            refreshInterval: 30,
+            createTime: '2025-10-05 09:10:00',
+            createUser: '陈七',
+            status: 'stopped',
+            type: '紧急版'
         }
     ]);
 
@@ -531,6 +538,249 @@ const ScreenManagement = () => {
             stopped: { color: 'default', text: '🔴 已停止' },
             maintenance: { color: 'orange', text: '🟡 维护中' }
         };
+    
+    // 行业统计界面 - 根据Figma设计稿P3还原
+    const renderIndustryStats = () => {
+        return [
+            // 背景 - 根据设计稿添加深色科技风格背景
+            React.createElement('div', {
+                key: 'background',
+                style: {
+                    position: 'absolute',
+                    top: '0',
+                    left: '0',
+                    width: '4800px',
+                    height: '1440px',
+                    background: 'linear-gradient(135deg, #0a1929 0%, #0b2133 50%, #0a1929 100%)',
+                    zIndex: '-1'
+                }
+            }),
+            
+            // 顶部标题 - 根据Figma设计稿P3样式优化
+            React.createElement('div', {
+                key: 'header',
+                style: {
+                    position: 'absolute',
+                    top: '80px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: 'rgba(255,255,255,0.1)',
+                    padding: '20px 60px',
+                    borderRadius: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '48px',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s',
+                    boxShadow: '0 4px 20px rgba(0, 255, 255, 0.3)'
+                },
+                onMouseEnter: (e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                    e.currentTarget.style.boxShadow = '0 6px 30px rgba(0, 255, 255, 0.5)';
+                },
+                onMouseLeave: (e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 255, 255, 0.3)';
+                }
+            }, '行业统计大屏'),
+            
+            // 行业统计数据模块 - 根据Figma设计稿P3布局
+            // 第一行统计数据组
+            React.createElement('div', {
+                key: 'statsGroup1',
+                style: {
+                    position: 'absolute',
+                    top: '280px',
+                    left: '20px',
+                    display: 'flex',
+                    gap: '20px'
+                }
+            }, [
+                // 统计项1 - 运营城市数量
+                React.createElement('div', {
+                    key: 'stat1',
+                    style: {
+                        background: 'rgba(255,255,255,0.1)',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        width: '300px',
+                        textAlign: 'center',
+                        boxShadow: '0 2px 10px rgba(0, 255, 255, 0.2)'
+                    }
+                }, [
+                    React.createElement('div', { style: { color: '#fff', fontSize: '32px', fontWeight: 'bold', marginBottom: '10px' } }, '50'),
+                    React.createElement('div', { style: { color: '#ccc', fontSize: '20px' } }, '运营城市数量')
+                ]),
+                
+                // 统计项2 - 运营线路数量
+                React.createElement('div', {
+                    key: 'stat2',
+                    style: {
+                        background: 'rgba(255,255,255,0.1)',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        width: '300px',
+                        textAlign: 'center',
+                        boxShadow: '0 2px 10px rgba(0, 255, 255, 0.2)'
+                    }
+                }, [
+                    React.createElement('div', { style: { color: '#fff', fontSize: '32px', fontWeight: 'bold', marginBottom: '10px' } }, '330+'),
+                    React.createElement('div', { style: { color: '#ccc', fontSize: '20px' } }, '运营线路数量')
+                ]),
+                
+                // 统计项3 - 运营里程
+                React.createElement('div', {
+                    key: 'stat3',
+                    style: {
+                        background: 'rgba(255,255,255,0.1)',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        width: '300px',
+                        textAlign: 'center',
+                        boxShadow: '0 2px 10px rgba(0, 255, 255, 0.2)'
+                    }
+                }, [
+                    React.createElement('div', { style: { color: '#fff', fontSize: '32px', fontWeight: 'bold', marginBottom: '10px' } }, '13,500+'),
+                    React.createElement('div', { style: { color: '#ccc', fontSize: '20px' } }, '运营里程（公里）')
+                ]),
+                
+                // 统计项4 - 客运量
+                React.createElement('div', {
+                    key: 'stat4',
+                    style: {
+                        background: 'rgba(255,255,255,0.1)',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        width: '300px',
+                        textAlign: 'center',
+                        boxShadow: '0 2px 10px rgba(0, 255, 255, 0.2)'
+                    }
+                }, [
+                    React.createElement('div', { style: { color: '#fff', fontSize: '32px', fontWeight: 'bold', marginBottom: '10px' } }, '230亿'),
+                    React.createElement('div', { style: { color: '#ccc', fontSize: '20px' } }, '年客运量（人次）')
+                ]),
+                
+                // 统计项5 - 日均客运量
+                React.createElement('div', {
+                    key: 'stat5',
+                    style: {
+                        background: 'rgba(255,255,255,0.1)',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        width: '300px',
+                        textAlign: 'center',
+                        boxShadow: '0 2px 10px rgba(0, 255, 255, 0.2)'
+                    }
+                }, [
+                    React.createElement('div', { style: { color: '#fff', fontSize: '32px', fontWeight: 'bold', marginBottom: '10px' } }, '6,300万'),
+                    React.createElement('div', { style: { color: '#ccc', fontSize: '20px' } }, '日均客运量（人次）')
+                ])
+            ]),
+            
+            // 第二行模块
+            React.createElement('div', {
+                key: 'secondRow',
+                style: {
+                    position: 'absolute',
+                    top: '450px',
+                    left: '20px',
+                    display: 'flex',
+                    gap: '20px'
+                }
+            }, [
+                // 城市分布统计
+                renderModule('cityDistribution', {
+                    left: '0px',
+                    top: '0px',
+                    width: '900px',
+                    height: '400px'
+                }),
+                
+                // 运营里程统计
+                renderModule('operationMileage', {
+                    left: '920px',
+                    top: '0px',
+                    width: '900px',
+                    height: '400px'
+                }),
+                
+                // 客运量统计
+                renderModule('passengerVolume', {
+                    left: '1840px',
+                    top: '0px',
+                    width: '900px',
+                    height: '400px'
+                })
+            ]),
+            
+            // 第三行模块
+            React.createElement('div', {
+                key: 'thirdRow',
+                style: {
+                    position: 'absolute',
+                    top: '870px',
+                    left: '20px',
+                    display: 'flex',
+                    gap: '20px'
+                }
+            }, [
+                // 车辆制式分布
+                renderModule('vehicleTypes', {
+                    left: '0px',
+                    top: '0px',
+                    width: '900px',
+                    height: '400px'
+                }),
+                
+                // 全自动运行线路
+                renderModule('automatedLines', {
+                    left: '920px',
+                    top: '0px',
+                    width: '900px',
+                    height: '400px'
+                }),
+                
+                // 城市群分布
+                renderModule('cityGroupDistribution', {
+                    left: '1840px',
+                    top: '0px',
+                    width: '900px',
+                    height: '400px'
+                })
+            ]),
+            
+            // 日期和时间信息 - 根据Figma设计稿P3添加
+            React.createElement('div', {
+                key: 'dateInfo',
+                style: {
+                    position: 'absolute',
+                    top: '30px',
+                    right: '40px',
+                    color: '#fff',
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    textShadow: '0 2px 10px rgba(0, 255, 255, 0.5)'
+                }
+            }, '2025年05月16日 星期三'),
+            
+            React.createElement('div', {
+                key: 'timeInfo',
+                style: {
+                    position: 'absolute',
+                    top: '70px',
+                    right: '40px',
+                    color: '#fff',
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    textShadow: '0 2px 10px rgba(0, 255, 255, 0.5)'
+                }
+            }, '实时数据更新中...')
+        ];
+    };
         const config = statusMap[status] || { color: 'gray', text: '未知' };
         return React.createElement(Tag, { color: config.color }, config.text);
     };
@@ -548,6 +798,19 @@ const ScreenManagement = () => {
                 React.createElement(Menu.Item, { key: 'stop', danger: true }, '⏸️ 停止运行') :
                 React.createElement(Menu.Item, { key: 'start' }, '▶️ 启动运行')
         ]);
+    };
+
+    // 处理配置按钮点击
+    const handleConfigScreen = (record) => {
+        setSelectedScreen(record);
+        setEditingScreen(record);
+        // 初始化基础信息表单
+        basicInfoForm.setFieldsValue({
+            screenName: record.name,
+            maintenanceUser: record.maintenanceUser,
+            refreshInterval: record.refreshInterval
+        });
+        setActiveTab('editor');
     };
 
     // 处理菜单操作
@@ -651,75 +914,357 @@ const ScreenManagement = () => {
     const renderScreenEditor = () => {
         if (!editingScreen) return null;
 
+        // 初始化表单数据（如果表单还未初始化）
+        if (editingScreen && basicInfoForm) {
+            const currentValues = basicInfoForm.getFieldsValue();
+            if (!currentValues.screenName) {
+                basicInfoForm.setFieldsValue({
+                    screenName: editingScreen.name,
+                    maintenanceUser: editingScreen.maintenanceUser,
+                    refreshInterval: editingScreen.refreshInterval
+                });
+            }
+        }
+
         return React.createElement('div', {
             style: {
-                background: '#f0f2f5',
+                background: 'linear-gradient(135deg, #f0f2f5 0%, #e8ebf0 100%)',
                 minHeight: 'calc(100vh - 200px)',
-                padding: '12px'
+                padding: '20px'
             }
         }, [
-            // 精简工具栏
+            // 顶部工具栏 - 根据 Figma 设计优化
             React.createElement('div', {
                 key: 'toolbar',
                 style: {
-                    background: '#fff',
-                    padding: '8px 16px',
-                    marginBottom: '8px',
-                    borderRadius: '6px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+                    padding: '16px 24px',
+                    marginBottom: '16px',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
                     display: 'flex',
                     justifyContent: 'space-between',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    border: '1px solid #e8e8e8'
                 }
             }, [
                 React.createElement(Button, {
                     key: 'back',
-                    onClick: () => setActiveTab('list')
-                }, '← 返回列表'),
+                    icon: React.createElement('i', { className: 'fa-solid fa-arrow-left' }),
+                    onClick: () => {
+                        setActiveTab('list');
+                        setEditingScreen(null);
+                        setSelectedScreen(null);
+                    },
+                    style: {
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                    }
+                }, '返回列表'),
                 React.createElement('div', {
                     key: 'center',
-                    style: { display: 'flex', alignItems: 'center', gap: 12 }
+                    style: { 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: 12,
+                        padding: '8px 16px',
+                        background: 'linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%)',
+                        borderRadius: '6px',
+                        border: '1px solid #91d5ff'
+                    }
                 }, [
-                    React.createElement('span', { key: 'icon', style: { fontSize: 16 } }, '💡'),
-                    React.createElement('span', { key: 'text', style: { fontSize: 14 } }, '点击下方大屏中的任意模块即可编辑内容，修改后点击"保存修改"应用到大屏')
+                    React.createElement('i', { 
+                        key: 'icon', 
+                        className: 'fa-solid fa-lightbulb',
+                        style: { fontSize: 16, color: '#1890ff' }
+                    }),
+                    React.createElement('span', { 
+                        key: 'text', 
+                        style: { 
+                            fontSize: 14,
+                            color: '#1890ff',
+                            fontWeight: 500
+                        } 
+                    }, '点击下方大屏中的任意模块即可编辑内容，修改后点击"保存修改"应用到大屏')
                 ]),
-                React.createElement(Space, { key: 'right' }, [
-                    React.createElement(Tag, {
-                        key: 'status',
-                        color: editingScreen.status === 'running' ? 'green' : 'default',
-                        size: 'small'
-                    }, editingScreen.status === 'running' ? '🟢 运行中' : '🔴 已停止'),
+                React.createElement(Space, { key: 'right', size: 'middle' }, [
                     React.createElement(Button, {
                         key: 'preview',
-                        type: 'primary',
-                        size: 'small',
-                        onClick: () => message.success('预览功能演示')
-                    }, '👁️ 预览大屏'),
+                        type: 'default',
+                        icon: React.createElement('i', { className: 'fa-solid fa-eye' }),
+                        onClick: () => message.success('预览功能演示'),
+                        style: {
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px'
+                        }
+                    }, '预览大屏'),
                     React.createElement(Button, {
                         key: 'save',
                         type: 'primary',
-                        size: 'small'
-                    }, '💾 保存修改')
+                        icon: React.createElement('i', { className: 'fa-solid fa-floppy-disk' }),
+                        onClick: () => handleSaveAllConfig(),
+                        style: {
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            background: 'linear-gradient(135deg, #1890ff 0%, #096dd9 100%)',
+                            border: 'none',
+                            boxShadow: '0 2px 8px rgba(24, 144, 255, 0.3)'
+                        }
+                    }, '保存修改')
                 ])
             ]),
 
-            // 真实大屏界面（放大显示）
+            // 基础信息配置 - 根据 Figma 设计优化样式
+            React.createElement(Card, {
+                key: 'basic-info',
+                title: React.createElement('div', {
+                    style: {
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        fontSize: '16px',
+                        fontWeight: 600,
+                        color: '#262626'
+                    }
+                }, [
+                    React.createElement('i', { 
+                        key: 'icon',
+                        className: 'fa-solid fa-gear',
+                        style: { color: '#1890ff' }
+                    }),
+                    React.createElement('span', { key: 'text' }, '基础信息配置')
+                ]),
+                size: 'default',
+                style: { 
+                    marginBottom: '16px',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                    border: '1px solid #e8e8e8'
+                },
+                headStyle: {
+                    background: 'linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%)',
+                    borderBottom: '2px solid #1890ff',
+                    borderRadius: '8px 8px 0 0'
+                }
+            }, React.createElement(Form, {
+                form: basicInfoForm,
+                layout: 'horizontal',
+                labelCol: { span: 6 },
+                wrapperCol: { span: 18 }
+            }, [
+                React.createElement(Row, { key: 'row', gutter: 24 }, [
+                    React.createElement(Col, { key: 'col1', span: 8 }, 
+                        React.createElement(Form.Item, {
+                            label: React.createElement('span', {
+                                style: {
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    fontWeight: 500
+                                }
+                            }, [
+                                React.createElement('i', { 
+                                    key: 'icon',
+                                    className: 'fa-solid fa-tv',
+                                    style: { color: '#1890ff', fontSize: '14px' }
+                                }),
+                                React.createElement('span', { key: 'text' }, '大屏名称')
+                            ]),
+                            name: 'screenName',
+                            rules: [{ required: true, message: '请输入大屏名称' }]
+                        }, React.createElement(Input, {
+                            placeholder: '请输入大屏名称',
+                            prefix: React.createElement('i', { className: 'fa-solid fa-pen', style: { color: '#bfbfbf' } }),
+                            style: { 
+                                borderRadius: '6px',
+                                border: '1px solid #d9d9d9',
+                                transition: 'all 0.3s'
+                            },
+                            onFocus: (e) => {
+                                e.target.style.borderColor = '#1890ff';
+                                e.target.style.boxShadow = '0 0 0 2px rgba(24, 144, 255, 0.2)';
+                            },
+                            onBlur: (e) => {
+                                e.target.style.borderColor = '#d9d9d9';
+                                e.target.style.boxShadow = 'none';
+                            }
+                        }))
+                    ),
+                    React.createElement(Col, { key: 'col2', span: 8 }, 
+                        React.createElement(Form.Item, {
+                            label: React.createElement('span', {
+                                style: {
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    fontWeight: 500
+                                }
+                            }, [
+                                React.createElement('i', { 
+                                    key: 'icon',
+                                    className: 'fa-solid fa-user',
+                                    style: { color: '#1890ff', fontSize: '14px' }
+                                }),
+                                React.createElement('span', { key: 'text' }, '维护人')
+                            ]),
+                            name: 'maintenanceUser',
+                            rules: [{ required: true, message: '请输入维护人' }]
+                        }, React.createElement(Input, {
+                            placeholder: '请输入维护人',
+                            prefix: React.createElement('i', { className: 'fa-solid fa-user-gear', style: { color: '#bfbfbf' } }),
+                            style: { 
+                                borderRadius: '6px',
+                                border: '1px solid #d9d9d9',
+                                transition: 'all 0.3s'
+                            },
+                            onFocus: (e) => {
+                                e.target.style.borderColor = '#1890ff';
+                                e.target.style.boxShadow = '0 0 0 2px rgba(24, 144, 255, 0.2)';
+                            },
+                            onBlur: (e) => {
+                                e.target.style.borderColor = '#d9d9d9';
+                                e.target.style.boxShadow = 'none';
+                            }
+                        }))
+                    ),
+                    React.createElement(Col, { key: 'col3', span: 8 }, 
+                        React.createElement(Form.Item, {
+                            label: React.createElement('span', {
+                                style: {
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    fontWeight: 500
+                                }
+                            }, [
+                                React.createElement('i', { 
+                                    key: 'icon',
+                                    className: 'fa-solid fa-clock',
+                                    style: { color: '#1890ff', fontSize: '14px' }
+                                }),
+                                React.createElement('span', { key: 'text' }, '刷新间隔')
+                            ]),
+                            name: 'refreshInterval',
+                            rules: [
+                                { required: true, message: '请输入刷新间隔' },
+                                { type: 'number', min: 10, max: 3600, message: '刷新间隔应在10-3600秒之间' }
+                            ]
+                        }, React.createElement(Input, {
+                            type: 'number',
+                            placeholder: '30',
+                            suffix: React.createElement('span', { style: { color: '#8c8c8c' } }, '秒'),
+                            prefix: React.createElement('i', { className: 'fa-solid fa-rotate', style: { color: '#bfbfbf' } }),
+                            style: { 
+                                borderRadius: '6px',
+                                border: '1px solid #d9d9d9',
+                                transition: 'all 0.3s'
+                            },
+                            onFocus: (e) => {
+                                e.target.style.borderColor = '#1890ff';
+                                e.target.style.boxShadow = '0 0 0 2px rgba(24, 144, 255, 0.2)';
+                            },
+                            onBlur: (e) => {
+                                e.target.style.borderColor = '#d9d9d9';
+                                e.target.style.boxShadow = 'none';
+                            }
+                        }))
+                    )
+                ])
+            ])),
+
+            // 大屏预览区域标题
+            React.createElement(Card, {
+                key: 'preview-header',
+                style: { 
+                    marginBottom: '16px',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                    border: '1px solid #e8e8e8'
+                },
+                bodyStyle: { padding: '12px 16px' }
+            }, React.createElement('div', {
+                style: {
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    color: '#262626'
+                }
+            }, [
+                React.createElement('i', { 
+                    key: 'icon',
+                    className: 'fa-solid fa-desktop',
+                    style: { color: '#1890ff' }
+                }),
+                React.createElement('span', { key: 'text' }, '大屏预览'),
+                React.createElement(Tag, {
+                    key: 'tag',
+                    color: editingScreen.status === 'running' ? 'success' : 'default',
+                    style: { marginLeft: '8px' }
+                }, editingScreen.status === 'running' ? '运行中' : '已停止')
+            ])),
+
+            // 真实大屏界面（放大显示）- 根据 Figma 设计优化
             React.createElement('div', {
                 key: 'screen',
                 style: {
                     background: '#165faf',
                     borderRadius: '8px',
                     overflow: 'hidden',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                    boxShadow: '0 8px 32px rgba(22, 95, 175, 0.3)',
                     transform: 'scale(0.4)',
                     transformOrigin: 'top left',
                     width: '4800px',
                     height: '1350px',
                     position: 'relative',
-                    margin: '0 auto'
+                    margin: '0 auto',
+                    border: '2px solid #4174a7',
+                    transition: 'all 0.3s'
+                },
+                onMouseEnter: (e) => {
+                    e.currentTarget.style.boxShadow = '0 12px 40px rgba(22, 95, 175, 0.4)';
+                },
+                onMouseLeave: (e) => {
+                    e.currentTarget.style.boxShadow = '0 8px 32px rgba(22, 95, 175, 0.3)';
                 }
             }, renderScreenContent(editingScreen))
         ]);
+    };
+
+    // 保存所有配置
+    const handleSaveAllConfig = async () => {
+        try {
+            // 保存基础信息
+            const basicInfo = await basicInfoForm.validateFields();
+            
+            // 更新大屏列表中的信息
+            setScreenList(prev => prev.map(item => 
+                item.id === editingScreen.id ? {
+                    ...item,
+                    name: basicInfo.screenName,
+                    maintenanceUser: basicInfo.maintenanceUser,
+                    refreshInterval: basicInfo.refreshInterval,
+                    maintenanceTime: new Date().toISOString().slice(0, 19).replace('T', ' ')
+                } : item
+            ));
+
+            // 更新当前编辑的大屏信息
+            setEditingScreen(prev => ({
+                ...prev,
+                name: basicInfo.screenName,
+                maintenanceUser: basicInfo.maintenanceUser,
+                refreshInterval: basicInfo.refreshInterval,
+                maintenanceTime: new Date().toISOString().slice(0, 19).replace('T', ' ')
+            }));
+
+            message.success('配置保存成功');
+        } catch (error) {
+            message.error('请完善表单信息');
+        }
     };
 
     // 渲染单个模块（可点击编辑）
@@ -910,20 +1455,39 @@ const ScreenManagement = () => {
     // 渲染不同模块的编辑表单
     const renderModuleEditForm = (moduleKey, module) => {
         switch(moduleKey) {
+            // 新闻类模块
             case 'news':
                 return renderNewsEditForm(module);
             case 'partyNews':
                 return renderPartyNewsEditForm(module);
+
+            // 列表类模块
             case 'workPlan':
                 return renderWorkPlanEditForm(module);
+
+            // 配置类模块
             case 'traffic':
                 return renderTrafficEditForm(module);
+
+            // 数据类模块
             case 'memberStats':
                 return renderMemberStatsEditForm(module);
+            case 'industryStats':
+                return renderIndustryStatsEditForm(module);
+            case 'standardStats':
+                return renderStandardStatsEditForm(module);
+            case 'operationMileage':
+                return renderOperationMileageEditForm(module);
+            case 'passengerVolume':
+                return renderPassengerVolumeEditForm(module);
+            case 'applicationStats':
+                return renderApplicationStatsEditForm(module);
+            case 'passStats':
+                return renderPassStatsEditForm(module);
+
+            // 其他模块
             default:
-                return React.createElement('div', {
-                    style: { padding: 40, textAlign: 'center', color: '#666' }
-                }, `${module.name}内容编辑功能`);
+                return renderDefaultEditForm(module);
         }
     };
 
@@ -1095,7 +1659,7 @@ const ScreenManagement = () => {
                 name: 'total',
                 initialValue: module.data.total
             }, React.createElement(Input, { type: 'number', placeholder: '1129' })),
-            
+
             React.createElement('h4', { key: 'categories-title', style: { marginTop: 24 } }, '会员分类统计'),
             module.data.categories.map((category, index) =>
                 React.createElement(Form.Item, {
@@ -1108,6 +1672,240 @@ const ScreenManagement = () => {
                 }))
             )
         ]);
+    };
+
+    // 行业统计编辑表单
+    const renderIndustryStatsEditForm = (module) => {
+        return React.createElement('div', {}, [
+            React.createElement(Form.Item, {
+                key: 'title',
+                label: '统计标题',
+                name: 'title',
+                initialValue: module.data.title
+            }, React.createElement(Input, { placeholder: '2024年各城市城轨交通运营总里程（公里）' })),
+
+            React.createElement('h4', { key: 'cities-title', style: { marginTop: 24 } }, '城市数据列表'),
+            module.data.cities.map((city, index) =>
+                React.createElement(Card, {
+                    key: index,
+                    size: 'small',
+                    style: { marginBottom: 8 }
+                }, React.createElement(Row, { gutter: 16, align: 'middle' }, [
+                    React.createElement(Col, { key: 'name', span: 8 },
+                        React.createElement(Input, {
+                            defaultValue: city.name,
+                            placeholder: '城市名称'
+                        })
+                    ),
+                    React.createElement(Col, { key: 'value', span: 8 },
+                        React.createElement(Input, {
+                            type: 'number',
+                            defaultValue: city.value,
+                            placeholder: '数值'
+                        })
+                    ),
+                    React.createElement(Col, { key: 'actions', span: 8 },
+                        React.createElement(Button, { size: 'small', danger: true }, '删除')
+                    )
+                ]))
+            ),
+            React.createElement(Button, {
+                key: 'add',
+                type: 'dashed',
+                block: true,
+                style: { marginTop: 12 }
+            }, '+ 添加城市数据')
+        ]);
+    };
+
+    // 标准制定统计编辑表单
+    const renderStandardStatsEditForm = (module) => {
+        return React.createElement('div', {}, [
+            React.createElement(Form.Item, {
+                key: 'total',
+                label: '标准总数',
+                name: 'total',
+                initialValue: module.data.total
+            }, React.createElement(Input, { type: 'number', placeholder: '156' })),
+
+            React.createElement(Form.Item, {
+                key: 'published',
+                label: '已发布数量',
+                name: 'published',
+                initialValue: module.data.published
+            }, React.createElement(Input, { type: 'number', placeholder: '143' })),
+
+            React.createElement(Form.Item, {
+                key: 'drafting',
+                label: '在编数量',
+                name: 'drafting',
+                initialValue: module.data.drafting
+            }, React.createElement(Input, { type: 'number', placeholder: '13' })),
+
+            React.createElement('h4', { key: 'categories-title', style: { marginTop: 24 } }, '分类统计'),
+            module.data.categories.map((category, index) =>
+                React.createElement(Form.Item, {
+                    key: index,
+                    label: category.name
+                }, React.createElement(Input, {
+                    type: 'number',
+                    defaultValue: category.count,
+                    placeholder: '数量'
+                }))
+            )
+        ]);
+    };
+
+    // 运营里程统计编辑表单
+    const renderOperationMileageEditForm = (module) => {
+        return React.createElement('div', {}, [
+            React.createElement('h4', { key: 'title', style: { marginBottom: 16 } }, '城市运营里程数据'),
+
+            module.data.map((city, index) =>
+                React.createElement(Card, {
+                    key: index,
+                    size: 'small',
+                    style: { marginBottom: 8 }
+                }, React.createElement(Row, { gutter: 16, align: 'middle' }, [
+                    React.createElement(Col, { key: 'city', span: 6 },
+                        React.createElement(Input, {
+                            defaultValue: city.city,
+                            placeholder: '城市名称'
+                        })
+                    ),
+                    React.createElement(Col, { key: 'mileage', span: 6 },
+                        React.createElement(Input, {
+                            type: 'number',
+                            defaultValue: city.mileage,
+                            placeholder: '运营里程'
+                        })
+                    ),
+                    React.createElement(Col, { key: 'lines', span: 6 },
+                        React.createElement(Input, {
+                            type: 'number',
+                            defaultValue: city.lines,
+                            placeholder: '线路数量'
+                        })
+                    ),
+                    React.createElement(Col, { key: 'actions', span: 6 },
+                        React.createElement(Button, { size: 'small', danger: true }, '删除')
+                    )
+                ]))
+            ),
+            React.createElement(Button, {
+                key: 'add',
+                type: 'dashed',
+                block: true,
+                style: { marginTop: 12 }
+            }, '+ 添加城市数据')
+        ]);
+    };
+
+    // 客运量统计编辑表单
+    const renderPassengerVolumeEditForm = (module) => {
+        return React.createElement('div', {}, [
+            React.createElement(Form.Item, {
+                key: 'totalAnnual',
+                label: '年客运量（亿人次）',
+                name: 'totalAnnual',
+                initialValue: module.data.totalAnnual
+            }, React.createElement(Input, { type: 'number', step: '0.01', placeholder: '322.57' })),
+
+            React.createElement(Form.Item, {
+                key: 'dailyAverage',
+                label: '日均客运量（万人次）',
+                name: 'dailyAverage',
+                initialValue: module.data.dailyAverage
+            }, React.createElement(Input, { type: 'number', step: '0.1', placeholder: '88.3' })),
+
+            React.createElement('h4', { key: 'top-cities-title', style: { marginTop: 24 } }, '主要城市客运量'),
+            module.data.topCities.map((city, index) =>
+                React.createElement(Card, {
+                    key: index,
+                    size: 'small',
+                    style: { marginBottom: 8 }
+                }, React.createElement(Row, { gutter: 16, align: 'middle' }, [
+                    React.createElement(Col, { key: 'city', span: 12 },
+                        React.createElement(Input, {
+                            defaultValue: city.city,
+                            placeholder: '城市名称'
+                        })
+                    ),
+                    React.createElement(Col, { key: 'volume', span: 12 },
+                        React.createElement(Input, {
+                            type: 'number',
+                            defaultValue: city.volume,
+                            placeholder: '客运量'
+                        })
+                    )
+                ]))
+            )
+        ]);
+    };
+
+    // 申报情况统计编辑表单
+    const renderApplicationStatsEditForm = (module) => {
+        return React.createElement('div', {}, [
+            React.createElement('h4', { key: 'title', style: { marginBottom: 16 } }, '年度申报情况统计'),
+
+            module.data.map((yearData, index) =>
+                React.createElement(Card, {
+                    key: index,
+                    size: 'small',
+                    style: { marginBottom: 8 }
+                }, React.createElement(Row, { gutter: 16, align: 'middle' }, [
+                    React.createElement(Col, { key: 'year', span: 12 },
+                        React.createElement(Input, {
+                            defaultValue: yearData.year,
+                            placeholder: '年份'
+                        })
+                    ),
+                    React.createElement(Col, { key: 'count', span: 12 },
+                        React.createElement(Input, {
+                            type: 'number',
+                            defaultValue: yearData.count,
+                            placeholder: '申报人数'
+                        })
+                    )
+                ]))
+            )
+        ]);
+    };
+
+    // 评审通过情况编辑表单
+    const renderPassStatsEditForm = (module) => {
+        return React.createElement('div', {}, [
+            React.createElement('h4', { key: 'title', style: { marginBottom: 16 } }, '年度评审通过情况统计'),
+
+            module.data.map((yearData, index) =>
+                React.createElement(Card, {
+                    key: index,
+                    size: 'small',
+                    style: { marginBottom: 8 }
+                }, React.createElement(Row, { gutter: 16, align: 'middle' }, [
+                    React.createElement(Col, { key: 'year', span: 12 },
+                        React.createElement(Input, {
+                            defaultValue: yearData.year,
+                            placeholder: '年份'
+                        })
+                    ),
+                    React.createElement(Col, { key: 'count', span: 12 },
+                        React.createElement(Input, {
+                            type: 'number',
+                            defaultValue: yearData.count,
+                            placeholder: '通过人数'
+                        })
+                    )
+                ]))
+            )
+        ]);
+    };
+
+    // 默认编辑表单
+    const renderDefaultEditForm = (module) => {
+        return React.createElement('div', {
+            style: { padding: 40, textAlign: 'center', color: '#666' }
+        }, `${module.name}内容编辑功能开发中`);
     };
 
     // 实时控制弹窗
@@ -1200,83 +1998,79 @@ const ScreenManagement = () => {
     // 表格列定义
     const columns = [
         {
+            title: '大屏ID',
+            dataIndex: 'id',
+            key: 'id',
+            width: 80
+        },
+        {
             title: '大屏名称',
             dataIndex: 'name',
             key: 'name',
-            width: 300,
+            width: 250,
             render: (text, record) => React.createElement('div', {}, [
                 React.createElement('div', {
                     key: 'name',
                     style: { fontWeight: 'bold', marginBottom: 4 }
                 }, text),
                 React.createElement('div', {
-                    key: 'meta',
+                    key: 'type',
                     style: { fontSize: 12, color: '#666' }
-                }, `${record.type} | ${record.resolution}`)
+                }, record.type)
             ])
         },
         {
-            title: '状态',
-            key: 'status',
-            width: 120,
-            render: (_, record) => getStatusTag(record.status)
+            title: '维护人',
+            dataIndex: 'maintenanceUser',
+            key: 'maintenanceUser',
+            width: 100
         },
         {
-            title: '模块状态',
-            key: 'modules',
-            width: 120,
-            render: (_, record) => React.createElement('div', {}, [
-                React.createElement('div', {
-                    key: 'count',
-                    style: { fontSize: 14 }
-                }, `${record.activeModules}/${record.modules}`),
-                React.createElement('div', {
-                    key: 'label',
-                    style: { fontSize: 12, color: '#666' }
-                }, '活跃/总数')
-            ])
-        },
-        {
-            title: '访问统计',
-            key: 'views',
-            width: 100,
-            render: (_, record) => React.createElement('div', {}, [
-                React.createElement('div', {
-                    key: 'count',
-                    style: { fontSize: 14, fontWeight: 'bold' }
-                }, record.viewCount),
-                React.createElement('div', {
-                    key: 'label',
-                    style: { fontSize: 12, color: '#666' }
-                }, '次访问')
-            ])
-        },
-        {
-            title: '最后更新',
-            dataIndex: 'lastUpdate',
-            key: 'lastUpdate',
-            width: 150
+            title: '维护时间',
+            dataIndex: 'maintenanceTime',
+            key: 'maintenanceTime',
+            width: 160,
+            render: (text) => {
+                const date = new Date(text);
+                return date.toLocaleString('zh-CN');
+            }
         },
         {
             title: '刷新间隔',
-            key: 'refresh',
+            key: 'refreshInterval',
             width: 100,
             render: (_, record) => `${record.refreshInterval}秒`
         },
         {
+            title: '创建时间',
+            dataIndex: 'createTime',
+            key: 'createTime',
+            width: 160,
+            render: (text) => {
+                const date = new Date(text);
+                return date.toLocaleString('zh-CN');
+            }
+        },
+        {
+            title: '创建人',
+            dataIndex: 'createUser',
+            key: 'createUser',
+            width: 100
+        },
+        {
             title: '操作',
             key: 'actions',
-            width: 200,
+            width: 180,
             fixed: 'right',
             render: (_, record) => React.createElement(Space, {}, [
                 React.createElement(Tooltip, {
-                    key: 'edit',
-                    title: '可视化编辑'
+                    key: 'config',
+                    title: '配置管理'
                 }, React.createElement(Button, {
                     type: 'primary',
                     size: 'small',
-                    onClick: () => handleMenuAction('edit', record)
-                }, '🖥️ 配置')),
+                    onClick: () => handleConfigScreen(record)
+                }, '⚙️ 配置')),
                 React.createElement(Dropdown, {
                     key: 'more',
                     overlay: getActionMenu(record),
@@ -1288,6 +2082,324 @@ const ScreenManagement = () => {
             ])
         }
     ];
+
+    // 渲染配置管理页面
+    const renderConfigPage = () => {
+        if (!selectedScreen) {
+            return React.createElement('div', {
+                style: {
+                    textAlign: 'center',
+                    padding: '50px',
+                    color: '#999'
+                }
+            }, '请先从大屏列表中选择一个大屏进行配置');
+        }
+
+        return React.createElement('div', {}, [
+            // 顶部工具栏
+            React.createElement('div', {
+                key: 'toolbar',
+                style: {
+                    background: '#fff',
+                    padding: '16px 24px',
+                    marginBottom: '16px',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                }
+            }, [
+                React.createElement('div', {
+                    key: 'left',
+                    style: { display: 'flex', alignItems: 'center', gap: 16 }
+                }, [
+                    React.createElement(Button, {
+                        key: 'back',
+                        onClick: () => {
+                            setSelectedScreen(null);
+                            setActiveTab('list');
+                        }
+                    }, '← 返回列表'),
+                    React.createElement('div', {
+                        key: 'info',
+                        style: { fontSize: 16, fontWeight: 'bold' }
+                    }, `配置管理：${selectedScreen.name}`)
+                ]),
+                React.createElement('div', {
+                    key: 'right',
+                    style: { display: 'flex', alignItems: 'center', gap: 12 }
+                }, [
+                    React.createElement(Button, {
+                        key: 'sync',
+                        type: 'primary',
+                        onClick: () => handleSyncData()
+                    }, '🔄 同步'),
+                    React.createElement(Button, {
+                        key: 'export',
+                        onClick: () => handleExportTemplate()
+                    }, '📤 导出模板'),
+                    React.createElement(Button, {
+                        key: 'import',
+                        onClick: () => handleImportData()
+                    }, '📥 导入数据'),
+                    React.createElement(Button, {
+                        key: 'save',
+                        type: 'primary',
+                        onClick: () => handleSaveConfig()
+                    }, '💾 保存修改')
+                ])
+            ]),
+
+            // 基础信息配置
+            React.createElement(Card, {
+                key: 'basic-info',
+                title: '基础信息配置',
+                style: { marginBottom: 16 }
+            }, React.createElement(Row, { gutter: 16 }, [
+                React.createElement(Col, { key: 'name', span: 8 },
+                    React.createElement(Form.Item, {
+                        label: '大屏名称',
+                        name: 'screenName',
+                        initialValue: selectedScreen.name
+                    }, React.createElement(Input, {
+                        placeholder: '请输入大屏名称'
+                    }))
+                ),
+                React.createElement(Col, { key: 'maintainer', span: 8 },
+                    React.createElement(Form.Item, {
+                        label: '维护人',
+                        name: 'maintenanceUser',
+                        initialValue: selectedScreen.maintenanceUser
+                    }, React.createElement(Input, {
+                        placeholder: '请输入维护人'
+                    }))
+                ),
+                React.createElement(Col, { key: 'interval', span: 8 },
+                    React.createElement(Form.Item, {
+                        label: '刷新间隔（秒）',
+                        name: 'refreshInterval',
+                        initialValue: selectedScreen.refreshInterval
+                    }, React.createElement(Input, {
+                        type: 'number',
+                        placeholder: '30'
+                    }))
+                )
+            ])),
+
+            // 子模块内容编辑
+            React.createElement(Card, {
+                key: 'modules',
+                title: '子模块内容编辑'
+            }, React.createElement('div', {
+                style: { maxHeight: '600px', overflowY: 'auto' }
+            }, renderModuleList()))
+        ]);
+    };
+
+    // 渲染子模块列表
+    const renderModuleList = () => {
+        const screenType = selectedScreen.type;
+        let modules = [];
+
+        switch(screenType) {
+            case '日常':
+                modules = ['weather', 'traffic', 'news', 'partyNews', 'workPlan', 'memberStats', 'industryStats', 'brandActivity', 'live'];
+                break;
+            case '协会版':
+                modules = ['associationInfo', 'organization', 'development', 'achievements', 'services', 'contact', 'memberStats', 'news'];
+                break;
+            case '标准版':
+                modules = ['standardStats', 'technicalSpecs', 'qualityCert', 'standardRelease', 'workflow', 'latestStandards', 'applicationCases'];
+                break;
+            case '行业版':
+                modules = ['cityDistribution', 'operationMileage', 'passengerVolume', 'vehicleTypes', 'headwayStats', 'automatedLines', 'cityGroupDistribution', 'systemRatio'];
+                break;
+            case '评审版':
+                modules = ['reviewIntro', 'applicationStats', 'passStats', 'applicantUnits', 'passUnits', 'professionalRatio', 'regionalDistribution', 'levelStats'];
+                break;
+            default:
+                modules = ['weather', 'traffic', 'news'];
+        }
+
+        return modules.map(moduleKey => {
+            const module = screenModules[moduleKey];
+            if (!module) return null;
+
+            return React.createElement(Card, {
+                key: moduleKey,
+                size: 'small',
+                style: { marginBottom: 12 },
+                extra: React.createElement(Button, {
+                    size: 'small',
+                    onClick: () => handleEditModule(moduleKey)
+                }, '编辑')
+            }, [
+                React.createElement('div', {
+                    key: 'title',
+                    style: { fontWeight: 'bold', marginBottom: 8 }
+                }, module.name),
+                React.createElement('div', {
+                    key: 'preview',
+                    style: { color: '#666', fontSize: '14px' }
+                }, renderModulePreview(moduleKey, module))
+            ]);
+        });
+    };
+
+    // 处理模块编辑
+    const handleEditModule = (moduleKey) => {
+        setSelectedModule(moduleKey);
+        setEditDrawerVisible(true);
+        editForm.setFieldsValue(screenModules[moduleKey].data);
+    };
+
+    // 处理导出模板
+    const handleExportTemplate = () => {
+        const templateData = generateExcelTemplate();
+        const csvContent = convertToCSV(templateData);
+        downloadCSV(csvContent, `${selectedScreen.name}_数据模板.csv`);
+        message.success('模板导出成功，请使用Excel打开编辑');
+    };
+
+    // 处理导入数据
+    const handleImportData = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.csv,.xlsx,.xls';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                // 模拟文件处理
+                message.success(`文件 "${file.name}" 上传成功，正在处理数据...`);
+                setTimeout(() => {
+                    message.success('数据导入完成，共导入 25 条记录');
+                }, 2000);
+            }
+        };
+        input.click();
+    };
+
+    // 生成Excel模板数据
+    const generateExcelTemplate = () => {
+        const screenType = selectedScreen.type;
+        let template = [];
+
+        switch(screenType) {
+            case '日常':
+                template = [
+                    ['模块类型', '字段名', '字段值', '说明'],
+                    ['会员统计', '总会员数', '1129', '会员单位总数'],
+                    ['会员统计', '副会长会员', '28', '副会长会员名录数量'],
+                    ['会员统计', '常务理事会员', '92', '常务理事会员名录数量'],
+                    ['会员统计', '理事会员', '384', '理事会员名录数量'],
+                    ['会员统计', '普通会员', '625', '普通会员名录数量'],
+                    ['行业统计', '城市名称', '上海', '运营里程数据'],
+                    ['行业统计', '运营里程', '850', '运营里程（公里）'],
+                    ['行业统计', '线路数量', '20', '地铁线路数量']
+                ];
+                break;
+            case '协会版':
+                template = [
+                    ['模块类型', '字段名', '字段值', '说明'],
+                    ['会员统计', '总会员数', '1129', '会员单位总数'],
+                    ['会员统计', '副会长会员', '28', '副会长会员名录数量'],
+                    ['会员统计', '常务理事会员', '92', '常务理事会员名录数量'],
+                    ['会员统计', '理事会员', '384', '理事会员名录数量'],
+                    ['会员统计', '普通会员', '625', '普通会员名录数量']
+                ];
+                break;
+            case '标准版':
+                template = [
+                    ['模块类型', '字段名', '字段值', '说明'],
+                    ['标准制定统计', '已发布标准', '143', '已发布标准数量'],
+                    ['标准制定统计', '在编标准', '13', '在编标准数量'],
+                    ['质量认证', '认证企业', '89', '认证企业数量'],
+                    ['质量认证', '认证产品', '234', '认证产品数量']
+                ];
+                break;
+            case '行业版':
+                template = [
+                    ['模块类型', '字段名', '字段值', '说明'],
+                    ['运营里程统计', '城市名称', '上海', '城市名称'],
+                    ['运营里程统计', '运营里程', '850', '运营里程（公里）'],
+                    ['运营里程统计', '线路数量', '20', '地铁线路数量'],
+                    ['客运量统计', '年客运量', '322.57', '年客运量（亿人次）'],
+                    ['客运量统计', '日均客运量', '88.3', '日均客运量（万人次）']
+                ];
+                break;
+            case '评审版':
+                template = [
+                    ['模块类型', '字段名', '字段值', '说明'],
+                    ['申报情况统计', '2019年', '73', '2019年申报人数'],
+                    ['申报情况统计', '2020年', '102', '2020年申报人数'],
+                    ['申报情况统计', '2023年', '780', '2023年申报人数'],
+                    ['申报情况统计', '2024年', '847', '2024年申报人数'],
+                    ['评审通过情况', '2019年', '21', '2019年通过人数'],
+                    ['评审通过情况', '2020年', '49', '2020年通过人数'],
+                    ['评审通过情况', '2023年', '496', '2023年通过人数'],
+                    ['评审通过情况', '2024年', '502', '2024年通过人数']
+                ];
+                break;
+            default:
+                template = [
+                    ['模块类型', '字段名', '字段值', '说明'],
+                    ['示例数据', '字段1', '值1', '示例说明']
+                ];
+        }
+
+        return template;
+    };
+
+    // 转换为CSV格式
+    const convertToCSV = (data) => {
+        return data.map(row =>
+            row.map(cell => `"${cell}"`).join(',')
+        ).join('\n');
+    };
+
+    // 下载CSV文件
+    const downloadCSV = (content, filename) => {
+        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    };
+
+    // 处理数据同步
+    const handleSyncData = () => {
+        Modal.confirm({
+            title: '🔄 数据同步确认',
+            content: React.createElement('div', {}, [
+                React.createElement('p', { key: 'desc' }, `确定要同步大屏"${selectedScreen.name}"的最新数据吗？`),
+                React.createElement('p', { key: 'note', style: { color: '#666', fontSize: '12px', marginTop: 8 } },
+                    '同步将从数据源获取最新数据并更新大屏显示内容。'
+                )
+            ]),
+            okText: '开始同步',
+            cancelText: '取消',
+            onOk: () => {
+                message.loading('正在同步数据...', 0);
+                // 模拟同步过程
+                setTimeout(() => {
+                    message.destroy();
+                    message.success(`大屏"${selectedScreen.name}"数据同步完成`);
+                }, 3000);
+            }
+        });
+    };
+
+    // 处理保存配置
+    const handleSaveConfig = () => {
+        message.success('配置保存成功');
+    };
 
     // 渲染列表页面
     const renderListPage = () => {
@@ -1307,37 +2419,6 @@ const ScreenManagement = () => {
                             valueStyle: { color: '#1890ff' }
                         })
                     )
-                ),
-                React.createElement(Col, { key: 'running', span: 6 },
-                    React.createElement(Card, { size: 'small' },
-                        React.createElement(Statistic, {
-                            title: '运行中',
-                            value: screenList.filter(s => s.status === 'running').length,
-                            prefix: '🟢',
-                            valueStyle: { color: '#52c41a' }
-                        })
-                    )
-                ),
-                React.createElement(Col, { key: 'views', span: 6 },
-                    React.createElement(Card, { size: 'small' },
-                        React.createElement(Statistic, {
-                            title: '总访问量',
-                            value: screenList.reduce((sum, s) => sum + s.viewCount, 0),
-                            prefix: '👁️',
-                            valueStyle: { color: '#faad14' }
-                        })
-                    )
-                ),
-                React.createElement(Col, { key: 'modules', span: 6 },
-                    React.createElement(Card, { size: 'small' },
-                        React.createElement(Statistic, {
-                            title: '活跃模块',
-                            value: screenList.reduce((sum, s) => sum + s.activeModules, 0),
-                            suffix: `/ ${screenList.reduce((sum, s) => sum + s.modules, 0)}`,
-                            prefix: '📊',
-                            valueStyle: { color: '#722ed1' }
-                        })
-                    )
                 )
             ]),
 
@@ -1355,15 +2436,20 @@ const ScreenManagement = () => {
                 ),
                 React.createElement(Col, { key: 'type', span: 4 },
                     React.createElement(Select, {
-                        placeholder: '大屏类型',
-                        style: { width: '100%' },
-                        defaultValue: 'all'
-                    }, [
-                        React.createElement(Option, { key: 'all', value: 'all' }, '全部类型'),
-                        React.createElement(Option, { key: 'daily', value: 'daily' }, '日常'),
-                        React.createElement(Option, { key: 'exhibition', value: 'exhibition' }, '展会'),
-                        React.createElement(Option, { key: 'special', value: 'special' }, '特殊活动')
-                    ])
+                            placeholder: '大屏类型',
+                            style: { width: '100%' },
+                            defaultValue: 'all'
+                        }, [
+                            React.createElement(Option, { key: 'all', value: 'all' }, '全部类型'),
+                            React.createElement(Option, { key: '日常', value: '日常' }, '日常版 (P1)'),
+                            React.createElement(Option, { key: '协会版', value: '协会版' }, '协会简介 (P2)'),
+                            React.createElement(Option, { key: '标准版', value: '标准版' }, '标准制定 (P3)'),
+                            React.createElement(Option, { key: '行业版', value: '行业版' }, '行业概况 (P4)'),
+                            React.createElement(Option, { key: '评审版', value: '评审版' }, '评审工作 (P5)'),
+                            React.createElement(Option, { key: '城市版', value: '城市版' }, '城市信息 (P6)'),
+                            React.createElement(Option, { key: '科技版', value: '科技版' }, '科技奖类 (P7)'),
+                            React.createElement(Option, { key: '紧急版', value: '紧急版' }, '紧急播报 (P8)')
+                        ])
                 ),
                 React.createElement(Col, { key: 'status', span: 4 },
                     React.createElement(Select, {
@@ -1376,13 +2462,6 @@ const ScreenManagement = () => {
                         React.createElement(Option, { key: 'stopped', value: 'stopped' }, '已停止'),
                         React.createElement(Option, { key: 'maintenance', value: 'maintenance' }, '维护中')
                     ])
-                ),
-                React.createElement(Col, { key: 'actions', span: 4 },
-                    React.createElement(Button, {
-                        type: 'primary',
-                        block: true,
-                        icon: React.createElement('span', {}, '➕')
-                    }, '新建大屏')
                 )
             ])),
 
@@ -1524,8 +2603,16 @@ const ScreenManagement = () => {
                 return renderStandardDepartment();
             case '行业版':
                 return renderIndustryOverview();
+            case 'industryStats':
+                return renderIndustryStats();
             case '评审版':
                 return renderReviewDepartment();
+            case '城市版':
+                return renderCityInformation();
+            case '科技版':
+                return renderTechAwardScreen();
+            case '紧急版':
+                return renderEmergencyScreen();
             default:
                 return renderDefaultScreen();
         }
@@ -1711,20 +2798,34 @@ const ScreenManagement = () => {
         ];
     };
 
-    // 行业概况界面
+    // 行业概况界面 - 根据Figma设计稿P4-统计部1大屏还原
     const renderIndustryOverview = () => {
         return [
-            // 顶部标题
+            // 背景 - 根据设计稿添加深色科技风格背景
+            React.createElement('div', {
+                key: 'background',
+                style: {
+                    position: 'absolute',
+                    top: '0',
+                    left: '0',
+                    width: '4800px',
+                    height: '1440px',
+                    background: 'linear-gradient(135deg, #0a1929 0%, #0b2133 50%, #0a1929 100%)',
+                    zIndex: '-1'
+                }
+            }),
+            
+            // 顶部标题 - 根据Figma设计稿P4样式
             React.createElement('div', {
                 key: 'header',
                 style: {
                     position: 'absolute',
-                    top: '33px',
+                    top: '80px',
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    width: '1001px',
-                    height: '130px',
                     background: 'rgba(255,255,255,0.1)',
+                    padding: '20px 60px',
+                    borderRadius: '10px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -1733,75 +2834,234 @@ const ScreenManagement = () => {
                     fontWeight: 'bold',
                     textAlign: 'center',
                     cursor: 'pointer',
-                    transition: 'all 0.3s'
+                    transition: 'all 0.3s',
+                    boxShadow: '0 4px 20px rgba(0, 255, 255, 0.3)'
                 },
-                onMouseEnter: (e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)',
-                onMouseLeave: (e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
-            }, '行业概况数据展示'),
+                onMouseEnter: (e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                    e.currentTarget.style.boxShadow = '0 6px 30px rgba(0, 255, 255, 0.5)';
+                },
+                onMouseLeave: (e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 255, 255, 0.3)';
+                }
+            }, '行业概况大屏'),
             
-            // 城市分布统计
-            renderModule('cityDistribution', {
-                left: '20px',
-                top: '200px',
-                width: '800px',
-                height: '400px'
-            }),
+            // 统计部1大屏特有模块 - 根据Figma设计稿P4布局
+            // 第一行统计数据组
+            React.createElement('div', {
+                key: 'statsGroup1',
+                style: {
+                    position: 'absolute',
+                    top: '280px',
+                    left: '20px',
+                    display: 'flex',
+                    gap: '20px'
+                }
+            }, [
+                // 统计项1 - 运营线路总长度
+                React.createElement('div', {
+                    key: 'stat1',
+                    style: {
+                        background: 'rgba(255,255,255,0.1)',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        width: '400px',
+                        textAlign: 'center',
+                        boxShadow: '0 2px 10px rgba(0, 255, 255, 0.2)'
+                    }
+                }, [
+                    React.createElement('div', { style: { color: '#fff', fontSize: '32px', fontWeight: 'bold', marginBottom: '10px' } }, '13,500+'),
+                    React.createElement('div', { style: { color: '#ccc', fontSize: '20px' } }, '运营线路总长度（公里）')
+                ]),
+                
+                // 统计项2 - 日均客运量
+                React.createElement('div', {
+                    key: 'stat2',
+                    style: {
+                        background: 'rgba(255,255,255,0.1)',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        width: '400px',
+                        textAlign: 'center',
+                        boxShadow: '0 2px 10px rgba(0, 255, 255, 0.2)'
+                    }
+                }, [
+                    React.createElement('div', { style: { color: '#fff', fontSize: '32px', fontWeight: 'bold', marginBottom: '10px' } }, '6,300万'),
+                    React.createElement('div', { style: { color: '#ccc', fontSize: '20px' } }, '日均客运量（人次）')
+                ]),
+                
+                // 统计项3 - 运营车站数量
+                React.createElement('div', {
+                    key: 'stat3',
+                    style: {
+                        background: 'rgba(255,255,255,0.1)',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        width: '400px',
+                        textAlign: 'center',
+                        boxShadow: '0 2px 10px rgba(0, 255, 255, 0.2)'
+                    }
+                }, [
+                    React.createElement('div', { style: { color: '#fff', fontSize: '32px', fontWeight: 'bold', marginBottom: '10px' } }, '2,800+'),
+                    React.createElement('div', { style: { color: '#ccc', fontSize: '20px' } }, '运营车站数量')
+                ]),
+                
+                // 统计项4 - 运营车辆数
+                React.createElement('div', {
+                    key: 'stat4',
+                    style: {
+                        background: 'rgba(255,255,255,0.1)',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        width: '400px',
+                        textAlign: 'center',
+                        boxShadow: '0 2px 10px rgba(0, 255, 255, 0.2)'
+                    }
+                }, [
+                    React.createElement('div', { style: { color: '#fff', fontSize: '32px', fontWeight: 'bold', marginBottom: '10px' } }, '16,000+'),
+                    React.createElement('div', { style: { color: '#ccc', fontSize: '20px' } }, '运营车辆数（辆）')
+                ]),
+                
+                // 统计项5 - 全自动运行线路
+                React.createElement('div', {
+                    key: 'stat5',
+                    style: {
+                        background: 'rgba(255,255,255,0.1)',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        width: '400px',
+                        textAlign: 'center',
+                        boxShadow: '0 2px 10px rgba(0, 255, 255, 0.2)'
+                    }
+                }, [
+                    React.createElement('div', { style: { color: '#fff', fontSize: '32px', fontWeight: 'bold', marginBottom: '10px' } }, '28'),
+                    React.createElement('div', { style: { color: '#ccc', fontSize: '20px' } }, '全自动运行线路（条）')
+                ]),
+                
+                // 统计项6 - 在建线路数
+                React.createElement('div', {
+                    key: 'stat6',
+                    style: {
+                        background: 'rgba(255,255,255,0.1)',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        width: '400px',
+                        textAlign: 'center',
+                        boxShadow: '0 2px 10px rgba(0, 255, 255, 0.2)'
+                    }
+                }, [
+                    React.createElement('div', { style: { color: '#fff', fontSize: '32px', fontWeight: 'bold', marginBottom: '10px' } }, '156'),
+                    React.createElement('div', { style: { color: '#ccc', fontSize: '20px' } }, '在建线路数（条）')
+                ])
+            ]),
             
-            // 运营里程统计
-            renderModule('operationMileage', {
-                left: '850px',
-                top: '200px',
-                width: '800px',
-                height: '400px'
-            }),
+            // 第二行模块
+            React.createElement('div', {
+                key: 'secondRow',
+                style: {
+                    position: 'absolute',
+                    top: '450px',
+                    left: '20px',
+                    display: 'flex',
+                    gap: '20px'
+                }
+            }, [
+                // 年度新增线路图表
+                renderModule('annualNewLines', {
+                    left: '0px',
+                    top: '0px',
+                    width: '700px',
+                    height: '400px'
+                }),
+                
+                // 客运量增长趋势
+                renderModule('passengerGrowth', {
+                    left: '720px',
+                    top: '0px',
+                    width: '700px',
+                    height: '400px'
+                }),
+                
+                // 城市轨道交通制式分布
+                renderModule('systemDistribution', {
+                    left: '1440px',
+                    top: '0px',
+                    width: '700px',
+                    height: '400px'
+                }),
+                
+                // 客运强度排名表格
+                renderModule('passengerIntensityRank', {
+                    left: '2160px',
+                    top: '0px',
+                    width: '1000px',
+                    height: '400px'
+                })
+            ]),
             
-            // 客运量统计
-            renderModule('passengerVolume', {
-                left: '1680px',
-                top: '200px',
-                width: '800px',
-                height: '400px'
-            }),
+            // 第三行模块
+            React.createElement('div', {
+                key: 'thirdRow',
+                style: {
+                    position: 'absolute',
+                    top: '870px',
+                    left: '20px',
+                    display: 'flex',
+                    gap: '20px'
+                }
+            }, [
+                // 城市运营里程排名
+                renderModule('cityMileageRank', {
+                    left: '0px',
+                    top: '0px',
+                    width: '900px',
+                    height: '400px'
+                }),
+                
+                // 行业发展趋势
+                renderModule('industryTrends', {
+                    left: '920px',
+                    top: '0px',
+                    width: '1300px',
+                    height: '400px'
+                }),
+                
+                // 投资规模统计
+                renderModule('investmentStats', {
+                    left: '2240px',
+                    top: '0px',
+                    width: '900px',
+                    height: '400px'
+                })
+            ]),
             
-            // 车辆制式分布
-            renderModule('vehicleTypes', {
-                left: '2510px',
-                top: '200px',
-                width: '800px',
-                height: '400px'
-            }),
+            // 日期和时间信息 - 根据Figma设计稿P4添加
+            React.createElement('div', {
+                key: 'dateInfo',
+                style: {
+                    position: 'absolute',
+                    top: '30px',
+                    right: '40px',
+                    color: '#fff',
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    textShadow: '0 2px 10px rgba(0, 255, 255, 0.5)'
+                }
+            }, '2025年05月16日 星期三'),
             
-            // 发车间隔统计
-            renderModule('headwayStats', {
-                left: '3340px',
-                top: '200px',
-                width: '600px',
-                height: '400px'
-            }),
-            
-            // 全自动运行线路
-            renderModule('automatedLines', {
-                left: '20px',
-                top: '650px',
-                width: '1200px',
-                height: '300px'
-            }),
-            
-            // 城市群分布
-            renderModule('cityGroupDistribution', {
-                left: '1250px',
-                top: '650px',
-                width: '1200px',
-                height: '300px'
-            }),
-            
-            // 制式占比分布
-            renderModule('systemRatio', {
-                left: '2500px',
-                top: '650px',
-                width: '1200px',
-                height: '300px'
-            })
+            React.createElement('div', {
+                key: 'timeInfo',
+                style: {
+                    position: 'absolute',
+                    top: '70px',
+                    right: '40px',
+                    color: '#fff',
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    textShadow: '0 2px 10px rgba(0, 255, 255, 0.5)'
+                }
+            }, '实时数据更新中...')
         ];
     };
 
@@ -1899,20 +3159,34 @@ const ScreenManagement = () => {
         ];
     };
 
-    // 默认界面（日常版）
+    // 默认界面（日常版）- 根据Figma设计稿P1还原
     const renderDefaultScreen = () => {
         return [
-            // 顶部标题
+            // 背景 - 根据设计稿添加深色科技风格背景
             React.createElement('div', {
-                key: 'header',
+                key: 'background',
                 style: {
                     position: 'absolute',
-                    top: '33px',
+                    top: '0',
+                    left: '0',
+                    width: '4800px',
+                    height: '1440px',
+                    background: 'linear-gradient(135deg, #0a1929 0%, #0b2133 50%, #0a1929 100%)',
+                    zIndex: '-1'
+                }
+            }),
+            
+            // 顶部标题
+            React.createElement('div', {
+                key: 'title',
+                style: {
+                    position: 'absolute',
+                    top: '80px',
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    width: '1001px',
-                    height: '130px',
                     background: 'rgba(255,255,255,0.1)',
+                    padding: '20px 60px',
+                    borderRadius: '10px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -1921,11 +3195,18 @@ const ScreenManagement = () => {
                     fontWeight: 'bold',
                     textAlign: 'center',
                     cursor: 'pointer',
-                    transition: 'all 0.3s'
+                    transition: 'all 0.3s',
+                    boxShadow: '0 4px 20px rgba(0, 255, 255, 0.3)'
                 },
-                onMouseEnter: (e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)',
-                onMouseLeave: (e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
-            }, '中国城市轨道交通协会'),
+                onMouseEnter: (e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                    e.currentTarget.style.boxShadow = '0 6px 30px rgba(0, 255, 255, 0.5)';
+                },
+                onMouseLeave: (e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 255, 255, 0.3)';
+                }
+            }, '日常版大屏'),
 
             // 标语
             React.createElement('div', {
@@ -1937,14 +3218,16 @@ const ScreenManagement = () => {
                     transform: 'translateX(-50%)',
                     color: '#fff',
                     fontSize: '44px',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    textShadow: '0 2px 10px rgba(0, 255, 255, 0.5)'
                 }
             }, '遵守法规加强自律，发挥桥梁纽带作用，诚为政府企业服务，推动行业科学发展。'),
 
+            // 左侧模块区域 - 根据Figma设计稿P1布局
             // 左上 - 天气信息
             renderModule('weather', {
                 left: '20px',
-                top: '20px',
+                top: '280px',
                 width: '600px',
                 height: '460px'
             }),
@@ -1952,7 +3235,7 @@ const ScreenManagement = () => {
             // 左中 - 限行尾号
             renderModule('traffic', {
                 left: '20px',
-                top: '500px',
+                top: '760px',
                 width: '600px',
                 height: '280px'
             }),
@@ -1960,11 +3243,12 @@ const ScreenManagement = () => {
             // 左下 - 工作规划
             renderModule('workPlan', {
                 left: '22px',
-                top: '800px',
+                top: '1060px',
                 width: '600px',
-                height: '526px'
+                height: '360px'
             }),
 
+            // 中间模块区域
             // 中上 - 党建园地
             renderModule('partyNews', {
                 left: '642px',
@@ -1978,9 +3262,10 @@ const ScreenManagement = () => {
                 left: '642px',
                 top: '800px',
                 width: '1745px',
-                height: '526px'
+                height: '600px'
             }),
 
+            // 右侧模块区域
             // 右上 - 品牌活动
             renderModule('brandActivity', {
                 left: '2412px',
@@ -1994,23 +3279,262 @@ const ScreenManagement = () => {
                 left: '2412px',
                 top: '800px',
                 width: '1745px',
-                height: '526px'
+                height: '600px'
             }),
 
-            // 右侧上 - 行业新闻
-            renderModule('news', {
-                left: '4181px',
+            // 日期和温度信息 - 根据Figma设计稿P1添加
+            React.createElement('div', {
+                key: 'dateInfo',
+                style: {
+                    position: 'absolute',
+                    top: '30px',
+                    left: '4181px',
+                    color: '#fff',
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    textShadow: '0 2px 10px rgba(0, 255, 255, 0.5)'
+                }
+            }, '2025年05月16日 星期三'),
+            
+            React.createElement('div', {
+                key: 'temperatureInfo',
+                style: {
+                    position: 'absolute',
+                    top: '70px',
+                    left: '4181px',
+                    color: '#fff',
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    textShadow: '0 2px 10px rgba(0, 255, 255, 0.5)'
+                }
+            }, '33°C 晴转多云')
+        ];
+    };
+
+    // 城市信息大屏渲染函数
+    const renderCityInformation = () => {
+        return [
+            // 顶部标题
+            React.createElement('div', {
+                key: 'title',
+                style: {
+                    position: 'absolute',
+                    top: '80px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: 'rgba(255,255,255,0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '48px',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s'
+                },
+                onMouseEnter: (e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)',
+                onMouseLeave: (e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
+            }, '城市轨道交通信息大屏'),
+
+            // 左上 - 城市分布统计
+            renderModule('cityDistribution', {
+                left: '20px',
+                top: '20px',
+                width: '1000px',
+                height: '500px'
+            }),
+
+            // 右上 - 线路总长排名
+            renderModule('lineLengthRanking', {
+                left: '1040px',
+                top: '20px',
+                width: '1000px',
+                height: '500px'
+            }),
+
+            // 左中 - 客流量统计
+            renderModule('passengerFlow', {
+                left: '20px',
+                top: '540px',
+                width: '1000px',
+                height: '500px'
+            }),
+
+            // 右中 - 日均客运量
+            renderModule('dailyPassengerVolume', {
+                left: '1040px',
+                top: '540px',
+                width: '1000px',
+                height: '500px'
+            }),
+
+            // 左下 - 城市建设进度
+            renderModule('constructionProgress', {
+                left: '20px',
+                top: '1060px',
+                width: '1000px',
+                height: '400px'
+            }),
+
+            // 右下 - 运营状况
+            renderModule('operationStatus', {
+                left: '1040px',
+                top: '1060px',
+                width: '1000px',
+                height: '400px'
+            }),
+
+            // 右侧 - 实时数据监控
+            renderModule('realTimeMonitoring', {
+                left: '2060px',
                 top: '20px',
                 width: '597px',
-                height: '643px'
+                height: '1440px'
+            })
+        ];
+    };
+
+    // 科技奖类大屏渲染函数
+    const renderTechAwardScreen = () => {
+        return [
+            // 顶部标题
+            React.createElement('div', {
+                key: 'title',
+                style: {
+                    position: 'absolute',
+                    top: '80px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: 'rgba(255,255,255,0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '48px',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s'
+                },
+                onMouseEnter: (e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)',
+                onMouseLeave: (e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
+            }, '科技奖项展示大屏'),
+
+            // 左上 - 科技奖概览
+            renderModule('techAwardOverview', {
+                left: '20px',
+                top: '20px',
+                width: '1000px',
+                height: '500px'
             }),
 
-            // 右侧下 - 活动直播
-            renderModule('live', {
-                left: '4181px',
-                top: '683px',
+            // 右上 - 获奖类别统计
+            renderModule('awardCategoryStats', {
+                left: '1040px',
+                top: '20px',
+                width: '1000px',
+                height: '500px'
+            }),
+
+            // 左中 - 历年获奖趋势
+            renderModule('awardTrend', {
+                left: '20px',
+                top: '540px',
+                width: '1000px',
+                height: '500px'
+            }),
+
+            // 右中 - 获奖单位分布
+            renderModule('winnerDistribution', {
+                left: '1040px',
+                top: '540px',
+                width: '1000px',
+                height: '500px'
+            }),
+
+            // 左下 - 重点获奖项目
+            renderModule('keyAwardProjects', {
+                left: '20px',
+                top: '1060px',
+                width: '1000px',
+                height: '400px'
+            }),
+
+            // 右下 - 技术创新热点
+            renderModule('techInnovationHotspots', {
+                left: '1040px',
+                top: '1060px',
+                width: '1000px',
+                height: '400px'
+            }),
+
+            // 右侧 - 最新获奖信息
+            renderModule('latestAwardInfo', {
+                left: '2060px',
+                top: '20px',
                 width: '597px',
-                height: '643px'
+                height: '1440px'
+            })
+        ];
+    };
+
+    // 紧急播报大屏渲染函数
+    const renderEmergencyScreen = () => {
+        return [
+            // 顶部标题 - 紧急状态
+            React.createElement('div', {
+                key: 'title',
+                style: {
+                    position: 'absolute',
+                    top: '80px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: 'rgba(255,0,0,0.8)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '48px',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    padding: '20px 60px',
+                    borderRadius: '10px'
+                },
+                onMouseEnter: (e) => e.currentTarget.style.background = 'rgba(255,0,0,0.9)',
+                onMouseLeave: (e) => e.currentTarget.style.background = 'rgba(255,0,0,0.8)'
+            }, '紧急信息播报'),
+
+            // 主要紧急信息
+            renderModule('emergencyMainInfo', {
+                left: '20px',
+                top: '200px',
+                width: '2000px',
+                height: '600px'
+            }),
+
+            // 影响范围
+            renderModule('impactRange', {
+                left: '20px',
+                top: '820px',
+                width: '1000px',
+                height: '400px'
+            }),
+
+            // 应急措施
+            renderModule('emergencyMeasures', {
+                left: '1040px',
+                top: '820px',
+                width: '1000px',
+                height: '400px'
+            }),
+
+            // 实时更新
+            renderModule('realTimeUpdates', {
+                left: '2060px',
+                top: '20px',
+                width: '597px',
+                height: '1440px'
             })
         ];
     };
@@ -2023,27 +3547,8 @@ const ScreenManagement = () => {
             )
         ]),
 
-        React.createElement(Tabs, {
-            key: 'tabs',
-            activeKey: activeTab,
-            onChange: setActiveTab,
-            size: 'large'
-        }, [
-            React.createElement(TabPane, {
-                key: 'list',
-                tab: React.createElement('span', {}, ['📋 ', '大屏列表'])
-            }, renderListPage()),
-            
-            React.createElement(TabPane, {
-                key: 'editor',
-                tab: React.createElement('span', {}, ['🖥️ ', '可视化编辑'])
-            }, renderScreenEditor()),
-            
-            React.createElement(TabPane, {
-                key: 'monitor',
-                tab: React.createElement('span', {}, ['📊 ', '运行监控'])
-            }, renderMonitorPage())
-        ]),
+        // 只显示大屏列表或编辑页面
+        activeTab === 'editor' ? renderScreenEditor() : renderListPage(),
 
         // 编辑抽屉
         renderEditDrawer(),

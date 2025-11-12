@@ -246,6 +246,14 @@ const LiveManagement = () => {
     
     // 编辑直播
     const handleEditLive = (live) => {
+        console.log('[LiveManagement] 开始编辑直播:', live.id, live.type);
+        
+        // 重置状态
+        setIsMultipleSessions(false);
+        setSessions([]);
+        setMeetingMaterials([]);
+        
+        // 设置基本状态
         setEditingLive(live);
         setSelectedLiveType(live.type);
         setCurrentStep(1);
@@ -257,18 +265,29 @@ const LiveManagement = () => {
             endTime: live.endTime ? window.moment(live.endTime) : null
         };
         
+        liveForm.resetFields(); // 先重置表单，避免字段冲突
         liveForm.setFieldsValue(formValues);
         
-        // 设置多场直播状态
+        // 设置多场直播状态和加载相关数据
         if (live.isMultipleSessions) {
             setIsMultipleSessions(true);
-            // 加载场次数据
-            loadSessions(live.id);
+            // 同步设置场次数据
+            const mockSessions = [
+                { id: 'session_001', sessionName: '开幕式', sessionTime: '2024-02-01 10:00:00', sessionUrl: 'https://live.example.com/session1' },
+                { id: 'session_002', sessionName: '主题演讲', sessionTime: '2024-02-01 14:00:00', sessionUrl: 'https://live.example.com/session2' }
+            ];
+            setSessions(mockSessions);
         }
         
-        // 加载会议资料
-        loadMeetingMaterials(live.id);
+        // 同步设置会议资料
+        const mockMaterials = [
+            { id: 'material_001', materialType: 'introduction', fileName: '会议介绍.pdf', fileUrl: '/files/introduction.pdf', allowDownload: true },
+            { id: 'material_002', materialType: 'agenda', fileName: '会议议程.pdf', fileUrl: '/files/agenda.pdf', allowDownload: true }
+        ];
+        setMeetingMaterials(mockMaterials);
         
+        // 最后打开模态框
+        console.log('[LiveManagement] 打开编辑模态框');
         setModalVisible(true);
     };
     
@@ -295,11 +314,6 @@ const LiveManagement = () => {
     
     // 删除直播
     const handleDeleteLive = async (live) => {
-        if (live.status === 'live') {
-            message.warning('进行中的直播不允许删除');
-            return;
-        }
-        
         try {
             setLoading(true);
             await new Promise(resolve => setTimeout(resolve, 500));
@@ -446,10 +460,8 @@ const LiveManagement = () => {
                 id: editingLive ? editingLive.id : `live_${Date.now()}`,
                 startTime: values.startTime ? values.startTime.format('YYYY-MM-DD HH:mm:ss') : null,
                 endTime: values.endTime ? values.endTime.format('YYYY-MM-DD HH:mm:ss') : null,
-                typeLabel: values.type === 'external' ? '外部链接直播' : 
+                typeLabel: values.type === 'external' ? '外部链接直播' :
                            values.type === 'weizan' ? '微赞直播' : '关联展会直播',
-                statusLabel: values.status === 'not_started' ? '未开始' :
-                            values.status === 'live' ? '直播中' : '已结束',
                 createdBy: editingLive ? editingLive.createdBy : '当前用户',
                 createdAt: editingLive ? editingLive.createdAt : new Date().toISOString().slice(0, 19).replace('T', ' '),
                 updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
@@ -1287,12 +1299,16 @@ const LiveManagement = () => {
             title: editingLive ? '编辑直播' : '新建直播',
             open: modalVisible,
             onCancel: () => {
+                console.log('[LiveManagement] 关闭模态框');
                 setModalVisible(false);
                 setCurrentStep(0);
                 setSelectedLiveType(null);
+                setEditingLive(null);
+                setIsMultipleSessions(false);
                 liveForm.resetFields();
             },
             width: currentStep === 0 ? 800 : 900,
+            forceRender: true, // 强制渲染，确保内容正确显示
             footer: currentStep === 0 ? null : [
                 React.createElement(Button, {
                     key: 'cancel',
@@ -1305,7 +1321,10 @@ const LiveManagement = () => {
                 }, '取消'),
                 currentStep === 1 && React.createElement(Button, {
                     key: 'back',
-                    onClick: handleBackToTypeSelection
+                    onClick: () => {
+                        console.log('[LiveManagement] 返回类型选择');
+                        handleBackToTypeSelection();
+                    }
                 }, '上一步'),
                 React.createElement(Button, {
                     key: 'submit',

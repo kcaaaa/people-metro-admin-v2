@@ -241,10 +241,14 @@
     <!-- AI管理页面组件 -->
     <script src="js/pages/AIAgentManagement.js"></script>
     <script src="js/pages/AIKnowledgeManagement.js"></script>
-    <script src="js/pages/AIKnowledgeDetail.js"></script>
+    <script src="js/pages/AIChat.js"></script>
     
     <!-- 主应用 -->
     <script src="js/App.js"></script>
+    
+    <!-- 确保AIKnowledgeDetail组件在App.js之后正确加载 -->
+    <script src="js/pages/AIKnowledgeDetail.js"></script>
+
     
     <script>
         function initApp() {

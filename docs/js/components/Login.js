@@ -258,7 +258,7 @@ const Login = ({ onLogin }) => {
                     onFinish: handlePasswordLogin,
                     size: 'large'
                 }, [
-                    React.createElement('div', { style: { marginBottom: 24, textAlign: 'center' } },
+                    React.createElement('div', { key: 'demo-buttons-password', style: { marginBottom: 24, textAlign: 'center' } },
                       demoAccountButtons.map(acc =>
                         React.createElement(Button, {
                           key: acc.phone,
@@ -271,7 +271,7 @@ const Login = ({ onLogin }) => {
                       )
                     ),
                     React.createElement(Form.Item, {
-                        key: 'phone',
+                        key: 'phone-field',
                         label: '手机号',
                         name: 'phone',
                         rules: [
@@ -279,24 +279,27 @@ const Login = ({ onLogin }) => {
                             { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' }
                         ]
                     }, React.createElement(Input, {
+                        key: 'phone-input',
                         placeholder: '请输入手机号',
                         prefix: '📱'
                     })),
                     React.createElement(Form.Item, {
-                        key: 'password',
+                        key: 'password-field',
                         label: '密码',
                         name: 'password',
                         rules: [
                             { required: true, message: '请输入密码' }
                         ]
                     }, React.createElement(Input.Password, {
+                        key: 'password-input',
                         placeholder: '请输入密码',
                         prefix: '🔒'
                     })),
                     React.createElement(Form.Item, {
-                        key: 'submit',
+                        key: 'submit-field',
                         style: { marginTop: '32px' }
                     }, React.createElement(Button, {
+                        key: 'submit-button',
                         type: 'primary',
                         htmlType: 'submit',
                         loading: loading,
@@ -319,7 +322,7 @@ const Login = ({ onLogin }) => {
                     onFinish: handleCodeLogin,
                     size: 'large'
                 }, [
-                    React.createElement('div', { style: { marginBottom: 24, textAlign: 'center' } },
+                    React.createElement('div', { key: 'demo-buttons-code', style: { marginBottom: 24, textAlign: 'center' } },
                       demoAccountButtons.map(acc =>
                         React.createElement(Button, {
                           key: acc.phone,
@@ -332,7 +335,7 @@ const Login = ({ onLogin }) => {
                       )
                     ),
                     React.createElement(Form.Item, {
-                        key: 'phone',
+                        key: 'code-phone-field',
                         label: '手机号',
                         name: 'phone',
                         rules: [
@@ -340,11 +343,12 @@ const Login = ({ onLogin }) => {
                             { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' }
                         ]
                     }, React.createElement(Input, {
+                        key: 'phone-input-code',
                         placeholder: '请输入手机号',
                         prefix: '📱'
                     })),
                     React.createElement(Form.Item, {
-                        key: 'code',
+                        key: 'code-field',
                         label: '验证码',
                         name: 'code',
                         rules: [
@@ -352,20 +356,23 @@ const Login = ({ onLogin }) => {
                             { len: 6, message: '验证码为6位数字' }
                         ]
                     }, React.createElement(Row, {
+                        key: 'code-row',
                         gutter: 8
                     }, [
                         React.createElement(Col, {
-                            key: 'code-input',
+                            key: 'code-input-col',
                             span: 15
                         }, React.createElement(Input, {
+                            key: 'code-input-field',
                             placeholder: '请输入验证码',
                             prefix: '🔢',
                             maxLength: 6
                         })),
                         React.createElement(Col, {
-                            key: 'send-code',
+                            key: 'send-code-col',
                             span: 9
                         }, React.createElement(Button, {
+                            key: 'send-code-button',
                             onClick: handleSendCode,
                             loading: sendingCode,
                             disabled: countdown > 0,
@@ -376,9 +383,10 @@ const Login = ({ onLogin }) => {
                         }, countdown > 0 ? `${countdown}s` : '获取验证码'))
                     ])),
                     React.createElement(Form.Item, {
-                        key: 'submit',
+                        key: 'code-submit-field',
                         style: { marginTop: '32px' }
                     }, React.createElement(Button, {
+                        key: 'code-submit-button',
                         type: 'primary',
                         htmlType: 'submit',
                         loading: loading,
@@ -435,22 +443,22 @@ const Login = ({ onLogin }) => {
                     React.createElement('tbody', { key: 'tbody' },
                         demoAccounts.map((acc, idx) =>
                             React.createElement('tr', { key: acc.phone, style: { background: idx % 2 === 0 ? '#fafbfc' : '#fff' } }, [
-                                React.createElement('td', { style: { padding: '6px 8px', border: '1px solid #e9ecef', minWidth: 60 } }, acc.name),
-                                React.createElement('td', { style: { padding: '6px 8px', border: '1px solid #e9ecef', minWidth: 110 } },
+                                React.createElement('td', { key: `role-${acc.phone}`, style: { padding: '6px 8px', border: '1px solid #e9ecef', minWidth: 60 } }, acc.name),
+                                React.createElement('td', { key: `phone-${acc.phone}`, style: { padding: '6px 8px', border: '1px solid #e9ecef', minWidth: 110 } },
                                     React.createElement('span', {
                                         style: { cursor: 'pointer', color: '#1677ff' },
                                         title: '点击复制',
                                         onClick: () => { navigator.clipboard && navigator.clipboard.writeText(acc.phone); }
                                     }, acc.phone)
                                 ),
-                                React.createElement('td', { style: { padding: '6px 8px', border: '1px solid #e9ecef', minWidth: 80 } },
+                                React.createElement('td', { key: `password-${acc.phone}`, style: { padding: '6px 8px', border: '1px solid #e9ecef', minWidth: 80 } },
                                     React.createElement('span', {
                                         style: { cursor: 'pointer', color: '#1677ff' },
                                         title: '点击复制',
                                         onClick: () => { navigator.clipboard && navigator.clipboard.writeText(acc.password); }
                                     }, acc.password)
                                 ),
-                                React.createElement('td', { style: { padding: '6px 8px', border: '1px solid #e9ecef', minWidth: 100 } },
+                                React.createElement('td', { key: `permission-${acc.phone}`, style: { padding: '6px 8px', border: '1px solid #e9ecef', minWidth: 100 } },
                                     acc.role === 'super_admin' ? '全站最高权限' :
                                     acc.role === 'union_admin' ? '协会管理' :
                                     acc.role === 'expo_admin' ? '会展管理' :
@@ -474,4 +482,4 @@ const Login = ({ onLogin }) => {
 };
 
 window.Login = Login;
-console.log('[Login] window.Login 挂载成功'); 
+console.log('[Login] window.Login 挂载成功');

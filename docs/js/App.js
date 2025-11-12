@@ -205,8 +205,8 @@ const App = () => {
         }
     };
 
-    const handlePageChange = (page) => {
-        console.log('Changing page to:', page);
+    const handlePageChange = (page, params = {}) => {
+        console.log('Changing page to:', page, 'with params:', params);
         
         // 检查页面访问权限
         if (window.PermissionManager && !window.PermissionManager.canAccessPage(page)) {
@@ -222,12 +222,20 @@ const App = () => {
             return;
         }
         
+        // 存储页面参数
+        if (params && Object.keys(params).length > 0) {
+            window.App.currentPageParams = params;
+        } else {
+            window.App.currentPageParams = {};
+        }
+        
         setCurrentPage(page);
         
         // 记录页面访问日志
         if (window.StateManager) {
             window.StateManager.emit('page:accessed', {
                 page,
+                params,
                 user: user.username,
                 timestamp: new Date().toISOString()
             });
@@ -377,7 +385,16 @@ const App = () => {
             'cultural-contact': window.App.pages.CulturalContactManagement,
             'CulturalContactManagement': window.App.pages.CulturalContactManagement,
             'cultural-company': window.App.pages.CulturalCompanyManagement,
-            'CulturalCompanyManagement': window.App.pages.CulturalCompanyManagement
+            'CulturalCompanyManagement': window.App.pages.CulturalCompanyManagement,
+            // AI管理
+            'ai-agents': window.App.pages.AIAgentManagement,
+            'AIAgentManagement': window.App.pages.AIAgentManagement,
+            'ai-knowledge': window.App.pages.AIKnowledgeManagement,
+            'AIKnowledgeManagement': window.App.pages.AIKnowledgeManagement,
+            'ai-knowledge-detail': window.App.pages.AIKnowledgeDetail,
+            'AIKnowledgeDetail': window.App.pages.AIKnowledgeDetail,
+            'ai-chat': window.App.pages.AIChat,
+            'AIChat': window.App.pages.AIChat
         };
 
         console.log('Looking for component:', currentPage);
@@ -423,7 +440,15 @@ const App = () => {
                 }
             }
             
-            return React.createElement(Component);
+            // 准备组件props
+            const componentProps = {
+                currentPage: currentPage,
+                onPageChange: handlePageChange,
+                // 传递当前页面的参数
+                ...(window.App.currentPageParams || {})
+            };
+            
+            return React.createElement(Component, componentProps);
         }
         
         console.log('Page component not found:', currentPage);
@@ -590,4 +615,4 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.error('应用初始化失败：找不到 window.App.init');
     }
-}); 
+});

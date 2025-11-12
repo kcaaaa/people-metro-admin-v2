@@ -392,7 +392,9 @@ const App = () => {
             'ai-knowledge': window.App.pages.AIKnowledgeManagement,
             'AIKnowledgeManagement': window.App.pages.AIKnowledgeManagement,
             'ai-knowledge-detail': window.App.pages.AIKnowledgeDetail,
-            'AIKnowledgeDetail': window.App.pages.AIKnowledgeDetail
+            'AIKnowledgeDetail': window.App.pages.AIKnowledgeDetail,
+            'ai-chat': window.App.pages.AIChat,
+            'AIChat': window.App.pages.AIChat
         };
 
         console.log('Looking for component:', currentPage);

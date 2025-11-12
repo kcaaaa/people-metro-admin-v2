@@ -1,6 +1,6 @@
 // 内容管理页面 - 支持内容发布和管理
 const ContentManagement = () => {
-    const { Card, Table, Button, Input, Select, Space, Tag, Modal, Form, Switch, message, Row, Col, Statistic, DatePicker, Tabs, Upload, Radio, Divider, Dropdown, Menu } = antd;
+    const { Card, Table, Button, Input, Select, Space, Tag, Modal, Form, Switch, Checkbox, message, Row, Col, Statistic, DatePicker, Tabs, Upload, Radio, Divider, Dropdown, Menu } = antd;
     const { Search } = Input;
     const { Option } = Select;
     const { RangePicker } = DatePicker;
@@ -29,6 +29,11 @@ const ContentManagement = () => {
         keyword: '',
         dateRange: null
     });
+    // 内容迁移相关状态
+    const [selectedContentIds, setSelectedContentIds] = React.useState([]);
+    const [migrateModalVisible, setMigrateModalVisible] = React.useState(false);
+    const [targetBoard, setTargetBoard] = React.useState('');
+    const [migratingContentId, setMigratingContentId] = React.useState(null); // 用于单条迁移时记录ID
 
     // 统计数据状态
     const [statsData, setStatsData] = React.useState({
@@ -343,12 +348,24 @@ const ContentManagement = () => {
     };
 
     React.useEffect(() => {
-        if (activeTab === 'management') {
-            loadContentList();
-        }
+        let isMounted = true;
+        
+        const loadContent = () => {
+            if (activeTab === 'management') {
+                loadContentList(isMounted);
+            }
+        };
+        
+        loadContent();
+        
+        return () => {
+            isMounted = false;
+        };
     }, [activeTab, pagination.current, pagination.pageSize, filters]);
 
-    const loadContentList = async () => {
+    const loadContentList = async (isMounted) => {
+        if (!isMounted) return;
+        
         setLoading(true);
         try {
             await new Promise(resolve => setTimeout(resolve, 800));
@@ -390,18 +407,87 @@ const ContentManagement = () => {
             }
             
             // 更新统计数据
-            setStatsData(calculateStats(filteredData));
-            
-            setContentList(filteredData);
-            setPagination(prev => ({
-                ...prev,
-                total: filteredData.length
-            }));
+            if (isMounted) {
+                setStatsData(calculateStats(filteredData));
+                setContentList(filteredData);
+                setPagination(prev => ({
+                    ...prev,
+                    total: filteredData.length
+                }));
+            }
         } catch (error) {
-            message.error('加载内容列表失败');
+            if (isMounted) {
+                message.error('加载内容列表失败');
+            }
+        } finally {
+            if (isMounted) {
+                setLoading(false);
+            }
+        }
+    };
+
+    // 内容迁移处理函数
+    const handleContentMigration = async () => {
+        if (!targetBoard) {
+            message.error('请选择目标栏目');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            // 确定要迁移的内容ID列表
+            const contentIdsToMigrate = migratingContentId ? [migratingContentId] : selectedContentIds;
+            
+            if (contentIdsToMigrate.length === 0) {
+                message.error('请选择要迁移的内容');
+                return;
+            }
+
+            // 模拟API调用
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // 更新本地数据
+            contentIdsToMigrate.forEach(contentId => {
+                const index = mockContentData.findIndex(item => item.id === contentId);
+                if (index !== -1) {
+                    mockContentData[index] = {
+                        ...mockContentData[index],
+                        board: targetBoard
+                    };
+                }
+            });
+
+            // 重置选择状态
+            setSelectedContentIds([]);
+            setMigratingContentId(null);
+            setTargetBoard('');
+            setMigrateModalVisible(false);
+
+            // 重新加载内容列表
+            loadContentList();
+
+            message.success(`成功迁移 ${contentIdsToMigrate.length} 条内容到${getBoardTag(targetBoard).props.children}栏目`);
+        } catch (error) {
+            message.error('内容迁移失败，请重试');
         } finally {
             setLoading(false);
         }
+    };
+
+    // 打开迁移模态框
+    const openMigrateModal = (contentId = null) => {
+        if (contentId) {
+            // 单条内容迁移
+            setMigratingContentId(contentId);
+        } else {
+            // 批量迁移，检查是否有选中内容
+            if (selectedContentIds.length === 0) {
+                message.warning('请先选择要迁移的内容');
+                return;
+            }
+        }
+        setTargetBoard('');
+        setMigrateModalVisible(true);
     };
 
     // 封面上传配置
@@ -631,7 +717,7 @@ const ContentManagement = () => {
             recommended: { color: 'gold', text: '推荐板块' }
         };
         const config = boardMap[board] || { color: 'gray', text: '未知' };
-        return React.createElement(Tag, { color: config.color }, config.text);
+        return React.createElement(Tag, { color: config.color, key: `board-tag-${board}` }, config.text);
     };
 
     // 渲染发布页面
@@ -866,6 +952,35 @@ const ContentManagement = () => {
 
         const columns = [
             {
+                title: React.createElement('input', {
+                    type: 'checkbox',
+                    checked: selectedContentIds.length === contentList.length && contentList.length > 0,
+                    onChange: (e) => {
+                        if (e.target.checked) {
+                            // 全选
+                            const allIds = contentList.map(item => item.id);
+                            setSelectedContentIds(allIds);
+                        } else {
+                            // 取消全选
+                            setSelectedContentIds([]);
+                        }
+                    }
+                }),
+                key: 'selection',
+                width: 50,
+                render: (_, record) => React.createElement('input', {
+                    type: 'checkbox',
+                    checked: selectedContentIds.includes(record.id),
+                    onChange: (e) => {
+                        if (e.target.checked) {
+                            setSelectedContentIds([...selectedContentIds, record.id]);
+                        } else {
+                            setSelectedContentIds(selectedContentIds.filter(id => id !== record.id));
+                        }
+                    }
+                })
+            },
+            {
                 title: '内容信息',
                 key: 'content',
                 width: 300,
@@ -937,7 +1052,7 @@ const ContentManagement = () => {
             {
                 title: '操作',
                 key: 'actions',
-                width: 200,
+                width: 250,
                 render: (_, record) => React.createElement(Space, {}, [
                     React.createElement(Button, {
                         key: 'view',
@@ -953,6 +1068,12 @@ const ContentManagement = () => {
                         type: 'link',
                         size: 'small'
                     }, '编辑'),
+                    React.createElement(Button, {
+                        key: 'migrate',
+                        type: 'link',
+                        size: 'small',
+                        onClick: () => openMigrateModal(record.id)
+                    }, '迁移'),
                     record.status === 'published' ? 
                         React.createElement(Button, {
                             key: 'hide',
@@ -1136,6 +1257,15 @@ const ContentManagement = () => {
                             onClick: loadContentList
                         }, '刷新'),
                         React.createElement(Button, {
+                            key: 'batch-migrate',
+                            onClick: () => {
+                                if (selectedContentIds.length > 0) {
+                                    openMigrateModal();
+                                }
+                            },
+                            disabled: selectedContentIds.length === 0
+                        }, '批量迁移'),
+                        React.createElement(Button, {
                             key: 'publish',
                             type: 'primary',
                             onClick: () => setActiveTab('publish')
@@ -1148,6 +1278,7 @@ const ContentManagement = () => {
                     columns: columns,
                     dataSource: contentList,
                     loading: loading,
+                    rowKey: 'id',
                     pagination: {
                         ...pagination,
                         showSizeChanger: true,
@@ -1156,6 +1287,10 @@ const ContentManagement = () => {
                         onChange: (page, pageSize) => {
                             setPagination(prev => ({ ...prev, current: page, pageSize }));
                         }
+                    },
+                    rowSelection: {
+                        selectedRowKeys: selectedContentIds,
+                        onChange: (selectedRowKeys) => setSelectedContentIds(selectedRowKeys)
                     },
                     rowKey: 'id',
                     scroll: { x: 1000 }
@@ -1345,9 +1480,59 @@ const ContentManagement = () => {
         ]),
 
         renderPreviewModal(),
-        renderDetailModal()
+        renderDetailModal(),
+        
+        // 内容迁移模态框
+        React.createElement(Modal, {
+            key: 'migrate-modal',
+            title: migratingContentId ? '迁移内容' : '批量迁移内容',
+            open: migrateModalVisible,
+            onCancel: () => {
+                setMigrateModalVisible(false);
+                setTargetBoard('');
+                setSelectedContentIds([]);
+            },
+            footer: [
+                React.createElement(Button, {
+                    key: 'cancel',
+                    onClick: () => {
+                        setMigrateModalVisible(false);
+                        setTargetBoard('');
+                        setSelectedContentIds([]);
+                    }
+                }, '取消'),
+                React.createElement(Button, {
+                    key: 'confirm',
+                    type: 'primary',
+                    onClick: handleContentMigration,
+                    loading: migratingContentId && loading
+                }, '确认迁移')
+            ],
+            width: 600,
+            children: React.createElement('div', { key: 'migrate-content' }, [
+                React.createElement('p', { style: { marginBottom: 16 } },
+                    migratingContentId ? 
+                        '将当前内容迁移到新栏目' : 
+                        `即将迁移 ${selectedContentIds.length} 条内容到新栏目`
+                ),
+                React.createElement(Form.Item, {
+                    label: '目标栏目',
+                    rules: [{ required: true, message: '请选择目标栏目' }]
+                },
+                    React.createElement(Select, {
+                        placeholder: '请选择目标栏目',
+                        value: targetBoard,
+                        onChange: (value) => setTargetBoard(value),
+                        style: { width: '100%' }
+                    }, [
+                        React.createElement(Option, { key: 'association', value: 'association' }, '协会板块'),
+                        React.createElement(Option, { key: 'recommended', value: 'recommended' }, '推荐板块')
+                    ])
+                )
+            ])
+        })
     ]);
 };
 
 window.App.pages.ContentManagement = ContentManagement;
-console.log('[ContentManagement] 组件挂载成功'); 
+console.log('[ContentManagement] 组件挂载成功');
