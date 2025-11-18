@@ -193,13 +193,7 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             label: '运营管理',
             title: '运营数据统计与分析',
             children: [
-                {
-                    key: 'screen-management',
-                    icon: '🖥️',
-                    label: '大屏管理',
-                    title: '数据大屏配置与监控管理',
-                    page: 'ScreenManagement'
-                },
+
                 {
                     key: 'operational',
                     icon: '📊',
@@ -241,6 +235,35 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     label: '消息管理',
                     title: 'APP系统消息推送管理',
                     page: 'MessageManagement'
+                }
+            ]
+        },
+        {
+            key: 'screen-operation',
+            icon: '📺',
+            label: '大屏运营',
+            title: '大屏管理与背景墙配置',
+            children: [
+                {
+                    key: 'screen-management',
+                    icon: '📺',
+                    label: '大屏管理',
+                    title: '数据大屏配置与监控管理',
+                    page: 'ScreenManagement'
+                },
+                {
+                    key: 'background-wall',
+                    icon: '🖼️',
+                    label: '背景墙管理',
+                    title: '背景图片上传与宣传语编辑',
+                    page: 'BackgroundWallManagement'
+                },
+                {
+                    key: 'scenario-management',
+                    icon: 'fa-th-large',
+                    label: '情景管理',
+                    title: '自由组合大屏形成情景模式',
+                    page: 'ScenarioManagement'
                 }
             ]
         },
@@ -400,14 +423,14 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                 }, [
                     React.createElement('span', {
                         key: 'icon',
-                        className: 'nav-icon',
+                        className: `nav-icon ${item.icon && item.icon.startsWith('fa-') ? item.icon : ''}`,
                         style: {
                             fontSize: '16px',
                             width: '20px',
                             marginRight: collapsed ? 0 : '12px',
                             textAlign: 'center'
                         }
-                    }, item.icon),
+                    }, item.icon && !item.icon.startsWith('fa-') ? item.icon : ''),
                     !collapsed && React.createElement('span', {
                         key: 'label',
                         style: {
@@ -429,14 +452,14 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
         }, [
             React.createElement('span', {
                 key: 'icon',
-                className: 'nav-icon',
+                className: `nav-icon ${item.icon && item.icon.startsWith('fa-') ? item.icon : ''}`,
                 style: {
                     fontSize: '16px',
                     width: '20px',
                     marginRight: collapsed ? 0 : '12px',
                     textAlign: 'center'
                 }
-            }, item.icon),
+            }, item.icon && !item.icon.startsWith('fa-') ? item.icon : ''),
             !collapsed && React.createElement('span', {
                 key: 'label',
                 style: {

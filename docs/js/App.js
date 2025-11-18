@@ -394,7 +394,13 @@ const App = () => {
             'ai-knowledge-detail': window.App.pages.AIKnowledgeDetail,
             'AIKnowledgeDetail': window.App.pages.AIKnowledgeDetail,
             'ai-chat': window.App.pages.AIChat,
-            'AIChat': window.App.pages.AIChat
+            'AIChat': window.App.pages.AIChat,
+            // 背景墙管理
+            'background-wall': window.App.pages['background-wall'] || window.App.pages.BackgroundWallManagement,
+            'BackgroundWallManagement': window.App.pages.BackgroundWallManagement,
+            // 情景管理
+            'scenario-management': window.App.pages['scenario-management'] || window.App.pages.ScenarioManagement,
+            'ScenarioManagement': window.App.pages.ScenarioManagement
         };
 
         console.log('Looking for component:', currentPage);
