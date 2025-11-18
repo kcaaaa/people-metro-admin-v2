@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# 人民城轨管理系统 - 大屏管理模块GIT部署脚本
-# 功能：自动化部署大屏管理模块到目标服务器
-# 版本：1.0.0
+# 人民城轨管理系统 - 大屏运营模块GIT部署脚本
+# 功能：自动化部署大屏运营模块（包含大屏管理和背景墙管理功能）到目标服务器
+# 版本：1.1.0
 # 创建日期：2024-05-16
+# 最后更新：2024-05-20
 # 维护人：技术团队
 
 # 颜色定义
@@ -15,7 +16,7 @@ NC='\033[0m' # No Color
 # 配置变量
 GIT_REPO="https://github.com/people-metro/people-metro-admin-v2.git"
 BRANCH="main"
-APP_NAME="screen-management"
+APP_NAME="screen-operation"
 DEPLOY_DIR="/data/apps/${APP_NAME}"
 BACKUP_DIR="/data/backups/${APP_NAME}"
 TMP_DIR="/tmp/${APP_NAME}-deploy"

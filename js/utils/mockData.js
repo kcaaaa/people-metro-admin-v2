@@ -1,5 +1,316 @@
 // 模拟数据工具类
 window.MockData = {
+    // 大屏管理数据
+    getScreens: () => [
+        { 
+            id: 'screen_001',
+            name: '主会场大屏',
+            description: '展会主会场中央大屏',
+            resolution: '1920x1080',
+            status: 'active',
+            createdAt: '2024-01-01',
+            updatedAt: '2024-01-10'
+        },
+        {
+            id: 'screen_002',
+            name: '技术展示大屏',
+            description: '技术创新展区大屏',
+            resolution: '1920x1080',
+            status: 'active',
+            createdAt: '2024-01-02',
+            updatedAt: '2024-01-08'
+        },
+        {
+            id: 'screen_003',
+            name: '互动体验大屏',
+            description: '观众互动体验区大屏',
+            resolution: '3840x2160',
+            status: 'active',
+            createdAt: '2024-01-03',
+            updatedAt: '2024-01-09'
+        },
+        {
+            id: 'screen_004',
+            name: '嘉宾休息室大屏',
+            description: 'VIP嘉宾休息区大屏',
+            resolution: '1920x1080',
+            status: 'active',
+            createdAt: '2024-01-04',
+            updatedAt: '2024-01-07'
+        },
+        {
+            id: 'screen_005',
+            name: '媒体采访大屏',
+            description: '媒体中心采访区大屏',
+            resolution: '1920x1080',
+            status: 'maintenance',
+            createdAt: '2024-01-05',
+            updatedAt: '2024-01-12'
+        },
+        // 新增大屏示例
+        {
+            id: 'screen_006',
+            name: '安全监控大屏',
+            description: '实时安全监控与预警大屏',
+            resolution: '2560x1440',
+            status: 'active',
+            createdAt: '2024-01-06',
+            updatedAt: '2024-01-13'
+        },
+        {
+            id: 'screen_007',
+            name: '客流分析大屏',
+            description: '实时客流数据分析大屏',
+            resolution: '1920x1080',
+            status: 'active',
+            createdAt: '2024-01-07',
+            updatedAt: '2024-01-14'
+        },
+        {
+            id: 'screen_008',
+            name: '应急指挥大屏',
+            description: '应急事件处理与指挥大屏',
+            resolution: '3840x2160',
+            status: 'active',
+            createdAt: '2024-01-08',
+            updatedAt: '2024-01-15'
+        },
+        {
+            id: 'screen_009',
+            name: '线路状态大屏',
+            description: '轨道交通线路运行状态大屏',
+            resolution: '1920x1080',
+            status: 'active',
+            createdAt: '2024-01-09',
+            updatedAt: '2024-01-16'
+        },
+        {
+            id: 'screen_010',
+            name: '商业广告大屏',
+            description: '站内商业广告展示大屏',
+            resolution: '1920x1080',
+            status: 'active',
+            createdAt: '2024-01-10',
+            updatedAt: '2024-01-17'
+        }
+    ],
+
+    // 情景管理数据
+    getScenarios: () => [
+        {
+            id: 'scenario_001',
+            name: '展会开幕情景',
+            description: '展会开幕时的大屏展示情景',
+            playMode: 'auto',
+            defaultDuration: 30,
+            screens: [
+                { screenId: 'screen_001', name: '主会场大屏', duration: 45, order: 1 },
+                { screenId: 'screen_002', name: '技术展示大屏', duration: 30, order: 2 },
+                { screenId: 'screen_003', name: '互动体验大屏', duration: 60, order: 3 }
+            ],
+            createdAt: '2024-01-10',
+            updatedAt: '2024-01-15'
+        },
+        {
+            id: 'scenario_002',
+            name: '技术论坛情景',
+            description: '技术论坛期间的大屏展示情景',
+            playMode: 'manual',
+            defaultDuration: 0,
+            screens: [
+                { screenId: 'screen_001', name: '主会场大屏', duration: 0, order: 1 },
+                { screenId: 'screen_004', name: '嘉宾休息室大屏', duration: 0, order: 2 }
+            ],
+            createdAt: '2024-01-12',
+            updatedAt: '2024-01-14'
+        },
+        {
+            id: 'scenario_003',
+            name: '观众互动情景',
+            description: '观众互动环节的大屏展示情景',
+            playMode: 'auto',
+            defaultDuration: 20,
+            screens: [
+                { screenId: 'screen_003', name: '互动体验大屏', duration: 30, order: 1 },
+                { screenId: 'screen_001', name: '主会场大屏', duration: 20, order: 2 }
+            ],
+            createdAt: '2024-01-14',
+            updatedAt: '2024-01-14'
+        },
+        // 新增情景模式示例
+        {
+            id: 'scenario_004',
+            name: '安全监控情景',
+            description: '日常安全监控与预警场景',
+            playMode: 'auto',
+            defaultDuration: 15,
+            screens: [
+                { screenId: 'screen_006', name: '安全监控大屏', duration: 30, order: 1 },
+                { screenId: 'screen_007', name: '客流分析大屏', duration: 20, order: 2 },
+                { screenId: 'screen_008', name: '应急指挥大屏', duration: 25, order: 3 }
+            ],
+            createdAt: '2024-01-16',
+            updatedAt: '2024-01-16'
+        },
+        {
+            id: 'scenario_005',
+            name: '线路运营情景',
+            description: '线路日常运营监控场景',
+            playMode: 'auto',
+            defaultDuration: 20,
+            screens: [
+                { screenId: 'screen_009', name: '线路状态大屏', duration: 40, order: 1 },
+                { screenId: 'screen_007', name: '客流分析大屏', duration: 30, order: 2 }
+            ],
+            createdAt: '2024-01-17',
+            updatedAt: '2024-01-18'
+        },
+        {
+            id: 'scenario_006',
+            name: '商业运营情景',
+            description: '站内商业广告轮播场景',
+            playMode: 'auto',
+            defaultDuration: 10,
+            screens: [
+                { screenId: 'screen_010', name: '商业广告大屏', duration: 10, order: 1 },
+                { screenId: 'screen_001', name: '主会场大屏', duration: 15, order: 2 }
+            ],
+            createdAt: '2024-01-18',
+            updatedAt: '2024-01-19'
+        },
+        {
+            id: 'scenario_007',
+            name: '应急响应情景',
+            description: '突发事件应急响应场景',
+            playMode: 'manual',
+            defaultDuration: 0,
+            screens: [
+                { screenId: 'screen_008', name: '应急指挥大屏', duration: 0, order: 1 },
+                { screenId: 'screen_006', name: '安全监控大屏', duration: 0, order: 2 },
+                { screenId: 'screen_009', name: '线路状态大屏', duration: 0, order: 3 },
+                { screenId: 'screen_001', name: '主会场大屏', duration: 0, order: 4 }
+            ],
+            createdAt: '2024-01-19',
+            updatedAt: '2024-01-19'
+        },
+        {
+            id: 'scenario_008',
+            name: '全设备监控情景',
+            description: '全面监控所有大屏设备的场景',
+            playMode: 'auto',
+            defaultDuration: 15,
+            screens: [
+                { screenId: 'screen_001', name: '主会场大屏', duration: 15, order: 1 },
+                { screenId: 'screen_002', name: '技术展示大屏', duration: 15, order: 2 },
+                { screenId: 'screen_003', name: '互动体验大屏', duration: 15, order: 3 },
+                { screenId: 'screen_004', name: '嘉宾休息室大屏', duration: 15, order: 4 },
+                { screenId: 'screen_006', name: '安全监控大屏', duration: 15, order: 5 },
+                { screenId: 'screen_007', name: '客流分析大屏', duration: 15, order: 6 },
+                { screenId: 'screen_008', name: '应急指挥大屏', duration: 15, order: 7 },
+                { screenId: 'screen_009', name: '线路状态大屏', duration: 15, order: 8 },
+                { screenId: 'screen_010', name: '商业广告大屏', duration: 15, order: 9 }
+            ],
+            createdAt: '2024-01-20',
+            updatedAt: '2024-01-20'
+        },
+        // 新增演示数据
+        {
+            id: 'scenario_009',
+            name: '运营高峰时段情景',
+            description: '早晚高峰期间的客流监控与引导场景',
+            playMode: 'auto',
+            defaultDuration: 10,
+            screens: [
+                { screenId: 'screen_007', name: '客流分析大屏', duration: 20, order: 1 },
+                { screenId: 'screen_009', name: '线路状态大屏', duration: 15, order: 2 },
+                { screenId: 'screen_001', name: '主会场大屏', duration: 10, order: 3 }
+            ],
+            createdAt: '2024-01-21',
+            updatedAt: '2024-01-22'
+        },
+        {
+            id: 'scenario_010',
+            name: '夜间维护情景',
+            description: '夜间设备维护期间的监控场景',
+            playMode: 'manual',
+            defaultDuration: 0,
+            screens: [
+                { screenId: 'screen_006', name: '安全监控大屏', duration: 0, order: 1 },
+                { screenId: 'screen_008', name: '应急指挥大屏', duration: 0, order: 2 }
+            ],
+            createdAt: '2024-01-22',
+            updatedAt: '2024-01-22'
+        },
+        {
+            id: 'scenario_011',
+            name: '节假日特殊模式情景',
+            description: '节假日期间的特殊展示模式',
+            playMode: 'auto',
+            defaultDuration: 25,
+            screens: [
+                { screenId: 'screen_001', name: '主会场大屏', duration: 30, order: 1 },
+                { screenId: 'screen_003', name: '互动体验大屏', duration: 25, order: 2 },
+                { screenId: 'screen_010', name: '商业广告大屏', duration: 20, order: 3 },
+                { screenId: 'screen_007', name: '客流分析大屏', duration: 15, order: 4 }
+            ],
+            createdAt: '2024-01-23',
+            updatedAt: '2024-01-24'
+        },
+        {
+            id: 'scenario_012',
+            name: '媒体接待情景',
+            description: '媒体参观访问时的展示场景',
+            playMode: 'manual',
+            defaultDuration: 0,
+            screens: [
+                { screenId: 'screen_002', name: '技术展示大屏', duration: 0, order: 1 },
+                { screenId: 'screen_001', name: '主会场大屏', duration: 0, order: 2 },
+                { screenId: 'screen_004', name: '嘉宾休息室大屏', duration: 0, order: 3 }
+            ],
+            createdAt: '2024-01-24',
+            updatedAt: '2024-01-24'
+        },
+        {
+            id: 'scenario_013',
+            name: '教育培训情景',
+            description: '员工培训和技能提升时的展示场景',
+            playMode: 'auto',
+            defaultDuration: 45,
+            screens: [
+                { screenId: 'screen_002', name: '技术展示大屏', duration: 60, order: 1 },
+                { screenId: 'screen_008', name: '应急指挥大屏', duration: 45, order: 2 }
+            ],
+            createdAt: '2024-01-25',
+            updatedAt: '2024-01-25'
+        },
+        {
+            id: 'scenario_014',
+            name: '设备巡检情景',
+            description: '设备日常巡检监控场景',
+            playMode: 'auto',
+            defaultDuration: 20,
+            screens: [
+                { screenId: 'screen_006', name: '安全监控大屏', duration: 30, order: 1 },
+                { screenId: 'screen_009', name: '线路状态大屏', duration: 25, order: 2 }
+            ],
+            createdAt: '2024-01-26',
+            updatedAt: '2024-01-26'
+        },
+        {
+            id: 'scenario_015',
+            name: '特殊活动情景',
+            description: '举办特殊活动时的定制化展示场景',
+            playMode: 'auto',
+            defaultDuration: 30,
+            screens: [
+                { screenId: 'screen_001', name: '主会场大屏', duration: 40, order: 1 },
+                { screenId: 'screen_003', name: '互动体验大屏', duration: 35, order: 2 },
+                { screenId: 'screen_010', name: '商业广告大屏', duration: 25, order: 3 }
+            ],
+            createdAt: '2024-01-27',
+            updatedAt: '2024-01-28'
+        }
+    ],
     // 仪表盘统计数据
     getDashboardStats: () => ({
         pendingReviews: { value: 248, change: '+12%', trend: 'up' },
@@ -475,4 +786,10 @@ window.MockData = {
             }
         }
     }
-}; 
+    };
+    
+    // 生成唯一ID
+    generateId: (prefix = 'id') => {
+        return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
+;

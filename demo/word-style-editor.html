@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大屏管理 - Word风格图片编辑器</title>
+    
+    <!-- Quill 富文本编辑器 CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    
+    <!-- FontAwesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        /* 头部样式 */
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 24px 32px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title i {
+            font-size: 28px;
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        /* 提示信息 */
+        .tips-container {
+            background: #ecf5ff;
+            border: 1px solid #b3d8ff;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 24px 32px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .tips-container i {
+            color: #409eff;
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        .tips-content {
+            flex: 1;
+        }
+
+        .tips-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #409eff;
+            margin-bottom: 8px;
+        }
+
+        .tips-list {
+            font-size: 13px;
+            color: #606266;
+            line-height: 1.8;
+            padding-left: 20px;
+        }
+
+        .tips-list li {
+            margin-bottom: 4px;
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            padding: 32px;
+        }
+
+        .editor-section,
+        .preview-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #2a5298;
+        }
+
+        .section-header i {
+            color: #2a5298;
+            font-size: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            color: #1e3c72;
+            font-weight: 600;
+        }
+
+        /* 编辑器样式 */
+        #editor {
+            min-height: 600px;
+            background: #ffffff;
+            border: 1px solid #e4e7ed;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .ql-container {
+            font-size: 16px;
+            min-height: 600px;
+        }
+
+        .ql-editor {
+            min-height: 600px;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Word风格的图片容器 */
+        .word-image-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: move;
+            border: 2px dashed transparent;
+            transition: border-color 0.2s;
+            margin: 8px;
+        }
+
+        .word-image-wrapper:hover,
+        .word-image-wrapper.selected {
+            border-color: #2a5298;
+        }
+
+        .word-image-wrapper img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+        }
+        
+        /* 编辑器需要相对定位以支持绝对定位的图片 */
+        .ql-editor {
+            position: relative;
+        }
+        
+        /* 绝对定位的图片容器 */
+        .word-image-wrapper.positioned {
+            position: absolute !important;
+        }
+
+        /* 调整手柄 */
+        .resize-handle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #2a5298;
+            border: 1px solid #ffffff;
+            border-radius: 50%;
+            display: none;
+        }
+
+        .word-image-wrapper.selected .resize-handle {
+            display: block;
+        }
+
+        .resize-handle.nw { top: -4px; left: -4px; cursor: nw-resize; }
+        .resize-handle.ne { top: -4px; right: -4px; cursor: ne-resize; }
+        .resize-handle.sw { bottom: -4px; left: -4px; cursor: sw-resize; }
+        .resize-handle.se { bottom: -4px; right: -4px; cursor: se-resize; }
+        .resize-handle.n { top: -4px; left: 50%; margin-left: -4px; cursor: n-resize; }
+        .resize-handle.s { bottom: -4px; left: 50%; margin-left: -4px; cursor: s-resize; }
+        .resize-handle.w { top: 50%; left: -4px; margin-top: -4px; cursor: w-resize; }
+        .resize-handle.e { top: 50%; right: -4px; margin-top: -4px; cursor: e-resize; }
+
+        /* 图片工具栏 */
+        .image-toolbar {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #ffffff;
+            border: 1px solid #e4e7ed;
+            border-radius: 6px;
+            padding: 4px;
+            display: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            white-space: nowrap;
+            z-index: 100;
+        }
+
+        .word-image-wrapper.selected .image-toolbar {
+            display: flex;
+            gap: 4px;
+        }
+
+        .toolbar-btn {
+            padding: 6px 10px;
+            background: #ffffff;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #606266;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .toolbar-btn:hover {
+            background: #2a5298;
+            color: #ffffff;
+            border-color: #2a5298;
+        }
+
+        .toolbar-btn.active {
+            background: #2a5298;
+            color: #ffffff;
+            border-color: #2a5298;
+        }
+
+        .toolbar-btn i {
+            font-size: 12px;
+        }
+
+        /* 文字环绕样式 */
+        .wrap-inline {
+            position: relative !important;
+            display: inline-block;
+            margin: 0 8px;
+        }
+
+        .wrap-square {
+            float: left;
+            margin: 0 16px 16px 0;
+        }
+
+        .wrap-tight {
+            float: left;
+            margin: 0 12px 12px 0;
+            shape-outside: margin-box;
+        }
+
+        .wrap-through {
+            position: absolute;
+        }
+
+        .wrap-top-bottom {
+            display: block;
+            margin: 16px auto;
+        }
+
+        .wrap-behind {
+            position: absolute;
+            z-index: 1 !important;
+        }
+
+        .wrap-front {
+            position: absolute;
+            z-index: 100 !important;
+        }
+
+        /* 预览区域 */
+        .preview-container {
+            min-height: 600px;
+            background: #ffffff;
+            border: 1px solid #e4e7ed;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 700px;
+            position: relative;
+        }
+
+        .preview-content {
+            line-height: 1.8;
+            color: #303133;
+            position: relative;
+        }
+
+        /* 操作按钮区域 */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            padding: 24px 32px;
+            background: #f5f7fa;
+            border-top: 1px solid #e4e7ed;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(42, 82, 152, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: #606266;
+            border: 1px solid #dcdfe6;
+        }
+
+        .btn-secondary:hover {
+            background: #f5f7fa;
+            border-color: #2a5298;
+            color: #2a5298;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="header-title">
+                <i class="fa-solid fa-desktop"></i>
+                <div>
+                    <h1>大屏管理 - Word风格图片编辑器</h1>
+                    <div class="header-subtitle">支持拖拽、调整大小、多种文字环绕方式</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 提示信息 -->
+        <div class="tips-container">
+            <i class="fa-solid fa-circle-info"></i>
+            <div class="tips-content">
+                <div class="tips-title">功能说明 - Word风格图片编辑</div>
+                <ul class="tips-list">
+                    <li><strong>插入图片</strong>：点击工具栏的图片按钮上传图片</li>
+                    <li><strong>拖拽移动</strong>：点击图片并拖拽到任意位置</li>
+                    <li><strong>调整大小</strong>：选中图片后，拖拽8个调整手柄改变大小</li>
+                    <li><strong>文字环绕</strong>：选中图片后，使用顶部工具栏选择环绕方式</li>
+                    <li><strong>6种环绕方式</strong>：嵌入型、四周型、紧密型、穿越型、上下型、衬于文字下方</li>
+                    <li><strong>实时预览</strong>：右侧实时显示最终效果</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 编辑器区域 -->
+            <div class="editor-section">
+                <div class="section-header">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <h2>内容编辑</h2>
+                </div>
+                
+                <div id="editor"></div>
+            </div>
+
+            <!-- 预览区域 -->
+            <div class="preview-section">
+                <div class="section-header">
+                    <i class="fa-solid fa-eye"></i>
+                    <h2>实时预览</h2>
+                </div>
+                
+                <div class="preview-container">
+                    <div class="preview-content" id="preview">
+                        <p>在左侧编辑器中输入内容，插入图片后可以：</p>
+                        <ul>
+                            <li>拖拽移动图片位置</li>
+                            <li>调整图片大小</li>
+                            <li>选择文字环绕方式</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="action-buttons">
+            <button class="btn btn-secondary" onclick="clearContent()">
+                <i class="fa-solid fa-trash"></i>
+                清空内容
+            </button>
+            <button class="btn btn-secondary" onclick="exportHTML()">
+                <i class="fa-solid fa-download"></i>
+                导出 HTML
+            </button>
+            <button class="btn btn-primary" onclick="saveContent()">
+                <i class="fa-solid fa-floppy-disk"></i>
+                保存内容
+            </button>
+        </div>
+    </div>
+
+    <!-- Quill 富文本编辑器 JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    
+    <script>
+        // 存储图片数据
+        let images = [];
+        let selectedImage = null;
+        let isDragging = false;
+        let isResizing = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let resizeHandle = null;
+
+        // 自定义图片处理函数
+        function imageHandler() {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
+
+            input.onchange = function() {
+                const file = input.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        insertWordImage(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+        }
+
+        // 初始化 Quill 编辑器
+        var quill = new Quill('#editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: {
+                    container: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'align': [] }],
+                        ['link', 'image'],
+                        ['clean']
+                    ],
+                    handlers: {
+                        image: imageHandler
+                    }
+                }
+            },
+            placeholder: '请输入内容，插入图片后可拖拽调整位置和大小...'
+        });
+
+        // 插入Word风格的图片
+        function insertWordImage(src) {
+            const imageId = 'img-' + Date.now();
+            
+            // 先使用 Quill 的方式插入一个占位符
+            const range = quill.getSelection(true);
+            const index = range ? range.index : quill.getLength();
+            
+            // 插入一个换行，为图片留出空间
+            quill.insertText(index, '\n', 'user');
+            
+            // 延迟创建自定义图片元素，避免与 Quill 的 DOM 操作冲突
+            setTimeout(() => {
+                const editor = document.querySelector('.ql-editor');
+                
+                // 创建图片包装器
+                const wrapper = document.createElement('div');
+                wrapper.className = 'word-image-wrapper wrap-square';
+                wrapper.id = imageId;
+                wrapper.style.width = '300px';
+                wrapper.style.height = '200px';
+                wrapper.setAttribute('contenteditable', 'false');
+                
+                // 创建图片
+                const img = document.createElement('img');
+                img.src = src;
+                wrapper.appendChild(img);
+                
+                // 创建工具栏
+                const toolbar = createImageToolbar(imageId);
+                wrapper.appendChild(toolbar);
+                
+                // 创建调整手柄
+                const handles = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+                handles.forEach(pos => {
+                    const handle = document.createElement('div');
+                    handle.className = `resize-handle ${pos}`;
+                    handle.dataset.position = pos;
+                    wrapper.appendChild(handle);
+                });
+                
+                // 找到插入位置（在新插入的换行符处）
+                const paragraphs = editor.querySelectorAll('p');
+                if (paragraphs.length > 0) {
+                    const lastP = paragraphs[paragraphs.length - 1];
+                    // 在段落后插入
+                    lastP.parentNode.insertBefore(wrapper, lastP.nextSibling);
+                } else {
+                    // 如果没有段落，直接添加
+                    editor.appendChild(wrapper);
+                }
+                
+                // 保存图片数据
+                images.push({
+                    id: imageId,
+                    src: src,
+                    width: 300,
+                    height: 200,
+                    x: 0,
+                    y: 0,
+                    wrapType: 'square'
+                });
+                
+                // 绑定事件
+                bindImageEvents(wrapper);
+                
+                // 更新预览
+                updatePreview();
+            }, 100);
+        }
+
+        // 创建图片工具栏
+        function createImageToolbar(imageId) {
+            const toolbar = document.createElement('div');
+            toolbar.className = 'image-toolbar';
+            
+            const wrapTypes = [
+                { type: 'inline', icon: 'fa-align-justify', title: '嵌入型' },
+                { type: 'square', icon: 'fa-square', title: '四周型' },
+                { type: 'tight', icon: 'fa-compress', title: '紧密型' },
+                { type: 'through', icon: 'fa-layer-group', title: '穿越型' },
+                { type: 'top-bottom', icon: 'fa-align-center', title: '上下型' },
+                { type: 'behind', icon: 'fa-layer-group', title: '衬于文字下方' }
+            ];
+            
+            wrapTypes.forEach(wrap => {
+                const btn = document.createElement('button');
+                btn.className = 'toolbar-btn';
+                btn.innerHTML = `<i class="fa-solid ${wrap.icon}"></i><span>${wrap.title}</span>`;
+                btn.title = wrap.title;
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    setWrapType(imageId, wrap.type);
+                };
+                toolbar.appendChild(btn);
+            });
+            
+            // 删除按钮
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'toolbar-btn';
+            deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i><span>删除</span>';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                deleteImage(imageId);
+            };
+            toolbar.appendChild(deleteBtn);
+            
+            return toolbar;
+        }
+
+        // 绑定图片事件
+        function bindImageEvents(wrapper) {
+            // 选中图片
+            wrapper.addEventListener('mousedown', function(e) {
+                if (e.target.classList.contains('resize-handle')) {
+                    // 开始调整大小
+                    isResizing = true;
+                    resizeHandle = e.target.dataset.position;
+                    selectedImage = wrapper;
+                    dragStartX = e.clientX;
+                    dragStartY = e.clientY;
+                } else if (!e.target.classList.contains('toolbar-btn')) {
+                    // 开始拖拽
+                    isDragging = true;
+                    selectedImage = wrapper;
+                    dragStartX = e.clientX - wrapper.offsetLeft;
+                    dragStartY = e.clientY - wrapper.offsetTop;
+                    
+                    // 清除其他选中状态
+                    document.querySelectorAll('.word-image-wrapper').forEach(w => {
+                        w.classList.remove('selected');
+                    });
+                    wrapper.classList.add('selected');
+                }
+                e.preventDefault();
+            });
+        }
+
+        // 全局鼠标移动事件
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging && selectedImage && selectedImage.classList.contains('positioned')) {
+                const editor = document.querySelector('.ql-editor');
+                const editorRect = editor.getBoundingClientRect();
+                
+                let newX = e.clientX - editorRect.left - dragStartX;
+                let newY = e.clientY - editorRect.top - dragStartY;
+                
+                // 限制在编辑器范围内
+                newX = Math.max(0, Math.min(newX, editorRect.width - selectedImage.offsetWidth));
+                newY = Math.max(0, Math.min(newY, editorRect.height - selectedImage.offsetHeight));
+                
+                selectedImage.style.left = newX + 'px';
+                selectedImage.style.top = newY + 'px';
+                
+                // 更新数据
+                updateImageData(selectedImage.id, { x: newX, y: newY });
+            } else if (isResizing && selectedImage) {
+                const deltaX = e.clientX - dragStartX;
+                const deltaY = e.clientY - dragStartY;
+                
+                const currentWidth = selectedImage.offsetWidth;
+                const currentHeight = selectedImage.offsetHeight;
+                
+                let newWidth = currentWidth;
+                let newHeight = currentHeight;
+                
+                // 根据不同的手柄调整大小
+                if (resizeHandle.includes('e')) {
+                    newWidth = currentWidth + deltaX;
+                }
+                if (resizeHandle.includes('w')) {
+                    newWidth = currentWidth - deltaX;
+                    selectedImage.style.left = (selectedImage.offsetLeft + deltaX) + 'px';
+                }
+                if (resizeHandle.includes('s')) {
+                    newHeight = currentHeight + deltaY;
+                }
+                if (resizeHandle.includes('n')) {
+                    newHeight = currentHeight - deltaY;
+                    selectedImage.style.top = (selectedImage.offsetTop + deltaY) + 'px';
+                }
+                
+                // 限制最小尺寸
+                newWidth = Math.max(50, newWidth);
+                newHeight = Math.max(50, newHeight);
+                
+                selectedImage.style.width = newWidth + 'px';
+                selectedImage.style.height = newHeight + 'px';
+                
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+                
+                // 更新数据
+                updateImageData(selectedImage.id, { 
+                    width: newWidth, 
+                    height: newHeight,
+                    x: selectedImage.offsetLeft,
+                    y: selectedImage.offsetTop
+                });
+            }
+        });
+
+        // 全局鼠标释放事件
+        document.addEventListener('mouseup', function() {
+            if (isDragging || isResizing) {
+                updatePreview();
+            }
+            isDragging = false;
+            isResizing = false;
+            resizeHandle = null;
+        });
+
+        // 设置环绕类型
+        function setWrapType(imageId, wrapType) {
+            const wrapper = document.getElementById(imageId);
+            if (wrapper) {
+                // 移除所有环绕类
+                wrapper.className = 'word-image-wrapper selected';
+                wrapper.classList.add('wrap-' + wrapType);
+                
+                // 如果是穿越型、衬于文字下方，需要绝对定位
+                if (wrapType === 'through' || wrapType === 'behind' || wrapType === 'front') {
+                    wrapper.classList.add('positioned');
+                    // 设置初始位置
+                    if (!wrapper.style.left || wrapper.style.left === '0px') {
+                        wrapper.style.left = '50px';
+                        wrapper.style.top = '50px';
+                    }
+                } else {
+                    wrapper.classList.remove('positioned');
+                    wrapper.style.left = '';
+                    wrapper.style.top = '';
+                }
+                
+                // 更新数据
+                updateImageData(imageId, { wrapType: wrapType });
+                
+                // 更新工具栏按钮状态
+                const toolbar = wrapper.querySelector('.image-toolbar');
+                toolbar.querySelectorAll('.toolbar-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // 更新预览
+                updatePreview();
+            }
+        }
+
+        // 删除图片
+        function deleteImage(imageId) {
+            const wrapper = document.getElementById(imageId);
+            if (wrapper) {
+                wrapper.remove();
+                images = images.filter(img => img.id !== imageId);
+                updatePreview();
+            }
+        }
+
+        // 更新图片数据
+        function updateImageData(imageId, updates) {
+            const img = images.find(i => i.id === imageId);
+            if (img) {
+                Object.assign(img, updates);
+            }
+        }
+
+        // 更新预览
+        function updatePreview() {
+            const preview = document.getElementById('preview');
+            const editor = document.querySelector('.ql-editor');
+            
+            // 克隆编辑器内容
+            let content = editor.innerHTML;
+            
+            // 移除工具栏和手柄
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+            
+            tempDiv.querySelectorAll('.image-toolbar, .resize-handle').forEach(el => {
+                el.remove();
+            });
+            
+            tempDiv.querySelectorAll('.word-image-wrapper').forEach(wrapper => {
+                wrapper.classList.remove('selected');
+            });
+            
+            preview.innerHTML = tempDiv.innerHTML;
+        }
+
+        // 监听内容变化
+        quill.on('text-change', function() {
+            updatePreview();
+        });
+
+        // 清空内容
+        function clearContent() {
+            if (confirm('确定要清空所有内容吗？')) {
+                quill.setText('');
+                document.querySelectorAll('.word-image-wrapper').forEach(w => w.remove());
+                images = [];
+                updatePreview();
+            }
+        }
+
+        // 导出 HTML
+        function exportHTML() {
+            const preview = document.getElementById('preview');
+            const content = preview.innerHTML;
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '大屏内容_' + new Date().getTime() + '.html';
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('HTML 内容已导出！');
+        }
+
+        // 保存内容
+        function saveContent() {
+            const preview = document.getElementById('preview');
+            const content = preview.innerHTML;
+            localStorage.setItem('screenContent', content);
+            localStorage.setItem('screenImages', JSON.stringify(images));
+            localStorage.setItem('screenContentTime', new Date().toLocaleString());
+            alert('内容已保存！');
+        }
+
+        // 页面加载时恢复内容
+        window.onload = function() {
+            const savedContent = localStorage.getItem('screenContent');
+            const savedImages = localStorage.getItem('screenImages');
+            
+            if (savedContent && confirm('检测到之前保存的内容，是否恢复？')) {
+                document.getElementById('preview').innerHTML = savedContent;
+                if (savedImages) {
+                    images = JSON.parse(savedImages);
+                    // 重建图片
+                    images.forEach(imgData => {
+                        insertWordImage(imgData.src);
+                        // 恢复位置和大小
+                        setTimeout(() => {
+                            const wrapper = document.getElementById(imgData.id);
+                            if (wrapper) {
+                                wrapper.style.width = imgData.width + 'px';
+                                wrapper.style.height = imgData.height + 'px';
+                                wrapper.style.left = imgData.x + 'px';
+                                wrapper.style.top = imgData.y + 'px';
+                                setWrapType(imgData.id, imgData.wrapType);
+                            }
+                        }, 100);
+                    });
+                }
+            }
+        };
+    </script>
+</body>
+</html>
+
