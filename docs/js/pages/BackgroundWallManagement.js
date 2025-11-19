@@ -406,10 +406,10 @@ const BackgroundWallManagement = () => {
             Form.Item,
             {
                 name: "description",
-                label: "背景墙描述",
-                rules: [{ required: true, message: '请输入背景墙描述' }]
+                label: "描述",
+                rules: [{ required: true, message: '请输入描述' }]
             },
-            React.createElement(TextArea, { placeholder: "请输入背景墙描述", rows: 3 })
+            React.createElement(Input, { placeholder: "请输入背景墙描述" })
         ),
         React.createElement(
             Row,
@@ -422,9 +422,9 @@ const BackgroundWallManagement = () => {
                     {
                         name: "width",
                         label: "宽度（像素）",
-                        rules: [{ required: true, message: '请输入宽度' }]
+                        rules: [{ required: true, message: '请输入宽度', type: 'number' }]
                     },
-                    React.createElement(Input, { type: "number", placeholder: "例如：1920" })
+                    React.createElement(Input, { type: "number", placeholder: "默认1920" })
                 )
             ),
             React.createElement(
@@ -435,283 +435,280 @@ const BackgroundWallManagement = () => {
                     {
                         name: "height",
                         label: "高度（像素）",
-                        rules: [{ required: true, message: '请输入高度' }]
+                        rules: [{ required: true, message: '请输入高度', type: 'number' }]
                     },
-                    React.createElement(Input, { type: "number", placeholder: "例如：1080" })
+                    React.createElement(Input, { type: "number", placeholder: "默认1080" })
                 )
             )
         ),
-        React.createElement(Divider, null, "视觉内容"),
         React.createElement(
             Form.Item,
-            { label: "背景图片", required: true },
+            { label: "背景图片" },
             React.createElement(
                 Space,
-                { direction: "vertical", size: "middle", style: { width: '100%' } },
-                React.createElement(CustomUpload, {
-                    onChange: (file) => {
-                        if (file) {
-                            handleImageUpload(file);
-                        }
-                    }
-                }),
-                imagePreviewUrl ? React.createElement(Image, {
-                    width: "100%",
+                { direction: "vertical", size: 16 },
+                React.createElement(CustomUpload, null),
+                imagePreviewUrl && React.createElement(Image, {
                     src: imagePreviewUrl,
-                    alt: "背景预览"
-                }) : React.createElement('div', {
-                    style: {
-                        width: '100%',
-                        height: '200px',
-                        border: '1px dashed #d9d9d9',
-                        borderRadius: '4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#999'
-                    }
-                }, '请上传背景图片')
+                    alt: "背景图片预览",
+                    style: { maxWidth: '100%', maxHeight: '300px', border: '1px solid #d9d9d9' }
+                }),
+                React.createElement(
+                    Typography.Text,
+                    { type: "secondary" },
+                    "建议上传与设置尺寸一致的图片，以获得最佳显示效果"
+                )
             )
         ),
-        React.createElement(Divider, null, "文本内容"),
+        React.createElement(Divider, { orientation: "left" }, "宣传语编辑"),
+        React.createElement(
+            Form.Item,
+            { label: "文本样式设置" },
+            React.createElement(
+                Row,
+                { gutter: 16 },
+                React.createElement(
+                    Col,
+                    { span: 8 },
+                    React.createElement(
+                        Form.Item,
+                        { label: "字体" },
+                        React.createElement(Select, {
+                            style: { width: '100%' },
+                            onChange: (value) => updateTextStyle('font-family', value),
+                            options: fontFamilies
+                        })
+                    )
+                ),
+                React.createElement(
+                    Col,
+                    { span: 8 },
+                    React.createElement(
+                        Form.Item,
+                        { label: "文字颜色" },
+                        React.createElement(Select, {
+                            style: { width: '100%' },
+                            onChange: (value) => updateTextStyle('color', value),
+                            options: textColors,
+                            optionRender: (option) => React.createElement(
+                                "div",
+                                { style: { display: 'flex', alignItems: 'center' } },
+                                React.createElement("div", {
+                                    style: {
+                                        width: '16px',
+                                        height: '16px',
+                                        backgroundColor: option.value,
+                                        border: '1px solid #d9d9d9',
+                                        marginRight: '8px'
+                                    }
+                                }),
+                                option.label
+                            )
+                        })
+                    )
+                ),
+                React.createElement(
+                    Col,
+                    { span: 8 },
+                    React.createElement(
+                        Form.Item,
+                        { label: "对齐方式" },
+                        React.createElement(Select, {
+                            style: { width: '100%' },
+                            onChange: (value) => updateTextStyle('text-align', value),
+                            options: textAlignOptions
+                        })
+                    )
+                )
+            ),
+            React.createElement(
+                Row,
+                { gutter: 16 },
+                React.createElement(
+                    Col,
+                    { span: 8 },
+                    React.createElement(
+                        Form.Item,
+                        { label: "字体大小（像素）" },
+                        React.createElement(Input, {
+                            type: "number",
+                            placeholder: "默认32",
+                            onChange: (e) => updateTextStyle('font-size', `${e.target.value}px`)
+                        })
+                    )
+                ),
+                React.createElement(
+                    Col,
+                    { span: 8 },
+                    React.createElement(
+                        Form.Item,
+                        { label: "文字阴影大小" },
+                        React.createElement(Input, {
+                            type: "number",
+                            placeholder: "默认2",
+                            onChange: (e) => updateTextStyle('text-shadow', `${e.target.value}px ${e.target.value}px ${e.target.value * 2}px #000000`)
+                        })
+                    )
+                ),
+                React.createElement(
+                    Col,
+                    { span: 8 },
+                    React.createElement(
+                        Form.Item,
+                        { label: "左边距（像素）" },
+                        React.createElement(Input, {
+                            type: "number",
+                            placeholder: "默认0",
+                            onChange: (e) => updateTextStyle('margin-left', `${e.target.value}px`)
+                        })
+                    )
+                )
+            )
+        ),
         React.createElement(
             Form.Item,
             {
                 name: "content",
-                label: "文本内容",
-                rules: [{ required: true, message: '请输入背景墙文本内容' }]
+                label: "宣传语内容（支持HTML标签）",
+                rules: [{ required: true, message: '请输入宣传语内容' }]
             },
             React.createElement(TextArea, {
-                placeholder: "可以输入富文本HTML内容，如<p style='color:#fff;font-size:36px;'>欢迎词</p>",
-                rows: 4,
+                rows: 6,
+                placeholder: "请输入宣传语内容",
                 onChange: handleContentChange
             })
         ),
         React.createElement(
-            Row,
-            { gutter: 16 },
-            React.createElement(
-                Col,
-                { span: 8 },
-                React.createElement(
-                    Form.Item,
-                    { label: "字体" },
-                    React.createElement(
-                        Select,
-                        {
-                            placeholder: "选择字体",
-                            onChange: (value) => updateTextStyle('font-family', value)
-                        },
-                        fontFamilies.map(font => React.createElement(Option, { key: font.value, value: font.value }, font.label))
-                    )
-                )
-            ),
-            React.createElement(
-                Col,
-                { span: 8 },
-                React.createElement(
-                    Form.Item,
-                    { label: "颜色" },
-                    React.createElement(
-                        Select,
-                        {
-                            placeholder: "选择颜色",
-                            onChange: (value) => updateTextStyle('color', value)
-                        },
-                        textColors.map(color => React.createElement(Option, { key: color.value, value: color.value }, color.label))
-                    )
-                )
-            ),
-            React.createElement(
-                Col,
-                { span: 8 },
-                React.createElement(
-                    Form.Item,
-                    { label: "对齐方式" },
-                    React.createElement(
-                        Select,
-                        {
-                            placeholder: "选择对齐方式",
-                            onChange: (value) => updateTextStyle('text-align', value)
-                        },
-                        textAlignOptions.map(option => React.createElement(Option, { key: option.value, value: option.value }, option.label))
-                    )
-                )
-            )
+            Form.Item,
+            { label: "实时预览" },
+            React.createElement("div", {
+                style: {
+                    border: '1px solid #d9d9d9',
+                    padding: '20px',
+                    minHeight: '150px',
+                    backgroundColor: '#f5f5f5'
+                },
+                dangerouslySetInnerHTML: { __html: form.getFieldValue('content') || '<p>请输入宣传语内容</p>' }
+            })
         )
     );
     
-    // 表格搜索
-    const handleSearch = (value) => {
-        console.log('搜索背景墙:', value);
-    };
+    // 渲染创建模态框
+    const renderCreateModal = () => React.createElement(
+        Modal,
+        {
+            title: "创建背景墙",
+            open: createModalVisible,
+            onCancel: () => setCreateModalVisible(false),
+            footer: [
+                React.createElement(Button, { key: "cancel", onClick: () => setCreateModalVisible(false) }, "取消"),
+                React.createElement(Button, { key: "submit", type: "primary", loading: loading, onClick: handleSaveCreate }, "保存")
+            ],
+            width: 800
+        },
+        renderForm(createForm)
+    );
     
-    // 表格筛选
-    const handleFilter = (value) => {
-        console.log('筛选背景墙状态:', value);
-    };
+    // 渲染编辑模态框
+    const renderEditModal = () => React.createElement(
+        Modal,
+        {
+            title: "编辑背景墙",
+            open: editModalVisible,
+            onCancel: () => setEditModalVisible(false),
+            footer: [
+                React.createElement(Button, { key: "cancel", onClick: () => setEditModalVisible(false) }, "取消"),
+                React.createElement(Button, { key: "submit", type: "primary", loading: loading, onClick: handleSaveEdit }, "保存")
+            ],
+            width: 800
+        },
+        renderForm(editForm)
+    );
+    
+    // 渲染预览模态框
+    const renderPreviewModal = () => React.createElement(
+        Modal,
+        {
+            title: `预览：${selectedBackground?.name}`,
+            open: previewModalVisible,
+            onCancel: () => setPreviewModalVisible(false),
+            footer: [
+                React.createElement(Button, { key: "close", onClick: () => setPreviewModalVisible(false) }, "关闭")
+            ],
+            width: 1000,
+            bodyStyle: { padding: 0 }
+        },
+        selectedBackground && React.createElement(
+            "div",
+            { style: { position: 'relative', width: '100%', height: '600px', overflow: 'hidden' } },
+            React.createElement("img", {
+                src: selectedBackground.imageUrl,
+                alt: "背景图片",
+                style: {
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0
+                }
+            }),
+            React.createElement("div", {
+                style: {
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                },
+                dangerouslySetInnerHTML: { __html: selectedBackground.content }
+            })
+        )
+    );
     
     return React.createElement(
-        'div',
-        { className: 'background-wall-management', style: { padding: '24px' } },
+        "div",
+        null,
         React.createElement(
-            Row,
-            { gutter: 24 },
-            React.createElement(
-                Col,
-                { span: 16 },
-                React.createElement(
-                    Card,
-                    {
-                        title: React.createElement('div', {
-                            style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
-                        }, [
-                            React.createElement('span', { key: 'title' }, '背景墙列表'),
-                            React.createElement(Space, { key: 'actions' }, [
-                                React.createElement(Search, {
-                                    placeholder: '搜索背景墙名称',
-                                    onSearch: handleSearch,
-                                    style: { width: 200 }
-                                }),
-                                React.createElement(Select, {
-                                    placeholder: '筛选状态',
-                                    style: { width: 120 },
-                                    onChange: handleFilter
-                                }, [
-                                    React.createElement(Option, { key: 'all', value: 'all' }, '全部状态'),
-                                    React.createElement(Option, { key: 'active', value: 'active' }, '启用'),
-                                    React.createElement(Option, { key: 'inactive', value: 'inactive' }, '禁用')
-                                ]),
-                                React.createElement(Button, {
-                                    type: 'primary',
-                                    onClick: handleCreate
-                                }, '创建背景墙')
-                            ])
-                        ]),
-                        bordered: false,
-                        style: { marginBottom: 24 }
-                    },
-                    React.createElement(Table, {
-                        columns: columns,
-                        dataSource: backgroundList,
-                        rowKey: "id",
-                        loading: loading,
-                        pagination: {
-                            pageSize: 5,
-                            showTotal: (total) => `共 ${total} 条背景墙配置`
-                        },
-                        scroll: { x: 1000 }
-                    })
-                )
-            ),
-            React.createElement(
-                Col,
-                { span: 8 },
-                React.createElement(
-                    Card,
-                    { title: "背景墙预览", bordered: false },
-                    selectedBackground ? React.createElement(
-                        'div',
-                        { style: { textAlign: 'center' } },
-                        React.createElement(Image, {
-                            width: "100%",
-                            src: selectedBackground.imageUrl,
-                            alt: selectedBackground.name,
-                            style: { borderRadius: '8px', marginBottom: '16px' }
-                        }),
-                        React.createElement(Title, { level: 4 }, selectedBackground.name),
-                        React.createElement(Paragraph, null, selectedBackground.description),
-                        React.createElement(Space, { size: "middle" }, [
-                            React.createElement(Tag, { color: 'blue', key: 'size' }, `${selectedBackground.width}×${selectedBackground.height}`),
-                            React.createElement(Tag, { key: 'status', color: selectedBackground.status === 'active' ? 'success' : 'default' }, selectedBackground.status === 'active' ? '启用' : '禁用')
-                        ])
-                    ) : React.createElement('div', {
-                        style: {
-                            height: '300px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: '#999',
-                            border: '1px dashed #d9d9d9',
-                            borderRadius: '8px'
-                        }
-                    }, '请选择左侧背景墙查看预览')
-                ),
-                React.createElement(
-                    Card,
-                    { title: "使用指南", bordered: false, style: { marginTop: '24px' } },
-                    React.createElement('ul', null, [
-                        React.createElement('li', { key: 'guide-1' }, '支持多种尺寸的背景墙配置，标准尺寸为1920×1080'),
-                        React.createElement('li', { key: 'guide-2' }, '可通过富文本模式配置文字内容、样式和动画效果'),
-                        React.createElement('li', { key: 'guide-3' }, '支持实时预览效果并同步到大屏展示系统'),
-                        React.createElement('li', { key: 'guide-4' }, '可设置背景墙启用/禁用状态，快速切换展示内容')
-                    ])
-                )
-            )
+            "div",
+            { style: { marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+            React.createElement(Title, { level: 4 }, "背景墙管理"),
+            React.createElement(Button, { type: "primary", onClick: handleCreate }, "创建背景墙")
         ),
         React.createElement(
-            Modal,
-            {
-                title: "创建背景墙",
-                open: createModalVisible,
-                onCancel: () => setCreateModalVisible(false),
-                onOk: handleSaveCreate,
-                confirmLoading: loading,
-                width: 800,
-                destroyOnClose: true
-            },
-            renderForm(createForm)
+            Card,
+            null,
+            React.createElement(Table, {
+                columns: columns,
+                dataSource: backgroundList,
+                rowKey: "id",
+                loading: loading,
+                pagination: { pageSize: 10 },
+                scroll: { x: 'max-content' }
+            })
         ),
-        React.createElement(
-            Modal,
-            {
-                title: "编辑背景墙",
-                open: editModalVisible,
-                onCancel: () => setEditModalVisible(false),
-                onOk: handleSaveEdit,
-                confirmLoading: loading,
-                width: 800,
-                destroyOnClose: true
-            },
-            renderForm(editForm)
-        ),
-        React.createElement(
-            Modal,
-            {
-                title: selectedBackground ? selectedBackground.name : "背景墙预览",
-                open: previewModalVisible,
-                footer: null,
-                onCancel: () => setPreviewModalVisible(false),
-                width: 1000
-            },
-            selectedBackground && React.createElement(
-                'div',
-                { style: { textAlign: 'center' } },
-                React.createElement(Image, {
-                    width: "100%",
-                    src: selectedBackground.imageUrl,
-                    alt: selectedBackground.name,
-                    style: { borderRadius: '8px', marginBottom: '16px' }
-                }),
-                React.createElement('div', {
-                    dangerouslySetInnerHTML: { __html: selectedBackground.content },
-                    style: {
-                        background: 'rgba(0,0,0,0.05)',
-                        padding: '16px',
-                        borderRadius: '8px'
-                    }
-                })
-            )
-        )
+        renderCreateModal(),
+        renderEditModal(),
+        renderPreviewModal()
     );
 };
 
+// 确保组件被正确导出并注册到应用页面中
 window.BackgroundWallManagement = BackgroundWallManagement;
-window.App = window.App || {};
-window.App.pages = window.App.pages || {};
-window.App.pages.BackgroundWallManagement = BackgroundWallManagement;
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = BackgroundWallManagement;
+// 注册到App.pages对象，这样路由系统才能找到并渲染该页面
+// 使用DOMContentLoaded事件确保App对象已初始化
+if (typeof window !== 'undefined' && window.document && window.document.createElement) {
+    if (window.App && window.App.pages) {
+        window.App.pages['background-wall'] = BackgroundWallManagement;
+    } else {
+        // 如果App对象还未初始化，等待DOM加载完成后再注册
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.App && window.App.pages) {
+                window.App.pages['background-wall'] = BackgroundWallManagement;
+            }
+        });
+    }
 }
-

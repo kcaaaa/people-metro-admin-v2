@@ -401,8 +401,7 @@ const App = () => {
             // 情景管理
             'scenario-management': window.App.pages['scenario-management'] || window.App.pages.ScenarioManagement,
             'ScenarioManagement': window.App.pages.ScenarioManagement
-        };
-
+            };
         console.log('Looking for component:', currentPage);
         console.log('Available components:', Object.keys(window.App.pages || {}));
         console.log('Component mapping:', {

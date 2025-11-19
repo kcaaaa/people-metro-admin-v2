@@ -232,7 +232,10 @@ const PermissionManager = {
         'AIKnowledgeManagement': ['ai:knowledge:view'],
         'AIKnowledgeDetail': ['ai:knowledge:view'],
         'AIChat': ['ai:chat:view'],
-        'ai-chat': ['ai:chat:view']
+        'ai-chat': ['ai:chat:view'],
+        'screen': ['operation:screen:view'],
+        'ScreenManagement': ['operation:screen:view'],
+        'BackgroundWallManagement': ['operation:backgroundwall:view']
     },
 
     // 初始化权限管理器
