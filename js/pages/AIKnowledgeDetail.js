@@ -13,6 +13,30 @@ const AIKnowledgeDetail = ({ onPageChange, currentPage, knowledgeId, mode = 'vie
     const [form] = Form.useForm();
     
     // 知识库类型选项
+    // 当前用户信息（模拟，实际应该从权限系统获取）
+    const currentUser = {
+        id: 'user1',
+        name: '管理员',
+        role: 'admin' // 可选值：'super-admin'、'admin' 或 'user'
+    };
+    
+    // 权限检查函数
+    const hasEditPermission = (record) => {
+        // 超级管理员拥有全部权限
+        if (currentUser.role === 'super-admin') {
+            return true;
+        }
+        // 管理员可以编辑所有全局知识库和自己的个人知识库
+        if (currentUser.role === 'admin' && record.isGlobal) {
+            return true;
+        }
+        // 个人知识库只有创建者可以编辑
+        if (!record.isGlobal && record.owner === currentUser.id) {
+            return true;
+        }
+        return false;
+    };
+    
     const knowledgeTypes = [
         { value: 'faq', label: '常见问题' },
         { value: 'product', label: '产品文档' },
@@ -35,6 +59,25 @@ const AIKnowledgeDetail = ({ onPageChange, currentPage, knowledgeId, mode = 'vie
         'csv': { label: 'CSV文件', color: 'lime' }
     };
     
+    // 权限设置选项（用于个人知识库权限设置）
+    const userOptions = [
+        { value: 'user1', label: '当前用户' },
+        { value: 'user2', label: '用户2' },
+        { value: 'user3', label: '用户3' }
+    ];
+    
+    const departmentOptions = [
+        { value: 'dept1', label: '技术部' },
+        { value: 'dept2', label: '市场部' },
+        { value: 'dept3', label: '人事部' }
+    ];
+    
+    const roleOptions = [
+        { value: 'admin', label: '管理员' },
+        { value: 'editor', label: '编辑' },
+        { value: 'user', label: '普通用户' }
+    ];
+    
     // 组件加载时初始化数据
     // 当mode或knowledgeId变化时重新加载数据
     React.useEffect(() => {
@@ -56,29 +99,46 @@ const AIKnowledgeDetail = ({ onPageChange, currentPage, knowledgeId, mode = 'vie
                       knowledgeId === '2' ? '产品手册' : 
                       knowledgeId === '3' ? '技术文档库' : 
                       knowledgeId === '4' ? '运营数据分析' : 
+                      knowledgeId === 'personal1' ? '我的学习笔记' :
+                      knowledgeId === 'personal2' ? '项目规划文档' :
                       '政策法规汇编',
                 description: knowledgeId === '1' ? '包含常见客户问题和解答的知识库' :
                             knowledgeId === '2' ? '详细的产品功能和使用说明文档' :
                             knowledgeId === '3' ? '系统架构、API接口和技术规范文档' :
                             knowledgeId === '4' ? '运营数据报告和趋势分析文档' :
+                            knowledgeId === 'personal1' ? '个人整理的学习资料和笔记' :
+                            knowledgeId === 'personal2' ? '个人项目的规划和设计文档' :
                             '相关政策法规和行业标准文档',
                 type: knowledgeId === '1' ? 'faq' :
                       knowledgeId === '2' ? 'product' :
                       knowledgeId === '3' ? 'technical' :
                       knowledgeId === '4' ? 'operation' :
+                      knowledgeId === 'personal1' ? 'technical' :
+                      knowledgeId === 'personal2' ? 'product' :
                       'policy',
                 enabled: knowledgeId !== '3', // ID为3的知识库设为禁用状态
                 documentCount: knowledgeId === '1' ? 256 :
                               knowledgeId === '2' ? 128 :
                               knowledgeId === '3' ? 78 :
                               knowledgeId === '4' ? 45 :
+                              knowledgeId === 'personal1' ? 25 :
+                              knowledgeId === 'personal2' ? 15 :
                               102,
                 lastUpdated: '2024-01-20',
                 createdAt: knowledgeId === '1' ? '2024-01-05' :
                            knowledgeId === '2' ? '2024-01-02' :
                            knowledgeId === '3' ? '2023-12-28' :
                            knowledgeId === '4' ? '2024-01-01' :
-                           '2023-12-30'
+                           knowledgeId === 'personal1' ? '2024-01-03' :
+                           knowledgeId === 'personal2' ? '2024-01-01' :
+                           '2023-12-30',
+                isGlobal: !knowledgeId.startsWith('personal'), // 个人知识库isGlobal为false
+                owner: knowledgeId.startsWith('personal') ? currentUser.id : 'system', // 个人知识库的创建者是当前用户
+                permissions: knowledgeId.startsWith('personal') ? {
+                    users: knowledgeId === 'personal2' ? ['user2'] : [],
+                    departments: knowledgeId === 'personal2' ? ['dept1'] : [],
+                    roles: knowledgeId === 'personal2' ? ['editor'] : []
+                } : undefined // 全局知识库不需要权限设置
             };
             
             // 模拟获取知识文件列表
@@ -156,7 +216,8 @@ const AIKnowledgeDetail = ({ onPageChange, currentPage, knowledgeId, mode = 'vie
                 name: knowledgeInfo.name,
                 description: knowledgeInfo.description,
                 type: knowledgeInfo.type,
-                enabled: knowledgeInfo.enabled
+                enabled: knowledgeInfo.enabled,
+                permissions: knowledgeInfo.permissions || { users: [], departments: [], roles: [] } // 初始化权限字段
             });
             setVisible(true);
         }
@@ -509,6 +570,57 @@ const AIKnowledgeDetail = ({ onPageChange, currentPage, knowledgeId, mode = 'vie
                         label: '启用状态'
                     },
                     React.createElement(Switch)
+                ),
+                
+                // 个人知识库需要设置权限（按人员、部门、角色）
+                knowledgeInfo.isGlobal === false && React.createElement(React.Fragment, null,
+                    React.createElement(Form.Item, {
+                        name: ['permissions', 'users'],
+                        label: '访问权限（人员）',
+                        tooltip: '选择可以访问该知识库的具体用户'
+                    },
+                        React.createElement(Select, { 
+                            mode: 'multiple', 
+                            placeholder: '请选择用户',
+                            disabled: !hasEditPermission(knowledgeInfo) // 根据权限控制是否可编辑
+                        },
+                            userOptions.map(function(user) {
+                                return React.createElement(Option, { key: user.value, value: user.value }, user.label);
+                            })
+                        )
+                    ),
+                    
+                    React.createElement(Form.Item, {
+                        name: ['permissions', 'departments'],
+                        label: '访问权限（部门）',
+                        tooltip: '选择可以访问该知识库的部门'
+                    },
+                        React.createElement(Select, { 
+                            mode: 'multiple', 
+                            placeholder: '请选择部门',
+                            disabled: !hasEditPermission(knowledgeInfo) // 根据权限控制是否可编辑
+                        },
+                            departmentOptions.map(function(dept) {
+                                return React.createElement(Option, { key: dept.value, value: dept.value }, dept.label);
+                            })
+                        )
+                    ),
+                    
+                    React.createElement(Form.Item, {
+                        name: ['permissions', 'roles'],
+                        label: '访问权限（角色）',
+                        tooltip: '选择可以访问该知识库的角色'
+                    },
+                        React.createElement(Select, { 
+                            mode: 'multiple', 
+                            placeholder: '请选择角色',
+                            disabled: !hasEditPermission(knowledgeInfo) // 根据权限控制是否可编辑
+                        },
+                            roleOptions.map(function(role) {
+                                return React.createElement(Option, { key: role.value, value: role.value }, role.label);
+                            })
+                        )
+                    )
                 )
             )
         )

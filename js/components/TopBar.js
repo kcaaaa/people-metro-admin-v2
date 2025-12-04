@@ -12,10 +12,10 @@ const TopBar = ({ currentPage, user, notifications, onNotificationClick, onLogou
         'review': { title: 'AI审核', breadcrumb: ['审核管理', 'AI审核'] },
         'exhibition-audit': { title: '展会内容审核', breadcrumb: ['审核管理', '展会内容审核'] },
         'audit-flow': { title: '审核流程', breadcrumb: ['审核管理', '审核流程'] },
-        'booth': { title: '展位管理', breadcrumb: ['展会管理', '展位管理'] },
-        'exhibitor': { title: '展商管理', breadcrumb: ['展会管理', '展商管理'] },
-        'exhibitor-maintenance': { title: '展商维护', breadcrumb: ['展会管理', '展商维护'] },
-        'live': { title: '论坛直播', breadcrumb: ['展会管理', '论坛直播'] },
+        'booth': { title: '展位管理', breadcrumb: ['展会运营', '展位管理'] },
+        'exhibitor': { title: '展商管理', breadcrumb: ['展会运营', '展商管理'] },
+        'exhibitor-maintenance': { title: '展商维护', breadcrumb: ['展会运营', '展商维护'] },
+        'live': { title: '论坛直播', breadcrumb: ['展会运营', '论坛直播'] },
         'stats': { title: '行为统计', breadcrumb: ['运营管理', '行为统计'] },
         'operational': { title: '运营数据统计', breadcrumb: ['运营管理', '运营数据统计'] },
         'live-stats': { title: '直播数据管理', breadcrumb: ['运营管理', '直播数据管理'] },
@@ -32,12 +32,14 @@ const TopBar = ({ currentPage, user, notifications, onNotificationClick, onLogou
         'personal-center': { title: '个人中心', breadcrumb: ['系统管理', '个人中心'] },
         'profile': { title: '用户画像', breadcrumb: ['系统管理', '用户画像'] },
         // AI管理
-        'ai-agents': { title: '智能体管理', breadcrumb: ['AI管理', '智能体管理'] },
-        'AIAgentManagement': { title: '智能体管理', breadcrumb: ['AI管理', '智能体管理'] },
-        'ai-knowledge': { title: '知识库管理', breadcrumb: ['AI管理', '知识库管理'] },
-        'AIKnowledgeManagement': { title: '知识库管理', breadcrumb: ['AI管理', '知识库管理'] },
-        'ai-knowledge-detail': { title: '知识库详情', breadcrumb: ['AI管理', '知识库管理', '知识库详情'] },
-        'AIKnowledgeDetail': { title: '知识库详情', breadcrumb: ['AI管理', '知识库管理', '知识库详情'] }
+'ai-agents': { title: '智能体管理', breadcrumb: ['AI管理', '智能体管理'] },
+'AIAgentManagement': { title: '智能体管理', breadcrumb: ['AI管理', '智能体管理'] },
+'ai-knowledge': { title: '知识库管理', breadcrumb: ['AI管理', '知识库管理'] },
+'AIKnowledgeManagement': { title: '知识库管理', breadcrumb: ['AI管理', '知识库管理'] },
+'ai-knowledge-detail': { title: '知识库详情', breadcrumb: ['AI管理', '知识库管理', '知识库详情'] },
+'AIKnowledgeDetail': { title: '知识库详情', breadcrumb: ['AI管理', '知识库管理', '知识库详情'] },
+'ai-categories': { title: '分类管理', breadcrumb: ['AI管理', '分类管理'] },
+'AICategoryManagement': { title: '分类管理', breadcrumb: ['AI管理', '分类管理'] }
     };
 
     const currentPageInfo = pageTitleMap[currentPage] || { title: '未知页面', breadcrumb: ['未知页面'] };

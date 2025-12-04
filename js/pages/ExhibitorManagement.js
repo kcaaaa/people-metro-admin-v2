@@ -1,4 +1,4 @@
-// 参展公司管理页面 - 展会参展公司信息管理
+// 参展公司管理页面 - 展会运营参展公司信息管理
 window.App = window.App || {};
 window.App.pages = window.App.pages || {};
 const ExhibitorManagement = () => {
@@ -937,4 +937,4 @@ const ExhibitorManagement = () => {
 
 // 将组件挂载到正确的命名空间
 window.App.pages.ExhibitorManagement = ExhibitorManagement;
-console.log('[ExhibitorManagement] 组件挂载成功 - 完整版本'); 
+console.log('[ExhibitorManagement] 组件挂载成功 - 完整版本');

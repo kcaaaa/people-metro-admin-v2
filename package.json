@@ -1,10 +1,10 @@
-﻿{
+{
   "name": "people-metro-admin-v2",
   "version": "2.0.0",
   "description": "人民城轨2.0运营管理后台",
   "private": true,
   "scripts": {
-    "start": "http-server -p 8000",
+    "start": "http-server -p 8080",
     "download-deps": "node download-deps.js",
     "setup": "npm run download-deps",
     "deploy": "gh-pages -d ."
@@ -17,6 +17,7 @@
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.1",
     "gh-pages": "^6.1.1",
     "http-server": "^14.1.1"
   },

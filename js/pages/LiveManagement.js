@@ -33,6 +33,8 @@ const LiveManagement = () => {
     const [isMultipleSessions, setIsMultipleSessions] = React.useState(false);
     const [sessions, setSessions] = React.useState([]);
     const [meetingMaterials, setMeetingMaterials] = React.useState([]);
+    // 报名相关状态
+    const [enableRegistration, setEnableRegistration] = React.useState(false);
     
     // 展会列表（用于关联展会直播）
     const [exhibitions, setExhibitions] = React.useState([]);
@@ -42,6 +44,13 @@ const LiveManagement = () => {
         loadLiveList();
         loadChannels();
         loadExhibitions();
+        
+        // 监听展会列表变化事件
+        window.addEventListener('exhibitionListChanged', loadExhibitions);
+        
+        return () => {
+            window.removeEventListener('exhibitionListChanged', loadExhibitions);
+        };
     }, []);
     
     // 加载直播列表
@@ -56,8 +65,8 @@ const LiveManagement = () => {
                 {
                     id: 'live_001',
                     title: '城轨新技术发布会',
-                    type: 'weizan',
-                    typeLabel: '微赞直播',
+                    type: 'internal_parse',
+                    typeLabel: '内部直播-解析（仅限微赞直播）',
                     status: 'not_started',
                     statusLabel: '未开始',
                     startTime: '2024-01-15 14:00:00',
@@ -79,9 +88,33 @@ const LiveManagement = () => {
                 },
                 {
                     id: 'live_002',
+                    title: '城市轨道交通运营管理培训',
+                    type: 'internal_no_parse',
+                    typeLabel: '内部直播-不解析',
+                    status: 'not_started',
+                    statusLabel: '未开始',
+                    startTime: '2024-01-18 09:00:00',
+                    endTime: null,
+                    presenter: '李培训师',
+                    channelId: null,
+                    channelName: null,
+                    coverUrl: 'https://placehold.co/120x68/e0e7ff/4f46e5?text=Live4',
+                    description: '城市轨道交通运营管理专业培训课程',
+                    enableRegistration: true,
+                    registrationUrl: 'https://www.wjx.cn/jq/87654321.aspx',
+                    isMultipleSessions: false,
+                    externalUrl: null,
+                    exhibitionId: null,
+                    exhibitionName: null,
+                    createdBy: '培训管理员',
+                    createdAt: '2024-01-12 14:30:00',
+                    updatedAt: '2024-01-12 14:30:00'
+                },
+                {
+                    id: 'live_003',
                     title: '外部平台直播测试',
                     type: 'external',
-                    typeLabel: '外部链接直播',
+                    typeLabel: '外部直播',
                     status: 'live',
                     statusLabel: '直播中',
                     startTime: '2024-01-12 09:00:00',
@@ -100,30 +133,6 @@ const LiveManagement = () => {
                     createdBy: '运营人员',
                     createdAt: '2024-01-08 15:20:00',
                     updatedAt: '2024-01-12 09:00:00'
-                },
-                {
-                    id: 'live_003',
-                    title: '展会开幕式直播',
-                    type: 'exhibition',
-                    typeLabel: '关联展会直播',
-                    status: 'not_started',
-                    statusLabel: '未开始',
-                    startTime: '2024-02-01 10:00:00',
-                    endTime: null,
-                    presenter: null,
-                    channelId: null,
-                    channelName: null,
-                    coverUrl: 'https://placehold.co/120x68/e0e7ff/4f46e5?text=Live3',
-                    description: '2024年城轨展会开幕式',
-                    enableRegistration: false,
-                    registrationUrl: null,
-                    isMultipleSessions: false,
-                    externalUrl: null,
-                    exhibitionId: 'exhibition_001',
-                    exhibitionName: '2024年城市轨道交通展会',
-                    createdBy: '管理员',
-                    createdAt: '2024-01-05 11:00:00',
-                    updatedAt: '2024-01-05 11:00:00'
                 }
             ];
             
@@ -160,13 +169,29 @@ const LiveManagement = () => {
             // 模拟API调用
             await new Promise(resolve => setTimeout(resolve, 300));
             
-            const mockExhibitions = [
-                { id: 'exhibition_001', name: '2024年城市轨道交通展会', startDate: '2024-02-01', endDate: '2024-02-03' },
-                { id: 'exhibition_002', name: '2024年智能交通技术展', startDate: '2024-03-15', endDate: '2024-03-17' },
-                { id: 'exhibition_003', name: '2024年轨道交通装备展', startDate: '2024-05-10', endDate: '2024-05-12' }
-            ];
+            // 从localStorage获取展会数据，如果没有则使用模拟数据
+            let exhibitionList = [];
+            const stored = localStorage.getItem('exhibitionList');
+            if (stored) {
+                exhibitionList = JSON.parse(stored);
+            } else {
+                // 模拟数据
+                exhibitionList = [
+                    { id: 'exhibition_001', name: '2024年城市轨道交通展会', startDate: '2024-02-01', endDate: '2024-02-03' },
+                    { id: 'exhibition_002', name: '2024年智能交通技术展', startDate: '2024-03-15', endDate: '2024-03-17' },
+                    { id: 'exhibition_003', name: '2024年轨道交通装备展', startDate: '2024-05-10', endDate: '2024-05-12' }
+                ];
+            }
             
-            setExhibitions(mockExhibitions);
+            // 转换格式为直播管理所需的格式
+            const formattedExhibitions = exhibitionList.map(ex => ({
+                id: ex.id,
+                name: ex.name,
+                startDate: ex.startTime ? ex.startTime.split(' ')[0] : '',
+                endDate: ex.endTime ? ex.endTime.split(' ')[0] : ''
+            }));
+            
+            setExhibitions(formattedExhibitions);
         } catch (error) {
             console.error('加载展会列表失败:', error);
         }
@@ -321,8 +346,8 @@ const LiveManagement = () => {
             setLiveList(prev => prev.filter(item => item.id !== live.id));
             message.success('删除成功');
             
-            // 如果是微赞直播，调用微赞API删除
-            if (live.type === 'weizan' && live.channelId) {
+            // 如果是内部直播-解析，调用微赞API删除
+            if (live.type === 'internal_parse' && live.channelId) {
                 // await deleteWeizanLive(live.channelId);
             }
         } catch (error) {
@@ -430,20 +455,20 @@ const LiveManagement = () => {
                 return;
             }
             
-            if (values.type === 'weizan') {
+            if (values.type === 'internal_parse' || values.type === 'internal_no_parse') {
                 if (!values.coverUrl) {
-                    message.error('微赞直播必须上传封面图片');
+                    message.error('内部直播必须上传封面图片');
                     return;
                 }
                 if (values.enableRegistration && !values.registrationUrl) {
                     message.error('开启报名功能时必须填写问卷星报名链接');
                     return;
                 }
-            }
-            
-            if (values.type === 'exhibition' && !values.exhibitionId) {
-                message.error('关联展会直播必须选择关联的展会');
-                return;
+                // 多场直播验证
+                if (values.isMultipleSessions && (!sessions || sessions.length === 0)) {
+                    message.error('开启多场直播时必须添加至少一场直播');
+                    return;
+                }
             }
             
             // 验证时间
@@ -455,17 +480,28 @@ const LiveManagement = () => {
             // 模拟API调用
             await new Promise(resolve => setTimeout(resolve, 1500));
             
+            // 处理多场直播场次时间格式
+            const formattedSessions = sessions ? sessions.map(session => ({
+                ...session,
+                startTime: session.startTime ? session.startTime.format('YYYY-MM-DD HH:mm:ss') : null,
+                endTime: session.endTime ? session.endTime.format('YYYY-MM-DD HH:mm:ss') : null
+            })) : [];
+            
             const liveData = {
                 ...values,
                 id: editingLive ? editingLive.id : `live_${Date.now()}`,
                 startTime: values.startTime ? values.startTime.format('YYYY-MM-DD HH:mm:ss') : null,
                 endTime: values.endTime ? values.endTime.format('YYYY-MM-DD HH:mm:ss') : null,
-                typeLabel: values.type === 'external' ? '外部链接直播' :
-                           values.type === 'weizan' ? '微赞直播' : '关联展会直播',
+                typeLabel: values.type === 'external' ? '外部直播' :
+                           values.type === 'internal_parse' ? '内部直播-解析（仅限微赞直播）' :
+                           values.type === 'internal_no_parse' ? '内部直播-不解析' : '展会直播',
                 createdBy: editingLive ? editingLive.createdBy : '当前用户',
                 createdAt: editingLive ? editingLive.createdAt : new Date().toISOString().slice(0, 19).replace('T', ' '),
                 updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
-                exhibitionName: values.exhibitionId ? exhibitions.find(e => e.id === values.exhibitionId)?.name : null
+                exhibitionName: values.exhibitionId ? exhibitions.find(e => e.id === values.exhibitionId)?.name : null,
+                // 添加会议资料和多场直播数据
+                meetingMaterials: meetingMaterials,
+                sessions: formattedSessions
             };
             
             if (editingLive) {
@@ -512,95 +548,158 @@ const LiveManagement = () => {
     
     // 渲染类型选择界面
     const renderTypeSelection = () => {
-        return React.createElement('div', {
-            style: { padding: '40px 20px', textAlign: 'center' }
-        }, [
-            React.createElement('h3', {
-                key: 'title',
-                style: { marginBottom: '32px', fontSize: '18px', fontWeight: '600' }
-            }, '请选择直播类型'),
-            
-            React.createElement(Row, {
-                key: 'types',
-                gutter: [24, 24],
-                justify: 'center'
-            }, [
-                React.createElement(Col, { span: 8 }, [
-                    React.createElement(Card, {
-                        key: 'external',
-                        hoverable: true,
-                        style: {
-                            cursor: 'pointer',
-                            border: selectedLiveType === 'external' ? '2px solid #1890ff' : '1px solid #d9d9d9'
-                        },
-                        onClick: () => handleSelectLiveType('external')
-                    }, [
-                        React.createElement('div', {
-                            key: 'icon',
-                            style: { fontSize: '48px', marginBottom: '16px' }
-                        }, '🔗'),
-                        React.createElement('div', {
-                            key: 'name',
-                            style: { fontSize: '16px', fontWeight: '600', marginBottom: '8px' }
-                        }, '外部链接直播'),
-                        React.createElement('div', {
-                            key: 'desc',
-                            style: { fontSize: '14px', color: '#666' }
-                        }, '通过外部平台进行直播，在本平台仅维护基本信息和状态')
-                    ])
-                ]),
-                
-                React.createElement(Col, { span: 8 }, [
-                    React.createElement(Card, {
-                        key: 'weizan',
-                        hoverable: true,
-                        style: {
-                            cursor: 'pointer',
-                            border: selectedLiveType === 'weizan' ? '2px solid #1890ff' : '1px solid #d9d9d9'
-                        },
-                        onClick: () => handleSelectLiveType('weizan')
-                    }, [
-                        React.createElement('div', {
-                            key: 'icon',
-                            style: { fontSize: '48px', marginBottom: '16px' }
-                        }, '📺'),
-                        React.createElement('div', {
-                            key: 'name',
-                            style: { fontSize: '16px', fontWeight: '600', marginBottom: '8px' }
-                        }, '微赞直播'),
-                        React.createElement('div', {
-                            key: 'desc',
-                            style: { fontSize: '14px', color: '#666' }
-                        }, '基于微赞平台API进行创建和管理，支持丰富的互动功能')
-                    ])
-                ]),
-                
-                React.createElement(Col, { span: 8 }, [
-                    React.createElement(Card, {
-                        key: 'exhibition',
-                        hoverable: true,
-                        style: {
-                            cursor: 'pointer',
-                            border: selectedLiveType === 'exhibition' ? '2px solid #1890ff' : '1px solid #d9d9d9'
-                        },
-                        onClick: () => handleSelectLiveType('exhibition')
-                    }, [
-                        React.createElement('div', {
-                            key: 'icon',
-                            style: { fontSize: '48px', marginBottom: '16px' }
-                        }, '🏢'),
-                        React.createElement('div', {
-                            key: 'name',
-                            style: { fontSize: '16px', fontWeight: '600', marginBottom: '8px' }
-                        }, '关联展会直播'),
-                        React.createElement('div', {
-                            key: 'desc',
-                            style: { fontSize: '14px', color: '#666' }
-                        }, '与平台现有展会功能关联，在APP中展示展会直播页面')
-                    ])
-                ])
-            ])
-        ]);
+        return React.createElement(
+            'div', 
+            {
+                style: { padding: '40px 20px', textAlign: 'center' }
+            }, 
+            [
+                React.createElement(
+                    'h3', 
+                    {
+                        key: 'title',
+                        style: { marginBottom: '32px', fontSize: '18px', fontWeight: '600' }
+                    }, 
+                    '请选择直播类型'
+                ),
+                React.createElement(
+                    Row, 
+                    {
+                        key: 'types',
+                        gutter: [24, 24],
+                        justify: 'center'
+                    }, 
+                    [
+                        React.createElement(
+                            Col, 
+                            { span: 8 }, 
+                            React.createElement(
+                                Card, 
+                                {
+                                    key: 'internal_parse',
+                                    hoverable: true,
+                                    style: {
+                                        cursor: 'pointer',
+                                        border: selectedLiveType === 'internal_parse' ? '2px solid #1890ff' : '1px solid #d9d9d9'
+                                    },
+                                    onClick: () => handleSelectLiveType('internal_parse')
+                                }, 
+                                [
+                                    React.createElement(
+                                        'div', 
+                                        {
+                                            key: 'icon',
+                                            style: { fontSize: '48px', marginBottom: '16px' }
+                                        }, 
+                                        '📺'
+                                    ),
+                                    React.createElement(
+                                        'div', 
+                                        {
+                                            key: 'name',
+                                            style: { fontSize: '16px', fontWeight: '600', marginBottom: '8px' }
+                                        }, 
+                                        '内部直播-解析'
+                                    ),
+                                    React.createElement(
+                                        'div', 
+                                        {
+                                            key: 'desc',
+                                            style: { fontSize: '14px', color: '#666' }
+                                        }, 
+                                        '仅限微赞直播链接，支持解析互动数据，提供会议资料和报名功能'
+                                    )
+                                ]
+                            )
+                        ),
+                        React.createElement(
+                            Col, 
+                            { span: 8 }, 
+                            React.createElement(
+                                Card, 
+                                {
+                                    key: 'internal_no_parse',
+                                    hoverable: true,
+                                    style: {
+                                        cursor: 'pointer',
+                                        border: selectedLiveType === 'internal_no_parse' ? '2px solid #1890ff' : '1px solid #d9d9d9'
+                                    },
+                                    onClick: () => handleSelectLiveType('internal_no_parse')
+                                }, 
+                                [
+                                    React.createElement(
+                                        'div', 
+                                        {
+                                            key: 'icon',
+                                            style: { fontSize: '48px', marginBottom: '16px' }
+                                        }, 
+                                        '📱'
+                                    ),
+                                    React.createElement(
+                                        'div', 
+                                        {
+                                            key: 'name',
+                                            style: { fontSize: '16px', fontWeight: '600', marginBottom: '8px' }
+                                        }, 
+                                        '内部直播-不解析'
+                                    ),
+                                    React.createElement(
+                                        'div', 
+                                        {
+                                            key: 'desc',
+                                            style: { fontSize: '14px', color: '#666' }
+                                        }, 
+                                        '提供会议资料和报名功能，但不解析互动数据'
+                                    )
+                                ]
+                            )
+                        ),
+                        React.createElement(
+                            Col, 
+                            { span: 8 }, 
+                            React.createElement(
+                                Card, 
+                                {
+                                    key: 'external',
+                                    hoverable: true,
+                                    style: {
+                                        cursor: 'pointer',
+                                        border: selectedLiveType === 'external' ? '2px solid #1890ff' : '1px solid #d9d9d9'
+                                    },
+                                    onClick: () => handleSelectLiveType('external')
+                                }, 
+                                [
+                                    React.createElement(
+                                        'div', 
+                                        {
+                                            key: 'icon',
+                                            style: { fontSize: '48px', marginBottom: '16px' }
+                                        }, 
+                                        '🔗'
+                                    ),
+                                    React.createElement(
+                                        'div', 
+                                        {
+                                            key: 'name',
+                                            style: { fontSize: '16px', fontWeight: '600', marginBottom: '8px' }
+                                        }, 
+                                        '外部直播'
+                                    ),
+                                    React.createElement(
+                                        'div', 
+                                        {
+                                            key: 'desc',
+                                            style: { fontSize: '14px', color: '#666' }
+                                        }, 
+                                        '通过外部平台进行直播，在本平台仅维护基本信息和状态'
+                                    )
+                                ]
+                            )
+                        )
+                    ]
+                )
+            ]
+        );
     };
     
     // 渲染外部链接直播配置表单
@@ -689,8 +788,8 @@ const LiveManagement = () => {
         ]);
     };
     
-    // 渲染微赞直播配置表单
-    const renderWeizanLiveForm = () => {
+    // 渲染内部直播-解析配置表单（仅限微赞直播）
+    const renderInternalParsedForm = () => {
         return React.createElement(Form, {
             form: liveForm,
             layout: 'vertical',
@@ -985,7 +1084,23 @@ const LiveManagement = () => {
     };
     
     // 渲染关联展会直播配置表单
-    const renderExhibitionLiveForm = () => {
+
+    
+    // 渲染配置表单
+    const renderConfigForm = () => {
+        if (selectedLiveType === 'external') {
+            return renderExternalLiveForm();
+        } else if (selectedLiveType === 'internal_parse') {
+            return renderInternalParsedForm();
+        } else if (selectedLiveType === 'internal_no_parse') {
+            return renderInternalUnparsedForm();
+
+        }
+        return null;
+    };
+    
+    // 渲染内部直播-不解析配置表单
+    const renderInternalUnparsedForm = () => {
         return React.createElement(Form, {
             form: liveForm,
             layout: 'vertical',
@@ -1000,22 +1115,6 @@ const LiveManagement = () => {
                 ]),
                 rules: [{ required: true, message: '请输入直播名称' }]
             }, React.createElement(Input, { placeholder: '请输入直播名称' })),
-            
-            React.createElement(Form.Item, {
-                key: 'exhibitionId',
-                name: 'exhibitionId',
-                label: React.createElement('span', {}, [
-                    React.createElement('span', { key: 'star', style: { color: 'red' } }, '*'),
-                    React.createElement('span', { key: 'text' }, ' 关联展会')
-                ]),
-                rules: [{ required: true, message: '请选择关联的展会' }]
-            }, React.createElement(Select, {
-                placeholder: '请选择展会',
-                options: exhibitions.map(ex => ({
-                    value: ex.id,
-                    label: `${ex.name} (${ex.startDate} - ${ex.endDate})`
-                }))
-            })),
             
             React.createElement(Form.Item, {
                 key: 'startTime',
@@ -1061,28 +1160,238 @@ const LiveManagement = () => {
                 showCount: true
             })),
             
+            React.createElement(Divider, {
+                key: 'registration-divider',
+                orientation: 'left'
+            }, '报名设置'),
+            
             React.createElement(Form.Item, {
-                key: 'status',
-                name: 'status',
-                label: '直播状态'
-            }, React.createElement(Select, {}, [
-                React.createElement(Option, { value: 'not_started' }, '未开始'),
-                React.createElement(Option, { value: 'live' }, '直播中'),
-                React.createElement(Option, { value: 'ended' }, '已结束')
-            ]))
+                key: 'enableRegistration',
+                name: 'enableRegistration',
+                valuePropName: 'checked',
+                label: '是否开启报名'
+            }, React.createElement(Switch, {
+                checkedChildren: '开启',
+                unCheckedChildren: '关闭',
+                onChange: (checked) => {
+                    setEnableRegistration(checked);
+                    if (!checked) {
+                        liveForm.setFieldsValue({ registrationEndTime: null });
+                    }
+                }
+            })),
+            
+            enableRegistration && React.createElement(Form.Item, {
+                key: 'registrationEndTime',
+                name: 'registrationEndTime',
+                label: '报名截止时间',
+                rules: [{ required: true, message: '请选择报名截止时间' }],
+                tooltip: '报名截止时间必须早于直播开始时间'
+            }, React.createElement(DatePicker, {
+                showTime: { format: 'HH:mm' },
+                style: { width: '100%' },
+                format: 'YYYY-MM-DD HH:mm',
+                disabledDate: (current) => {
+                    const startTime = liveForm.getFieldValue('startTime');
+                    if (startTime) {
+                        return current && (current >= startTime || current < window.moment().startOf('day'));
+                    }
+                    return current && current < window.moment().startOf('day');
+                }
+            })),
+            
+            enableRegistration && React.createElement(Form.Item, {
+                key: 'needAudit',
+                name: 'needAudit',
+                valuePropName: 'checked',
+                label: '是否需要审核'
+            }, React.createElement(Switch, {
+                checkedChildren: '需要',
+                unCheckedChildren: '不需要'
+            })),
+            
+            React.createElement(Divider, {
+                key: 'multiple-divider',
+                orientation: 'left'
+            }, '多场直播配置'),
+            
+            React.createElement(Form.Item, {
+                key: 'isMultipleSessions',
+                name: 'isMultipleSessions',
+                valuePropName: 'checked',
+                label: '是否多场直播'
+            }, React.createElement(Switch, {
+                checkedChildren: '多场',
+                unCheckedChildren: '单场',
+                onChange: (checked) => {
+                    setIsMultipleSessions(checked);
+                    if (!checked) {
+                        setSessions([]);
+                    }
+                }
+            })),
+            
+            isMultipleSessions && React.createElement(Form.List, {
+                key: 'sessions',
+                name: 'sessions',
+                initialValue: sessions
+            }, (fields, { add, remove }) => {
+                return React.createElement('div', {}, [
+                    ...fields.map((field, index) => React.createElement(Card, {
+                        key: field.key || `session-${index}`,
+                        title: `第${index + 1}场`,
+                        extra: React.createElement(Button, {
+                            type: 'link',
+                            danger: true,
+                            onClick: () => remove(field.name)
+                        }, '删除'),
+                        style: { marginBottom: '16px' }
+                    }, [
+                        React.createElement(Form.Item, {
+                            key: 'sessionName',
+                            name: [field.name, 'sessionName'],
+                            label: '场次名称',
+                            rules: [{ required: true, message: '请输入场次名称' }]
+                        }, React.createElement(Input, { placeholder: '请输入场次名称' })),
+                        
+                        React.createElement(Form.Item, {
+                            key: 'sessionTime',
+                            name: [field.name, 'sessionTime'],
+                            label: '场次时间',
+                            rules: [{ required: true, message: '请选择场次时间' }]
+                        }, React.createElement(DatePicker, {
+                            showTime: { format: 'HH:mm' },
+                            style: { width: '100%' },
+                            format: 'YYYY-MM-DD HH:mm'
+                        })),
+                        
+                        React.createElement(Form.Item, {
+                            key: 'sessionUrl',
+                            name: [field.name, 'sessionUrl'],
+                            label: '场次直播链接',
+                            rules: [
+                                { required: true, message: '请输入场次直播链接' },
+                                { type: 'url', message: '请输入有效的URL格式' }
+                            ]
+                        }, React.createElement(Input, { placeholder: 'https://live.example.com/session1' }))
+                    ])),
+                    
+                    React.createElement(Form.Item, { key: 'add-session' }, [
+                        React.createElement(Button, {
+                            type: 'dashed',
+                            onClick: () => add(),
+                            block: true,
+                            icon: React.createElement('span', {}, '➕')
+                        }, '添加场次')
+                    ])
+                ]);
+            }),
+            
+            React.createElement(Divider, {
+                key: 'materials-divider',
+                orientation: 'left'
+            }, '会议资料管理'),
+            
+            React.createElement(Form.List, {
+                key: 'meetingMaterials',
+                name: 'meetingMaterials',
+                initialValue: meetingMaterials
+            }, (fields, { add, remove }) => {
+                return React.createElement('div', {}, [
+                    ...fields.map((field, index) => {
+                        const materialType = liveForm.getFieldValue(['meetingMaterials', field.name, 'materialType']);
+                        const materialTypeLabel = materialType === 'introduction' ? '会议介绍' :
+                                                  materialType === 'agenda' ? '会议议程' : '会议资料';
+                        
+                        return React.createElement(Card, {
+                            key: field.key || `material-${index}`,
+                            title: materialTypeLabel || `资料${index + 1}`,
+                            extra: React.createElement(Button, {
+                                type: 'link',
+                                danger: true,
+                                onClick: () => remove(field.name)
+                            }, '删除'),
+                            style: { marginBottom: '16px' }
+                        }, [
+                            React.createElement(Form.Item, {
+                                key: 'materialType',
+                                name: [field.name, 'materialType'],
+                                label: '资料类型',
+                                rules: [{ required: true, message: '请选择资料类型' }]
+                            }, React.createElement(Select, {
+                                placeholder: '选择资料类型',
+                                options: [
+                                    { value: 'introduction', label: '会议介绍' },
+                                    { value: 'agenda', label: '会议议程' },
+                                    { value: 'materials', label: '会议资料' }
+                                ]
+                            })),
+                            
+                            React.createElement(Form.Item, {
+                                key: 'file',
+                                name: [field.name, 'file'],
+                                label: 'PDF文件',
+                                rules: [{ required: true, message: '请上传PDF文件' }],
+                                extra: '仅支持PDF格式，单文件大小不超过50MB'
+                            }, React.createElement(Upload, {
+                                accept: '.pdf',
+                                maxCount: 1,
+                                beforeUpload: (file) => {
+                                    const isValidType = file.type === 'application/pdf';
+                                    if (!isValidType) {
+                                        message.error('只能上传PDF格式文件！');
+                                        return false;
+                                    }
+                                    const isValidSize = file.size / 1024 / 1024 < 50;
+                                    if (!isValidSize) {
+                                        message.error('文件大小不能超过50MB！');
+                                        return false;
+                                    }
+                                    // 设置文件名
+                                    liveForm.setFieldsValue({
+                                        [`meetingMaterials[${field.name}].fileName`]: file.name
+                                    });
+                                    return false; // 阻止自动上传
+                                }
+                            }, React.createElement(Button, {
+                                icon: React.createElement('span', {}, '📄')
+                            }, '上传PDF文件'))),
+                            
+                            React.createElement(Form.Item, {
+                                key: 'fileName',
+                                name: [field.name, 'fileName'],
+                                hidden: true
+                            }, React.createElement(Input)),
+                            
+                            React.createElement(Form.Item, {
+                                key: 'fileUrl',
+                                name: [field.name, 'fileUrl'],
+                                hidden: true
+                            }, React.createElement(Input)),
+                            
+                            React.createElement(Form.Item, {
+                                key: 'allowDownload',
+                                name: [field.name, 'allowDownload'],
+                                valuePropName: 'checked',
+                                label: '允许下载'
+                            }, React.createElement(Switch, {
+                                checkedChildren: '允许',
+                                unCheckedChildren: '禁止'
+                            }))
+                        ]);
+                    }),
+                    
+                    React.createElement(Form.Item, { key: 'add-material' }, [
+                        React.createElement(Button, {
+                            type: 'dashed',
+                            onClick: () => add(),
+                            block: true,
+                            icon: React.createElement('span', {}, '➕')
+                        }, '添加会议资料')
+                    ])
+                ]);
+            }),
         ]);
-    };
-    
-    // 渲染配置表单
-    const renderConfigForm = () => {
-        if (selectedLiveType === 'external') {
-            return renderExternalLiveForm();
-        } else if (selectedLiveType === 'weizan') {
-            return renderWeizanLiveForm();
-        } else if (selectedLiveType === 'exhibition') {
-            return renderExhibitionLiveForm();
-        }
-        return null;
     };
     
     // 表格列定义
@@ -1122,7 +1431,7 @@ const LiveManagement = () => {
             dataIndex: 'typeLabel',
             width: 120,
             render: (text, record) => React.createElement(Tag, {
-                color: record.type === 'external' ? 'blue' : record.type === 'weizan' ? 'green' : 'orange'
+                color: record.type === 'external' ? 'blue' : record.type === 'weizan' ? 'green' : record.type === 'exhibition' ? 'purple' : 'orange'
             }, text)
         },
         {
@@ -1153,7 +1462,8 @@ const LiveManagement = () => {
                     size: 'small',
                     onClick: (e) => handleViewDetail(record, e)
                 }, '详情'),
-                React.createElement(Button, {
+                // 展会直播不允许编辑
+                record.type !== 'exhibition' && React.createElement(Button, {
                     key: `edit-${record.id}`,
                     size: 'small',
                     onClick: (e) => {
@@ -1161,7 +1471,8 @@ const LiveManagement = () => {
                         handleEditLive(record);
                     }
                 }, '编辑'),
-                React.createElement(Popconfirm, {
+                // 展会直播不允许删除
+                record.type !== 'exhibition' && React.createElement(Popconfirm, {
                     key: `delete-${record.id}`,
                     title: '确定要删除这个直播吗？',
                     onConfirm: (e) => {
@@ -1230,9 +1541,9 @@ const LiveManagement = () => {
                         style: { width: '100%' }
                     }, [
                         React.createElement(Option, { value: 'all' }, '全部类型'),
-                        React.createElement(Option, { value: 'external' }, '外部链接直播'),
-                        React.createElement(Option, { value: 'weizan' }, '微赞直播'),
-                        React.createElement(Option, { value: 'exhibition' }, '关联展会直播')
+                        React.createElement(Option, { value: 'external' }, '外部直播'),
+                        React.createElement(Option, { value: 'internal_parse' }, '内部直播-解析'),
+                        React.createElement(Option, { value: 'internal_no_parse' }, '内部直播-不解析')
                     ])
                 ]),
                 

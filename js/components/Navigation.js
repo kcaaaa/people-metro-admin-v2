@@ -159,17 +159,31 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
             ]
         },
         {
-            key: 'exhibition-management',
-            icon: '🏢',
-            label: '展会管理',
-            title: '展会管理模块',
+            key: 'exhibition-operation',
+            icon: '🏛️',
+            label: '展会运营',
+            title: '展会管理与报名系统',
             children: [
+                {
+                    key: 'exhibition-management',
+                    icon: '🏢',
+                    label: '展会管理',
+                    title: '展会信息配置与管理',
+                    page: 'ExhibitionManagement'
+                },
+                {
+                    key: 'exhibition-registration',
+                    icon: '📝',
+                    label: '展会报名管理',
+                    title: '展会报名信息管理与审核',
+                    page: 'ExhibitionRegistrationManagement' // 确保与App.js中的映射一致
+                },
                 {
                     key: 'booth',
                     icon: '🏢',
                     label: '展位管理',
                     title: '展会展位信息管理',
-                    page: 'booth' // 修正为小写，与App.js映射一致
+                    page: 'booth'
                 },
                 {
                     key: 'exhibitor',
@@ -364,6 +378,13 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
                     label: 'AI对话聊天',
                     title: '与AI智能体进行对话，支持知识库增强',
                     page: 'AIChat'
+                },
+                {
+                    key: 'ai-categories',
+                    icon: '📂',
+                    label: '分类管理',
+                    title: 'AI知识库分类的创建与管理',
+                    page: 'AICategoryManagement'
                 }
             ]
         }

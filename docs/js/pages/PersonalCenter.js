@@ -41,7 +41,7 @@ const PersonalCenter = () => {
         'review': { enabled: true, label: 'AI审核', level: 2, parent: 'audit-management' },
         'exhibition-audit': { enabled: true, label: '展会内容审核', level: 2, parent: 'audit-management' },
         'audit-flow': { enabled: true, label: '审核流程管理', level: 2, parent: 'audit-management' },
-        'exhibition-management': { enabled: true, label: '展会管理', level: 1 },
+        'exhibition-management': { enabled: true, label: '展会运营', level: 1 },
         'booth': { enabled: true, label: '展位管理', level: 2, parent: 'exhibition-management' },
         'exhibitor': { enabled: true, label: '展商管理', level: 2, parent: 'exhibition-management' },
         'exhibitor-maintenance': { enabled: true, label: '展商维护', level: 2, parent: 'exhibition-management' },
@@ -1173,4 +1173,4 @@ const PersonalCenter = () => {
 };
 
 window.App.pages.PersonalCenter = PersonalCenter;
-console.log('[PersonalCenter] 组件挂载成功'); 
+console.log('[PersonalCenter] 组件挂载成功');

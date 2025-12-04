@@ -395,12 +395,19 @@ const App = () => {
             'AIKnowledgeDetail': window.App.pages.AIKnowledgeDetail,
             'ai-chat': window.App.pages.AIChat,
             'AIChat': window.App.pages.AIChat,
+            'ai-categories': window.App.pages.AICategoryManagement,
+            'AICategoryManagement': window.App.pages.AICategoryManagement,
             // 背景墙管理
             'background-wall': window.App.pages['background-wall'] || window.App.pages.BackgroundWallManagement,
             'BackgroundWallManagement': window.App.pages.BackgroundWallManagement,
             // 情景管理
             'scenario-management': window.App.pages['scenario-management'] || window.App.pages.ScenarioManagement,
-            'ScenarioManagement': window.App.pages.ScenarioManagement
+            'ScenarioManagement': window.App.pages.ScenarioManagement,
+            // 展会管理
+            'exhibition-management': window.App.pages.ExhibitionManagement,
+            'ExhibitionManagement': window.App.pages.ExhibitionManagement,
+            'exhibition-registration': window.App.pages.ExhibitionRegistrationManagement,
+            'ExhibitionRegistrationManagement': window.App.pages.ExhibitionRegistrationManagement
             };
         console.log('Looking for component:', currentPage);
         console.log('Available components:', Object.keys(window.App.pages || {}));

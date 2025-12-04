@@ -1,5 +1,5 @@
 // 版本: v2.2 - 2025-01-03 - 重新设计展位管理层级结构
-// 展位管理页面 - 展会展位信息管理
+// 展位管理页面 - 展会运营展位信息管理
 window.App = window.App || {};
 window.App.pages = window.App.pages || {};
 const BoothManagement = () => {
@@ -961,4 +961,4 @@ const BoothManagement = () => {
 
 console.log('BoothManagement component defined');
 window.App.pages.BoothManagement = BoothManagement;
-console.log('[BoothManagement] 组件挂载成功'); 
+console.log('[BoothManagement] 组件挂载成功');

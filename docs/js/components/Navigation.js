@@ -161,8 +161,8 @@ const Navigation = ({ currentPage, onPageChange, collapsed, onToggleCollapse }) 
         {
             key: 'exhibition-management',
             icon: '🏢',
-            label: '展会管理',
-            title: '展会管理模块',
+            label: '展会运营',
+            title: '展会运营模块',
             children: [
                 {
                     key: 'booth',

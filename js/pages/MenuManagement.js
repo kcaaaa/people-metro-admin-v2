@@ -13,7 +13,7 @@ const MenuManagement = () => {
         'cultural-management': { enabled: true, label: '文创管理', level: 1 },
         'live-management': { enabled: true, label: '直播管理', level: 1 },
         'audit-management': { enabled: true, label: '审核管理', level: 1 },
-        'exhibition-management': { enabled: true, label: '展会管理', level: 1 },
+        'exhibition-management': { enabled: true, label: '展会运营', level: 1 },
         'operation-statistics': { enabled: true, label: '运营管理', level: 1 },
         'system-management': { enabled: true, label: '系统管理', level: 1 },
         'ai-management': { enabled: true, label: 'AI管理', level: 1 },
@@ -57,6 +57,7 @@ const MenuManagement = () => {
         // AI管理子菜单
         'ai-agents': { enabled: true, label: '智能体管理', level: 2, parent: 'ai-management' },
         'ai-knowledge': { enabled: true, label: '知识库管理', level: 2, parent: 'ai-management' },
+        'ai-categories': { enabled: true, label: '分类管理', level: 2, parent: 'ai-management' },
     };
 
     // 状态管理
