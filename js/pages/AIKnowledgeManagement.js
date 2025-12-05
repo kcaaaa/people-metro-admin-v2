@@ -322,7 +322,12 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
                     createdAt: new Date().toISOString().split('T')[0],
                     lastUpdated: new Date().toISOString().split('T')[0],
                     owner: currentUser.id,
-                    isGlobal: currentKnowledgeType === 'global'
+                    isGlobal: currentKnowledgeType === 'global',
+                    permissions: currentKnowledgeType !== 'global' ? {
+                        users: [],
+                        departments: [],
+                        roles: []
+                    } : undefined
                 };
                 
                 if (currentKnowledgeType === 'global') {

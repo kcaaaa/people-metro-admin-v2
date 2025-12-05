@@ -22,14 +22,41 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
         role: 'user' // 可选值：'super-admin'、'admin' 或 'user'
     };
     
-    // 知识库类型选项
-    const knowledgeTypes = [
-        { value: 'faq', label: '常见问题' },
-        { value: 'product', label: '产品文档' },
-        { value: 'technical', label: '技术文档' },
-        { value: 'operation', label: '运营数据' },
-        { value: 'policy', label: '政策法规' }
-    ];
+    // 从分类管理系统获取的分类数据
+    const [categories, setCategories] = React.useState([]);
+    
+    // 模拟获取分类数据的函数
+    const fetchCategories = () => {
+        // 这里应该调用API获取真实分类数据，现在使用模拟数据
+        const mockCategories = [
+            {
+                id: 'standard',
+                name: '标准',
+                level: 1
+            },
+            {
+                id: 'statistics',
+                name: '统计分析',
+                level: 1
+            },
+            {
+                id: 'compliance',
+                name: '合规',
+                level: 1
+            },
+            {
+                id: 'other',
+                name: '其他',
+                level: 1
+            }
+        ];
+        setCategories(mockCategories);
+    };
+    
+    // 初始化时获取分类数据
+    React.useEffect(() => {
+        fetchCategories();
+    }, []);
     
     // 模拟数据初始化
     React.useEffect(() => {
@@ -96,7 +123,12 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
                 lastUpdated: '2024-01-19',
                 createdAt: '2024-01-03',
                 owner: currentUser.id,
-                isGlobal: false
+                isGlobal: false,
+                permissions: {
+                    users: [], // 允许访问的用户ID列表
+                    departments: [], // 允许访问的部门ID列表
+                    roles: [] // 允许访问的角色列表
+                }
             },
             {
                 id: 'personal2',
@@ -108,7 +140,12 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
                 lastUpdated: '2024-01-17',
                 createdAt: '2024-01-01',
                 owner: currentUser.id,
-                isGlobal: false
+                isGlobal: false,
+                permissions: {
+                    users: ['user2'], // 允许user2访问
+                    departments: ['dept1'], // 允许dept1部门访问
+                    roles: ['editor'] // 允许editor角色访问
+                }
             }
         ];
         
@@ -125,9 +162,31 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
                 lastUpdated: '2024-01-16',
                 createdAt: '2023-12-29',
                 owner: 'user2',
-                isGlobal: false
+                isGlobal: false,
+                permissions: {
+                    users: [],
+                    departments: [],
+                    roles: ['admin']
+                }
             });
         }
+        
+        // 模拟用户数据（用于权限控制）
+        const mockUsers = [
+            { id: 'user1', name: '当前用户', department: 'dept1', role: 'user' },
+            { id: 'user2', name: '用户2', department: 'dept2', role: 'editor' },
+            { id: 'user3', name: '用户3', department: 'dept1', role: 'admin' }
+        ];
+        
+        // 模拟部门数据
+        const mockDepartments = [
+            { id: 'dept1', name: '技术部' },
+            { id: 'dept2', name: '市场部' },
+            { id: 'dept3', name: '人事部' }
+        ];
+        
+        // 获取当前用户信息
+        const currentUserInfo = mockUsers.find(user => user.id === currentUser.id) || { department: 'unknown' };
         
         setTimeout(() => {
             // 过滤出用户有权限查看的全局知识库
@@ -135,11 +194,58 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
                 currentUser.role === 'super-admin' || currentUser.role === 'admin' || knowledge.roles.includes(currentUser.role)
             );
             
+            // 过滤出用户有权限查看的个人知识库
+            const accessiblePersonalKnowledge = allPersonalKnowledge.filter(knowledge => {
+                // 超级管理员和管理员可以查看所有个人知识库
+                if (currentUser.role === 'super-admin' || currentUser.role === 'admin') {
+                    return true;
+                }
+                
+                // 知识库创建者可以查看
+                if (knowledge.owner === currentUser.id) {
+                    return true;
+                }
+                
+                // 检查权限设置
+                const permissions = knowledge.permissions || {};
+                
+                // 检查用户权限
+                if (permissions.users && permissions.users.includes(currentUser.id)) {
+                    return true;
+                }
+                
+                // 检查部门权限
+                if (permissions.departments && permissions.departments.includes(currentUserInfo.department)) {
+                    return true;
+                }
+                
+                // 检查角色权限
+                if (permissions.roles && permissions.roles.includes(currentUser.role)) {
+                    return true;
+                }
+                
+                return false;
+            });
+            
             setGlobalKnowledgeData(accessibleGlobalKnowledge);
-            setPersonalKnowledgeData(allPersonalKnowledge);
+            setPersonalKnowledgeData(accessiblePersonalKnowledge);
             setLoading(false);
         }, 500);
     };
+    
+    // 模拟用户数据（用于权限控制）
+    const mockUsers = [
+        { id: 'user1', name: '当前用户', department: 'dept1', role: 'user' },
+        { id: 'user2', name: '用户2', department: 'dept2', role: 'editor' },
+        { id: 'user3', name: '用户3', department: 'dept1', role: 'admin' }
+    ];
+    
+    // 模拟部门数据
+    const mockDepartments = [
+        { id: 'dept1', name: '技术部' },
+        { id: 'dept2', name: '市场部' },
+        { id: 'dept3', name: '人事部' }
+    ];
     
     // 打开新增/编辑对话框
     const handleOpenModal = (record = null, knowledgeType = 'global') => {
@@ -154,7 +260,8 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
                 description: record.description,
                 type: record.type,
                 enabled: record.enabled,
-                roles: record.roles || []
+                roles: record.roles || [],
+                permissions: record.permissions || { users: [], departments: [], roles: [] }
             });
         } else {
             // 新增模式
@@ -163,7 +270,9 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
             form.resetFields();
             form.setFieldsValue({ 
                 enabled: true,
-                roles: knowledgeType === 'global' ? [currentUser.role] : []
+                roles: knowledgeType === 'global' ? [currentUser.role] : [],
+                permissions: { users: [], departments: [], roles: [] },
+                type: 'other' // 新增时默认只能选择"其他"分类
             });
         }
         setVisible(true);
@@ -213,7 +322,12 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
                     createdAt: new Date().toISOString().split('T')[0],
                     lastUpdated: new Date().toISOString().split('T')[0],
                     owner: currentUser.id,
-                    isGlobal: currentKnowledgeType === 'global'
+                    isGlobal: currentKnowledgeType === 'global',
+                    permissions: currentKnowledgeType !== 'global' ? {
+                        users: [],
+                        departments: [],
+                        roles: []
+                    } : undefined
                 };
                 
                 if (currentKnowledgeType === 'global') {
@@ -338,6 +452,26 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
         { value: 'user', label: '普通用户' }
     ];
     
+    // 用户选项（用于个人知识库权限设置）
+    const userOptions = mockUsers.map(user => ({
+        value: user.id,
+        label: user.name
+    }));
+    
+    // 部门选项（用于个人知识库权限设置）
+    const departmentOptions = mockDepartments.map(dept => ({
+        value: dept.id,
+        label: dept.name
+    }));
+    
+    // 知识库类型选项
+    const knowledgeTypes = [
+        { value: 'faq', label: 'FAQ' },
+        { value: 'product', label: '产品手册' },
+        { value: 'technical', label: '技术文档' },
+        { value: 'other', label: '其他' }
+    ];
+    
     // 表格列定义 - 全局知识库
     const globalColumns = [
         {
@@ -351,12 +485,12 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
             key: 'description'
         },
         {
-            title: '类型',
+            title: '分类',
             dataIndex: 'type',
             key: 'type',
             render: function(type) {
-                const typeOption = knowledgeTypes.find(function(t) { return t.value === type; });
-                return typeOption ? React.createElement(Tag, { color: 'blue' }, typeOption.label) : type;
+                const typeOption = categories.find(function(t) { return t.id === type; });
+                return typeOption ? React.createElement(Tag, { color: 'blue' }, typeOption.name) : type;
             }
         },
         {
@@ -620,12 +754,16 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
                 React.createElement(Form.Item,
                     {
                         name: 'type',
-                        label: '类型',
-                        rules: [{ required: true, message: '请选择知识库类型' }]
+                        label: '分类',
+                        rules: [{ required: true, message: '请选择知识库分类' }],
+                        help: editMode ? '编辑模式下可以修改分类' : '新增知识库只能使用"其他"分类'
                     },
-                    React.createElement(Select, { placeholder: '请选择知识库类型' },
-                        knowledgeTypes.map(function(type) {
-                            return React.createElement(Option, { key: type.value, value: type.value }, type.label);
+                    React.createElement(Select, { 
+                        placeholder: '请选择知识库分类',
+                        disabled: !editMode // 新增时禁用选择，只能使用默认的"其他"分类
+                    },
+                        categories.map(function(category) {
+                            return React.createElement(Option, { key: category.id, value: category.id }, category.name);
                         })
                     )
                 ),
@@ -653,6 +791,57 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
                         roleOptions.map(function(role) {
                             return React.createElement(Option, { key: role.value, value: role.value }, role.label);
                         })
+                    )
+                ),
+                
+                // 个人知识库需要设置权限（按人员、部门、角色）
+                currentKnowledgeType === 'personal' && React.createElement(React.Fragment, null,
+                    React.createElement(Form.Item, {
+                        name: ['permissions', 'users'],
+                        label: '访问权限（人员）',
+                        tooltip: '选择可以访问该知识库的具体用户'
+                    },
+                        React.createElement(Select, { 
+                            mode: 'multiple', 
+                            placeholder: '请选择用户',
+                            disabled: currentKnowledge ? !hasEditPermission(currentKnowledge) : false // 新增时不禁用，编辑时检查权限
+                        },
+                            userOptions.map(function(user) {
+                                return React.createElement(Option, { key: user.value, value: user.value }, user.label);
+                            })
+                        )
+                    ),
+                    
+                    React.createElement(Form.Item, {
+                        name: ['permissions', 'departments'],
+                        label: '访问权限（部门）',
+                        tooltip: '选择可以访问该知识库的部门'
+                    },
+                        React.createElement(Select, { 
+                            mode: 'multiple', 
+                            placeholder: '请选择部门',
+                            disabled: currentKnowledge ? !hasEditPermission(currentKnowledge) : false // 新增时不禁用，编辑时检查权限
+                        },
+                            departmentOptions.map(function(dept) {
+                                return React.createElement(Option, { key: dept.value, value: dept.value }, dept.label);
+                            })
+                        )
+                    ),
+                    
+                    React.createElement(Form.Item, {
+                        name: ['permissions', 'roles'],
+                        label: '访问权限（角色）',
+                        tooltip: '选择可以访问该知识库的角色'
+                    },
+                        React.createElement(Select, { 
+                            mode: 'multiple', 
+                            placeholder: '请选择角色',
+                            disabled: currentKnowledge ? !hasEditPermission(currentKnowledge) : false // 新增时不禁用，编辑时检查权限
+                        },
+                            roleOptions.map(function(role) {
+                                return React.createElement(Option, { key: role.value, value: role.value }, role.label);
+                            })
+                        )
                     )
                 )
             )
