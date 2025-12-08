@@ -34,6 +34,42 @@ const AIAgentManagement = ({ onPageChange, currentPage }) => {
         { value: 'manager', label: '经理' }
     ];
     
+    // 从分类管理系统获取的分类数据
+    const [categories, setCategories] = React.useState([]);
+    
+    // 模拟获取分类数据的函数
+    const fetchCategories = () => {
+        // 这里应该调用API获取真实分类数据，现在使用模拟数据
+        const mockCategories = [
+            {
+                id: 'standard',
+                name: '标准',
+                level: 1
+            },
+            {
+                id: 'statistics',
+                name: '统计分析',
+                level: 1
+            },
+            {
+                id: 'compliance',
+                name: '合规',
+                level: 1
+            },
+            {
+                id: 'other',
+                name: '其他',
+                level: 1
+            }
+        ];
+        setCategories(mockCategories);
+    };
+    
+    // 初始化时获取分类数据
+    React.useEffect(() => {
+        fetchCategories();
+    }, []);
+    
     // 模拟数据初始化
     React.useEffect(() => {
         initMockData();
@@ -43,11 +79,11 @@ const AIAgentManagement = ({ onPageChange, currentPage }) => {
     const initMockData = () => {
         setLoading(true);
         
-        // 模拟智能体数据 - 调整为符合新结构的数据
+        // 模拟智能体数据 - 调整为符合新结构的数据，并添加默认分类
         const mockAgents = [
             {
                 id: '1',
-                name: '客服助手',
+                name: '标准智能体',
                 type: 'dify',
                 platform: 'pc',
                 sort: 0,
@@ -55,14 +91,15 @@ const AIAgentManagement = ({ onPageChange, currentPage }) => {
                 ai_id: 'agent123',
                 ai_key: 'key123',
                 role: 'operator',
-                remark: '为客户提供常见问题解答',
+                remark: '提供标准相关的智能查询服务',
                 enabled: true,
+                defaultCategory: 'standard', // 关联标准分类
                 createdAt: '2024-01-10',
                 updatedAt: '2024-01-20'
             },
             {
                 id: '2',
-                name: '产品咨询',
+                name: '统计分析智能体',
                 type: 'alicloud',
                 platform: 'both',
                 sort: 1,
@@ -70,14 +107,15 @@ const AIAgentManagement = ({ onPageChange, currentPage }) => {
                 ai_id: 'agent456',
                 ai_key: 'key456',
                 role: 'viewer',
-                remark: '介绍产品功能和提供使用建议',
+                remark: '提供统计分析相关的智能查询服务',
                 enabled: true,
+                defaultCategory: 'statistics', // 关联统计分析分类
                 createdAt: '2024-01-05',
                 updatedAt: '2024-01-15'
             },
             {
                 id: '3',
-                name: '技术支持',
+                name: '合规智能体',
                 type: 'dify',
                 platform: 'app',
                 sort: 2,
@@ -85,8 +123,9 @@ const AIAgentManagement = ({ onPageChange, currentPage }) => {
                 ai_id: 'agent789',
                 ai_key: 'key789',
                 role: 'editor',
-                remark: '提供技术问题排查和解决方案',
+                remark: '提供合规相关的智能查询服务',
                 enabled: false,
+                defaultCategory: 'compliance', // 关联合规分类
                 createdAt: '2023-12-20',
                 updatedAt: '2024-01-10'
             }
@@ -114,7 +153,8 @@ const AIAgentManagement = ({ onPageChange, currentPage }) => {
                 ai_key: record.ai_key,
                 role: record.role,
                 remark: record.remark,
-                enabled: record.enabled
+                enabled: record.enabled,
+                defaultCategory: record.defaultCategory
             });
         } else {
             // 新增模式
@@ -124,7 +164,8 @@ const AIAgentManagement = ({ onPageChange, currentPage }) => {
             form.setFieldsValue({ 
                 platform: 'pc',
                 sort: 0,
-                enabled: true
+                enabled: true,
+                defaultCategory: '' // 新增时默认无分类
             });
         }
         setVisible(true);
@@ -160,6 +201,7 @@ const AIAgentManagement = ({ onPageChange, currentPage }) => {
                         role: values.role,
                         remark: values.remark || '',
                         enabled: values.enabled,
+                        defaultCategory: values.defaultCategory || '',
                         updatedAt: new Date().toISOString().split('T')[0] 
                     } : item
                 );
@@ -179,6 +221,7 @@ const AIAgentManagement = ({ onPageChange, currentPage }) => {
                     role: values.role,
                     remark: values.remark || '',
                     enabled: values.enabled,
+                    defaultCategory: values.defaultCategory || '',
                     createdAt: new Date().toISOString().split('T')[0],
                     updatedAt: new Date().toISOString().split('T')[0]
                 };
@@ -232,7 +275,7 @@ const AIAgentManagement = ({ onPageChange, currentPage }) => {
         }
     };
     
-    // 表格列定义 - 调整为符合新数据结构的列
+    // 表格列定义 - 调整为符合新数据结构的列，并添加默认分类列
     const columns = [
         {
             title: '名称',
@@ -253,6 +296,14 @@ const AIAgentManagement = ({ onPageChange, currentPage }) => {
             render: function(_, record) {
                 const platformOption = platforms.find(platform => platform.value === record.platform);
                 return platformOption ? platformOption.label : record.platform;
+            }
+        },
+        {
+            title: '默认分类',
+            key: 'defaultCategory',
+            render: function(_, record) {
+                const category = categories.find(cat => cat.id === record.defaultCategory);
+                return category ? React.createElement(Tag, { color: 'green' }, category.name) : '-';
             }
         },
         {
@@ -434,6 +485,20 @@ const AIAgentManagement = ({ onPageChange, currentPage }) => {
                             React.createElement(Select, { placeholder: '请选择角色' },
                                 userRoles.map(function(role) {
                                     return React.createElement(Option, { key: role.value, value: role.value }, role.label);
+                                })
+                            )
+                        )
+                    ),
+                    React.createElement(Col, { span: 12 },
+                        React.createElement(Form.Item,
+                            {
+                                name: 'defaultCategory',
+                                label: '默认分类',
+                                help: '智能体将默认关联此分类下的知识库，使用时只能选择此分类和"其他"分类下的知识库'
+                            },
+                            React.createElement(Select, { placeholder: '请选择默认分类' },
+                                categories.map(function(category) {
+                                    return React.createElement(Option, { key: category.id, value: category.id }, category.name);
                                 })
                             )
                         )

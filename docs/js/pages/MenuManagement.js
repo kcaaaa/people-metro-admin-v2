@@ -57,6 +57,7 @@ const MenuManagement = () => {
         // AI管理子菜单
         'ai-agents': { enabled: true, label: '智能体管理', level: 2, parent: 'ai-management' },
         'ai-knowledge': { enabled: true, label: '知识库管理', level: 2, parent: 'ai-management' },
+        'ai-categories': { enabled: true, label: '分类管理', level: 2, parent: 'ai-management' },
     };
 
     // 状态管理

@@ -1,6 +1,6 @@
 // 大屏管理页面 - 可视化编辑版本
 const ScreenManagement = () => {
-    const { Card, Table, Button, Input, Select, Space, Tag, Modal, Form, Switch, message, Row, Col, Statistic, Tabs, Progress, Badge, Dropdown, Menu, Tooltip, Drawer } = antd;
+    const { Card, Table, Button, Input, Select, Space, Tag, Modal, Form, Switch, message, Row, Col, Statistic, Tabs, Progress, Badge, Dropdown, Menu, Tooltip, Drawer, DatePicker } = antd;
     const { Search } = Input;
     const { Option } = Select;
     const { TabPane } = Tabs;
@@ -1995,90 +1995,78 @@ const ScreenManagement = () => {
         ]));
     };
 
-    // 表格列定义
+    // 表格列定义 - 根据Figma设计调整
     const columns = [
         {
-            title: '大屏ID',
-            dataIndex: 'id',
-            key: 'id',
-            width: 80
+            title: '序号',
+            key: 'index',
+            width: 80,
+            render: (text, record, index) => `${index + 1}`.padStart(3, '0')
         },
         {
             title: '大屏名称',
             dataIndex: 'name',
             key: 'name',
-            width: 250,
-            render: (text, record) => React.createElement('div', {}, [
-                React.createElement('div', {
-                    key: 'name',
-                    style: { fontWeight: 'bold', marginBottom: 4 }
-                }, text),
-                React.createElement('div', {
-                    key: 'type',
-                    style: { fontSize: 12, color: '#666' }
-                }, record.type)
-            ])
+            width: 200,
+            render: (text) => React.createElement('span', { style: { fontWeight: 500 } }, text)
         },
         {
             title: '维护人',
             dataIndex: 'maintenanceUser',
             key: 'maintenanceUser',
-            width: 100
+            width: 120
         },
         {
             title: '维护时间',
             dataIndex: 'maintenanceTime',
             key: 'maintenanceTime',
-            width: 160,
-            render: (text) => {
-                const date = new Date(text);
-                return date.toLocaleString('zh-CN');
-            }
-        },
-        {
-            title: '刷新间隔',
-            key: 'refreshInterval',
-            width: 100,
-            render: (_, record) => `${record.refreshInterval}秒`
-        },
-        {
-            title: '创建时间',
-            dataIndex: 'createTime',
-            key: 'createTime',
-            width: 160,
-            render: (text) => {
-                const date = new Date(text);
-                return date.toLocaleString('zh-CN');
-            }
+            width: 180
         },
         {
             title: '创建人',
             dataIndex: 'createUser',
             key: 'createUser',
-            width: 100
+            width: 120
+        },
+        {
+            title: '创建时间',
+            dataIndex: 'createTime',
+            key: 'createTime',
+            width: 180
         },
         {
             title: '操作',
-            key: 'actions',
-            width: 180,
+            key: 'action',
+            width: 200,
             fixed: 'right',
-            render: (_, record) => React.createElement(Space, {}, [
-                React.createElement(Tooltip, {
-                    key: 'config',
-                    title: '配置管理'
-                }, React.createElement(Button, {
-                    type: 'primary',
-                    size: 'small',
+            render: (_, record) => React.createElement(Space, { size: 'middle' }, [
+                React.createElement('a', { 
+                    key: 'detail',
+                    style: { color: '#1890ff', cursor: 'pointer' },
+                    onClick: () => message.info('查看详情: ' + record.name)
+                }, '详情'),
+                React.createElement('a', { 
+                    key: 'edit',
+                    style: { color: '#1890ff', cursor: 'pointer' },
                     onClick: () => handleConfigScreen(record)
-                }, '⚙️ 配置')),
-                React.createElement(Dropdown, {
-                    key: 'more',
-                    overlay: getActionMenu(record),
-                    trigger: ['click']
-                }, React.createElement(Button, {
-                    type: 'link',
-                    size: 'small'
-                }, '更多 ▼'))
+                }, '编辑'),
+                React.createElement('a', { 
+                    key: 'delete',
+                    style: { color: '#ff4d4f', cursor: 'pointer' },
+                    onClick: () => {
+                        Modal.confirm({
+                            title: '确认删除',
+                            content: `确定要删除大屏"${record.name}"吗？`,
+                            okText: '删除',
+                            okType: 'danger',
+                            cancelText: '取消',
+                            onOk: () => {
+                                setScreenList(prev => prev.filter(item => item.id !== record.id));
+                                message.success('删除成功');
+                            }
+                        });
+                    }
+                }, '删除')
             ])
         }
     ];
@@ -2401,86 +2389,107 @@ const ScreenManagement = () => {
         message.success('配置保存成功');
     };
 
-    // 渲染列表页面
+    // 辅助函数：渲染筛选项
+    const renderFilterItem = (label, placeholder, type = 'text') => {
+        return React.createElement('div', {
+            key: label,
+            style: { display: 'flex', flexDirection: 'column', gap: '8px' }
+        }, [
+            React.createElement('span', { key: 'label', style: { color: '#333' } }, label),
+            type === 'date' ? 
+                React.createElement(DatePicker, { key: 'input', style: { width: 200 }, placeholder: placeholder }) :
+                React.createElement(Input, { key: 'input', style: { width: 200 }, placeholder: placeholder })
+        ]);
+    };
+
+    // 渲染列表页面 - 根据Figma设计调整
     const renderListPage = () => {
-        return React.createElement('div', {}, [
-            // 统计卡片
-            React.createElement(Row, {
-                key: 'stats',
-                gutter: 16,
-                style: { marginBottom: 24 }
+        return React.createElement('div', {
+            style: {
+                padding: '24px',
+                background: '#fff',
+                minHeight: '100%'
+            }
+        }, [
+            // 头部区域
+            React.createElement('div', {
+                key: 'header',
+                style: {
+                    marginBottom: '24px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start'
+                }
             }, [
-                React.createElement(Col, { key: 'total', span: 6 },
-                    React.createElement(Card, { size: 'small' },
-                        React.createElement(Statistic, {
-                            title: '大屏总数',
-                            value: screenList.length,
-                            prefix: '🖥️',
-                            valueStyle: { color: '#1890ff' }
-                        })
-                    )
-                )
+                React.createElement('div', { key: 'title-area' }, [
+                    React.createElement('h2', {
+                        key: 'title',
+                        style: {
+                            fontSize: '20px',
+                            fontWeight: 'bold',
+                            marginBottom: '8px',
+                            color: '#333'
+                        }
+                    }, '大屏管理'),
+                    React.createElement('p', {
+                        key: 'desc',
+                        style: {
+                            color: '#666',
+                            marginBottom: 0
+                        }
+                    }, '集中展示APP直播列表信息，方便直播运营人员处理直播问题和建议。')
+                ]),
+                React.createElement(Button, {
+                    key: 'sync-btn',
+                    icon: React.createElement('i', { className: 'fa-solid fa-arrows-rotate', style: { marginRight: 8 } }),
+                    onClick: () => message.success('数据已同步'),
+                    style: {
+                        display: 'flex',
+                        alignItems: 'center'
+                    }
+                }, '同步数据')
             ]),
 
-            // 筛选栏
-            React.createElement(Card, {
+            // 筛选区域
+            React.createElement('div', {
                 key: 'filters',
-                size: 'small',
-                style: { marginBottom: 16 }
-            }, React.createElement(Row, { gutter: 16, align: 'middle' }, [
-                React.createElement(Col, { key: 'search', span: 12 },
-                    React.createElement(Search, {
-                        placeholder: '搜索大屏名称',
-                        enterButton: true
-                    })
-                ),
-                React.createElement(Col, { key: 'type', span: 4 },
-                    React.createElement(Select, {
-                            placeholder: '大屏类型',
-                            style: { width: '100%' },
-                            defaultValue: 'all'
-                        }, [
-                            React.createElement(Option, { key: 'all', value: 'all' }, '全部类型'),
-                            React.createElement(Option, { key: '日常', value: '日常' }, '日常版 (P1)'),
-                            React.createElement(Option, { key: '协会版', value: '协会版' }, '协会简介 (P2)'),
-                            React.createElement(Option, { key: '标准版', value: '标准版' }, '标准制定 (P3)'),
-                            React.createElement(Option, { key: '行业版', value: '行业版' }, '行业概况 (P4)'),
-                            React.createElement(Option, { key: '评审版', value: '评审版' }, '评审工作 (P5)'),
-                            React.createElement(Option, { key: '城市版', value: '城市版' }, '城市信息 (P6)'),
-                            React.createElement(Option, { key: '科技版', value: '科技版' }, '科技奖类 (P7)'),
-                            React.createElement(Option, { key: '紧急版', value: '紧急版' }, '紧急播报 (P8)')
-                        ])
-                ),
-                React.createElement(Col, { key: 'status', span: 4 },
-                    React.createElement(Select, {
-                        placeholder: '运行状态',
-                        style: { width: '100%' },
-                        defaultValue: 'all'
-                    }, [
-                        React.createElement(Option, { key: 'all', value: 'all' }, '全部状态'),
-                        React.createElement(Option, { key: 'running', value: 'running' }, '运行中'),
-                        React.createElement(Option, { key: 'stopped', value: 'stopped' }, '已停止'),
-                        React.createElement(Option, { key: 'maintenance', value: 'maintenance' }, '维护中')
-                    ])
-                )
-            ])),
+                style: {
+                    marginBottom: '24px',
+                    display: 'flex',
+                    gap: '24px',
+                    flexWrap: 'wrap'
+                }
+            }, [
+                renderFilterItem('大屏名称', '请输入大屏名称'),
+                renderFilterItem('维护人', '请输入维护人'),
+                renderFilterItem('维护时间', '请选择维护时间', 'date'),
+                renderFilterItem('创建人', '请输入创建人'),
+                renderFilterItem('创建时间', '请选择创建时间', 'date'),
+            ]),
 
-            // 大屏列表表格
-            React.createElement(Card, { key: 'table' },
+            // 表格区域
+            React.createElement('div', { key: 'table-area' }, [
+                React.createElement('div', {
+                    key: 'table-header',
+                    style: {
+                        marginBottom: '16px',
+                        fontSize: '16px',
+                        fontWeight: 'bold'
+                    }
+                }, '大屏列表'),
                 React.createElement(Table, {
+                    key: 'table',
                     columns: columns,
                     dataSource: screenList,
-                    loading: loading,
                     rowKey: 'id',
                     pagination: {
-                        pageSize: 10,
-                        showSizeChanger: true,
-                        showQuickJumper: true,
-                        showTotal: (total) => `共 ${total} 个大屏`
-                    },
-                    scroll: { x: 1200 }
+                        total: screenList.length,
+                        showTotal: (total) => `共${total}条`,
+                        defaultPageSize: 10,
+                        showSizeChanger: true
+                    }
                 })
-            )
+            ])
         ]);
     };
 
