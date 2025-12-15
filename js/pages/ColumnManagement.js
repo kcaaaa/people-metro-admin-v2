@@ -1,6 +1,6 @@
 // 栏目管理页面
 const ColumnManagement = () => {
-    const { Row, Col, Card, Button, Space, Alert, Form, Input, Select, message, Modal, Table, Tag, Tree, Switch, Drawer, TreeSelect, Divider, Tooltip, Badge, Statistic } = antd;
+    const { Row, Col, Card, Button, Space, Alert, Form, Input, Select, message, Modal, Table, Tag, Tree, Switch, Drawer, TreeSelect, Divider, Tooltip, Badge, Statistic, Descriptions } = antd;
     const [form] = Form.useForm();
     const [permissionForm] = Form.useForm();
     const [columns, setColumns] = React.useState([]);
@@ -14,15 +14,24 @@ const ColumnManagement = () => {
     const [selectedKeys, setSelectedKeys] = React.useState([]);
     const [permissionDrawerVisible, setPermissionDrawerVisible] = React.useState(false);
     const [currentColumnPermissions, setCurrentColumnPermissions] = React.useState({});
+    const loadColumnsTimer = React.useRef(null);
 
     React.useEffect(() => {
         loadColumns();
+        
+        // 返回清理函数
+        return () => {
+            // 清理可能的定时器
+            if (loadColumnsTimer.current) {
+                clearTimeout(loadColumnsTimer.current);
+            }
+        };
     }, []);
 
     // 加载栏目数据
     const loadColumns = () => {
         setLoading(true);
-        setTimeout(() => {
+        loadColumnsTimer.current = setTimeout(() => {
             const mockColumns = [
                 {
                     key: 'about',

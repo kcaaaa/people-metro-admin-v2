@@ -13,11 +13,11 @@ const AIKnowledgeDetail = ({ onPageChange, currentPage, knowledgeId, mode = 'vie
     const [form] = Form.useForm();
     
     // 知识库类型选项
-    // 当前用户信息（模拟，实际应该从权限系统获取）
-    const currentUser = {
+    // 当前用户信息（从认证系统获取）
+    const currentUser = window.AuthUtils && window.AuthUtils.getCurrentUser ? window.AuthUtils.getCurrentUser() : {
         id: 'user1',
         name: '管理员',
-        role: 'admin' // 可选值：'super-admin'、'admin' 或 'user'
+        role: 'admin' // 默认值
     };
     
     // 权限检查函数
@@ -154,10 +154,11 @@ const AIKnowledgeDetail = ({ onPageChange, currentPage, knowledgeId, mode = 'vie
     const generateMockFiles = (knowledgeId) => {
         const baseFiles = [];
         const fileTypes = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'md', 'csv'];
-        const fileCount = knowledgeId === '1' ? 20 : 
-                          knowledgeId === '2' ? 15 : 
-                          knowledgeId === '3' ? 12 : 
-                          knowledgeId === '4' ? 8 : 10;
+        // 增加文件数量，确保示例知识库有足够的文件
+        const fileCount = knowledgeId === '1' ? 30 : 
+                          knowledgeId === '2' ? 25 : 
+                          knowledgeId === '3' ? 20 : 
+                          knowledgeId === '4' ? 15 : 15;
         
         for (let i = 1; i <= fileCount; i++) {
             const fileType = fileTypes[Math.floor(Math.random() * fileTypes.length)];

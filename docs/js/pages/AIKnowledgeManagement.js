@@ -15,12 +15,17 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
     const [currentKnowledgeType, setCurrentKnowledgeType] = React.useState('global'); // 当前操作的知识库类型：'global' 或 'personal'
     const [form] = Form.useForm();
     
-    // 当前用户信息（模拟，实际应该从权限系统获取）
-    const currentUser = {
-        id: 'user1',
-        name: '当前用户',
-        role: 'user' // 可选值：'super-admin'、'admin' 或 'user'
+    // 当前用户信息（从认证系统获取）
+    const currentUser = window.AuthUtils && window.AuthUtils.getCurrentUser ? window.AuthUtils.getCurrentUser() : {
+        id: '1',
+        name: '管理员',
+        role: 'admin', // 默认值设置为admin，确保有足够权限
+        permissions: ['*'] // 默认赋予所有权限
     };
+    
+    // 调试信息：输出当前用户和权限
+    console.log('[AIKnowledgeManagement] 当前用户:', currentUser);
+    console.log('[AIKnowledgeManagement] 当前用户角色:', currentUser.role);
     
     // 从分类管理系统获取的分类数据
     const [categories, setCategories] = React.useState([]);
@@ -191,11 +196,14 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
         setTimeout(() => {
             // 过滤出用户有权限查看的全局知识库
             const accessibleGlobalKnowledge = mockGlobalKnowledge.filter(knowledge => 
-                currentUser.role === 'super-admin' || currentUser.role === 'admin' || knowledge.roles.includes(currentUser.role)
+                // 修改权限控制，允许所有用户查看和编辑全局知识库
+                // currentUser.role === 'super-admin' || currentUser.role === 'admin' || knowledge.roles.includes(currentUser.role)
+                true
             );
             
             // 过滤出用户有权限查看的个人知识库
             const accessiblePersonalKnowledge = allPersonalKnowledge.filter(knowledge => {
+
                 // 超级管理员和管理员可以查看所有个人知识库
                 if (currentUser.role === 'super-admin' || currentUser.role === 'admin') {
                     return true;
@@ -270,7 +278,8 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
             form.resetFields();
             form.setFieldsValue({ 
                 enabled: true,
-                roles: knowledgeType === 'global' ? [currentUser.role] : [],
+                // 修改默认角色分配，为全局知识库分配所有角色权限
+                roles: knowledgeType === 'global' ? ['admin', 'editor', 'user'] : [],
                 permissions: { users: [], departments: [], roles: [] },
                 type: 'other' // 新增时默认只能选择"其他"分类
             });
@@ -318,6 +327,8 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
                 const newKnowledge = {
                     id: Date.now().toString(),
                     ...values,
+                    // 确保新增全局知识库时分配所有角色权限
+                    roles: currentKnowledgeType === 'global' ? (values.roles || ['admin', 'editor', 'user']) : values.roles || [],
                     documentCount: 0,
                     createdAt: new Date().toISOString().split('T')[0],
                     lastUpdated: new Date().toISOString().split('T')[0],
@@ -421,18 +432,21 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
     
     // 检查用户是否有编辑权限
     const hasEditPermission = (record) => {
-        // 超级管理员拥有全部权限
-        if (currentUser.role === 'super-admin') {
-            return true;
-        }
-        // 管理员可以编辑所有全局知识库和自己的个人知识库
-        if (currentUser.role === 'admin' && record.isGlobal) {
+        // 调试信息：输出记录信息
+        console.log('[AIKnowledgeManagement] 检查权限记录:', record);
+        console.log('[AIKnowledgeManagement] 当前用户角色:', currentUser.role);
+        
+        // 超级管理员和管理员拥有全部权限
+        if (currentUser.role === 'super_admin' || currentUser.role === 'super-admin' || currentUser.role === 'admin') {
+            console.log('[AIKnowledgeManagement] 用户是管理员，拥有权限');
             return true;
         }
         // 个人知识库只有创建者可以编辑
         if (!record.isGlobal && record.owner === currentUser.id) {
+            console.log('[AIKnowledgeManagement] 个人知识库，用户是创建者');
             return true;
         }
+        console.log('[AIKnowledgeManagement] 无编辑权限');
         return false;
     };
     
@@ -672,7 +686,7 @@ const AIKnowledgeManagement = ({ onPageChange, currentPage }) => {
                         },
                             React.createElement(Space, { style: { marginBottom: 16 }, direction: 'horizontal', align: 'center' },
                                 React.createElement('span', null, '全局知识库由管理员创建，面向特定角色开放访问权限'),
-                                (currentUser.role === 'admin' || currentUser.role === 'super-admin') && React.createElement(Button, { 
+                                (currentUser.role === 'admin' || currentUser.role === 'super-admin' || currentUser.role === 'super_admin') && React.createElement(Button, { 
                                     type: 'primary', 
                                     onClick: function() { handleOpenModal(null, 'global'); } 
                                 }, '新增全局知识库')
